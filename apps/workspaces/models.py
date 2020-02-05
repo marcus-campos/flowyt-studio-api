@@ -9,7 +9,7 @@ class Workspace(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField("Descrição", null=True, blank=True, help_text="(Opcional)")
     slug = models.SlugField("Slug", null=True, blank=True, help_text="(Opcional)")
-    integrations = models.CharField("Integrações", max_length=255, null=True, blank=True, help_text="(Opcional)")
+    integrations = JSONField("Integrações", max_length=255, null=True, blank=True, help_text="(Opcional)")
     envs = JSONField("Environments", null=True, blank=True, help_text="(Opcional)")
 
     class Meta:
