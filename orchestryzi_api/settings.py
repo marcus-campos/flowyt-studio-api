@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     # Apps
     "apps.workspaces",
-    "whitenoise.runserver_nostatic",,
+    "whitenoise.runserver_nostatic",
 ]
 
 MIDDLEWARE = [
@@ -78,7 +78,7 @@ DATABASES["default"]["CONN_MAX_AGE"] = config(
 )  # always connected
 DATABASES["default"]["TEST"] = {"NAME": config("TEST_DATABASE_NAME", default=None)}
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
