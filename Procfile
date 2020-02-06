@@ -1,0 +1,1 @@
+web: gunicorn orchestryzi_api.wsgi --log-file -

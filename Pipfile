@@ -15,6 +15,8 @@ prettyconf = "*"
 psycopg2-binary = "*"
 dj_database_url = "*"
 drf-yasg = "*"
+whitenoise = "*"
+django-heroku = "*"
 
 [dev-packages]
 flake8 = "*"
