@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     # Apps
     "apps.workspaces",
+    "whitenoise.runserver_nostatic",,
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 
@@ -75,6 +77,8 @@ DATABASES["default"]["CONN_MAX_AGE"] = config(
     "CONN_MAX_AGE", cast=config.eval, default="None"
 )  # always connected
 DATABASES["default"]["TEST"] = {"NAME": config("TEST_DATABASE_NAME", default=None)}
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
