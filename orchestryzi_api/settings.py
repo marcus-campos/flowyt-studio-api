@@ -8,7 +8,7 @@ from dj_database_url import parse as parse_db_url
 
 
 # Project Structure
-BASE_DIR = Path(__file__).absolute().parents[2]
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_DIR = Path(__file__).absolute().parents[1]
 
 # Quick-start development settings - unsuitable for production
@@ -59,7 +59,7 @@ WSGI_APPLICATION = "orchestryzi_api.wsgi.application"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [os.path.join(PROJECT_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -105,13 +105,13 @@ USE_TZ = True
 
 LOCALE_PATHS = (PROJECT_DIR / "locale",)
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
 
-STATIC_URL = "/static/"
-
-STATICFILES_DIRS = [
-    ("rest_framework_swagger", os.path.join(STATIC_ROOT, "rest_framework_swagger")),
-]
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
