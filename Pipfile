@@ -17,6 +17,7 @@ dj_database_url = "*"
 drf-yasg = "*"
 whitenoise = "*"
 django-heroku = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 flake8 = "*"

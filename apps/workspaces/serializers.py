@@ -6,6 +6,7 @@ from apps.workspaces.models import Workspace, Flow
 class WorkspaceSerializer(serializers.ModelSerializer):
     envs = serializers.JSONField(required=False)
     integrations = serializers.JSONField(required=False)
+    workspace_color = serializers.CharField(required=False)
 
     class Meta:
         model = Workspace

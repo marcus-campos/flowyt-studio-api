@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     # Rest Framework Apps
     "rest_framework",
     "drf_yasg",
+    # Libs
+    "corsheaders",
     # Apps
     "apps.workspaces",
     "whitenoise.runserver_nostatic",
@@ -50,6 +52,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 
@@ -133,3 +137,7 @@ SWAGGER_SETTINGS = {
     "JSON_EDITOR": True,
 }
 django_heroku.settings(locals())
+
+
+# Accept all
+CORS_ORIGIN_ALLOW_ALL=True
