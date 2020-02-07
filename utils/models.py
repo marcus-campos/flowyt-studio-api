@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import uuid
 
 from django.db import models
 from django.utils.translation import ugettext as translate
@@ -6,7 +7,7 @@ from django.utils.timezone import now
 
 
 class AutoCreatedUpdatedMixin(models.Model):
-
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField("Criado em",null=True,blank=True,db_index=True, auto_now_add=True)
     updated_at = models.DateTimeField("Atualizado em",null=True, blank=True, db_index=True, auto_now=True)
 
