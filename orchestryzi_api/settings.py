@@ -137,7 +137,7 @@ SWAGGER_SETTINGS = {
     },
     "JSON_EDITOR": True,
 }
-django_heroku.settings(locals())
+
 
 
 # Accept all
@@ -167,3 +167,4 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
+django_heroku.settings(locals())
