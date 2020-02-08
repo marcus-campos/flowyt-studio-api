@@ -138,8 +138,6 @@ SWAGGER_SETTINGS = {
     "JSON_EDITOR": True,
 }
 
-
-
 # Accept all
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
