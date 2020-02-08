@@ -66,7 +66,7 @@ class FlowReleases(AutoCreatedUpdatedMixin):
     flow_layout = JSONField("Flow Layout")
     flow_data = JSONField("Flow Data", null=True, blank=True, help_text="(Opcional)")
 
-    workspace = models.ForeignKey("WorkspaceReleases", on_delete=models.CASCADE)
+    workspace_release = models.ForeignKey("WorkspaceReleases", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
