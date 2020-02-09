@@ -41,7 +41,8 @@ class FunctionFileSerializer(serializers.ModelSerializer):
 
 
 class FlowSerializer(serializers.ModelSerializer):
-    integrations = serializers.JSONField(required=False)
+    flow_layout = serializers.JSONField(required=False)
+    flow_data = serializers.JSONField(required=False)
 
     class Meta:
         model = Flow

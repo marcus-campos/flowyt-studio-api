@@ -56,7 +56,7 @@ class FunctionFile(AutoCreatedUpdatedMixin):
 
 class Flow(AutoCreatedUpdatedMixin):
     name = models.CharField("Flow Name", max_length=255)
-    flow_layout = JSONField("Flow Layout")
+    flow_layout = JSONField("Flow Layout", null=True, blank=True, help_text="(Opcional)")
     flow_data = JSONField("Flow Data", null=True, blank=True, help_text="(Opcional)")
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
