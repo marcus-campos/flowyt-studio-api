@@ -34,7 +34,7 @@ urlpatterns = [
     url(
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
-    url(r"^login/", obtain_jwt_token),
-    url(r"^refresh-token/", refresh_jwt_token),
+    url(r"^api/token/", obtain_jwt_token),
+    url(r"^api/token/refresh/", refresh_jwt_token),
     url(r"^api/v1/", include("apps.workspaces.urls")),
 ]
