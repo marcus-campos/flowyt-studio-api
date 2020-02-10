@@ -3,9 +3,9 @@ from django.urls import include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from rest_framework_jwt.views import obtain_jwt_token
-from rest_framework_jwt.views import refresh_jwt_token
-
+from rest_framework_simplejwt import views as jwt_views
+from django.contrib import admin
+from django.urls import path
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -34,7 +34,12 @@ urlpatterns = [
     url(
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
-    url(r"^api/token/", obtain_jwt_token),
-    url(r"^api/token/refresh/", refresh_jwt_token),
+    path(
+        "api/token/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
+    ),
+    path(
+        "api/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
+    ),
     url(r"^api/v1/", include("apps.workspaces.urls")),
+    url(r"^admin/", admin.site.urls),
 ]

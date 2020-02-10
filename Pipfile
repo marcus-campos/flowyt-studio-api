@@ -18,7 +18,7 @@ drf-yasg = "*"
 whitenoise = "*"
 django-heroku = "*"
 django-cors-headers = "*"
-djangorestframework-jwt = "*"
+djangorestframework_simplejwt = "*"
 
 [dev-packages]
 flake8 = "*"
