@@ -7,13 +7,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0001_initial'),
+        ("workspaces", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='flow',
-            name='flow_layout',
-            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, help_text='(Opcional)', null=True, verbose_name='Flow Layout'),
+            model_name="flow",
+            name="flow_layout",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                blank=True,
+                help_text="(Opcional)",
+                null=True,
+                verbose_name="Flow Layout",
+            ),
         ),
     ]

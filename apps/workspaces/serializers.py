@@ -1,7 +1,12 @@
 from rest_framework import serializers
 
-from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Workspace)
+from apps.workspaces.models import (
+    Environment,
+    Flow,
+    FunctionFile,
+    Integration,
+    Workspace,
+)
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
