@@ -35,10 +35,10 @@ urlpatterns = [
         r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"
     ),
     path(
-        "api/token/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
+        "api/v1/token/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
     ),
     path(
-        "api/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
+        "api/v1/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
     ),
     url(r"^api/v1/", include("apps.workspaces.urls")),
     url(r"^admin/", admin.site.urls),
