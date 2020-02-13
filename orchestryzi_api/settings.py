@@ -1,11 +1,11 @@
 import os
-import django_heroku
-
+from datetime import timedelta
 from pathlib import Path
+
+import dj_database_url
+import django_heroku
 from django.utils.module_loading import import_string
 from prettyconf import config
-from dj_database_url
-from datetime import timedelta
 
 # Project Structure
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
