@@ -1,5 +1,5 @@
 echo creating user
-exec manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('root', 'admin@example.com', 'root')"
+exec python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('root', 'admin@example.com', 'root')"
 # Start Gunicorn processes
 echo Starting Gunicorn.
 exec gunicorn orchestryzi_api.wsgi \
