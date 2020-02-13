@@ -78,9 +78,11 @@ TEMPLATES = [
 ]
 # Database
 DATABASES = {
-    "default": config("DATABASE_URL", cast=parse_db_url)
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL", cast=parse_db_url),
+        ssl_require=False
+    )
 }
-DATABASES["default"]["SSL_REQUIRE"] = False
 DATABASES["default"]["CONN_MAX_AGE"] = config(
     "CONN_MAX_AGE", cast=config.eval, default="None"
 )  # always connected
