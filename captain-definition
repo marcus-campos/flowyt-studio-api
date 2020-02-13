@@ -6,7 +6,7 @@
     "ENV SECRET_KEY e72t)7a5^d9nrfrz_i=%=dsa2%%v7kf*9hqp*9toe3ff)%s2&j",
     "ENV DEBUG False",
     "ENV ALLOWED_HOSTS *",
-    "ENV DATABASE_URL postgresql://orch:or!v1G64@srv-captain--orchestryzi-api-db/orchestryzi_api",
+    "ENV DATABASE_URL postgresql://orch:or!v1G64@srv-captain--orchestryzi-api-db:5432/orchestryzi_api",
     
     "RUN pip install -U pip setuptools",
 
