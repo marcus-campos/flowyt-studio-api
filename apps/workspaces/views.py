@@ -24,10 +24,10 @@ class IntegrationViewSet(viewsets.ModelViewSet):
 
 
 class FunctionFileViewSet(viewsets.ModelViewSet):
-    queryset = Flow.objects.all()
+    queryset = FunctionFile.objects.all()
     serializer_class = FunctionFileSerializer
 
 
 class FlowViewSet(viewsets.ModelViewSet):
-    queryset = FunctionFile.objects.all()
+    queryset = Flow.objects.all()
     serializer_class = FlowSerializer
