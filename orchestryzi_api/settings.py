@@ -1,11 +1,11 @@
 import os
-from datetime import timedelta
-from pathlib import Path
-
-import dj_database_url
 import django_heroku
+
+from pathlib import Path
 from django.utils.module_loading import import_string
 from prettyconf import config
+from dj_database_url import parse as parse_db_url
+from datetime import timedelta
 
 # Project Structure
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -77,16 +77,12 @@ TEMPLATES = [
     },
 ]
 # Database
-DATABASES = {
-    "default": dj_database_url.config(
-        default=config("DATABASE_URL", cast=dj_database_url.parse),
-        ssl_require=False
-    )
-}
+DATABASES = {"default": config("DATABASE_URL", cast=parse_db_url)}
 DATABASES["default"]["CONN_MAX_AGE"] = config(
     "CONN_MAX_AGE", cast=config.eval, default="None"
 )  # always connected
 DATABASES["default"]["TEST"] = {"NAME": config("TEST_DATABASE_NAME", default=None)}
+DATABASES["default"]["OPTIONS"]["sslmode"] = "disable" 
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
