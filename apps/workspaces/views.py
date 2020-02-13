@@ -1,13 +1,11 @@
 from rest_framework import viewsets
 
-from apps.workspaces.models import Flow, Workspace
-from apps.workspaces.serializers import (
-    EnvironmentSerializer,
-    FlowSerializer,
-    FunctionFileSerializer,
-    IntegrationSerializer,
-    WorkspaceSerializer,
-)
+from apps.workspaces.models import (Environment, Flow, FunctionFile,
+                                    Integration, Workspace)
+from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
+                                         FunctionFileSerializer,
+                                         IntegrationSerializer,
+                                         WorkspaceSerializer)
 
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
@@ -16,12 +14,12 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
 
 class EnvironmentViewSet(viewsets.ModelViewSet):
-    queryset = Flow.objects.all()
+    queryset = Environment.objects.all()
     serializer_class = EnvironmentSerializer
 
 
 class IntegrationViewSet(viewsets.ModelViewSet):
-    queryset = Flow.objects.all()
+    queryset = Integration.objects.all()
     serializer_class = IntegrationSerializer
 
 
@@ -31,5 +29,5 @@ class FunctionFileViewSet(viewsets.ModelViewSet):
 
 
 class FlowViewSet(viewsets.ModelViewSet):
-    queryset = Flow.objects.all()
+    queryset = FunctionFile.objects.all()
     serializer_class = FlowSerializer
