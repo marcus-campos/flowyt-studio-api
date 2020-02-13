@@ -196,6 +196,3 @@ SIMPLE_JWT = {
 
 django_heroku.settings(locals())
 del DATABASES['default']['OPTIONS']['sslmode']
-
-import django
-django.setup()
