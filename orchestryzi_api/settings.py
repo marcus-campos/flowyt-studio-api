@@ -82,7 +82,7 @@ DATABASES["default"]["CONN_MAX_AGE"] = config(
     "CONN_MAX_AGE", cast=config.eval, default="None"
 )  # always connected
 DATABASES["default"]["TEST"] = {"NAME": config("TEST_DATABASE_NAME", default=None)}
-DATABASES["default"]["OPTIONS"] = {"sslmode": "prefer"}
+DATABASES["default"]["OPTIONS"] = {"sslmode": "disable"}
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
