@@ -196,3 +196,14 @@ SIMPLE_JWT = {
 
 django_heroku.settings(locals())
 del DATABASES['default']['OPTIONS']['sslmode']
+
+import django
+django.setup()
+
+from django.contrib.auth.models import User
+
+u = User(username='root')
+u.set_password('root')
+u.is_superuser = True
+u.is_staff = True
+u.save()
