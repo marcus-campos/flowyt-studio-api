@@ -77,7 +77,9 @@ TEMPLATES = [
     },
 ]
 # Database
-DATABASES = {"default": config("DATABASE_URL", cast=parse_db_url)}
+DATABASES = {
+    "default": config("DATABASE_URL", cast=parse_db_url)
+}
 DATABASES["default"]["CONN_MAX_AGE"] = config(
     "CONN_MAX_AGE", cast=config.eval, default="None"
 )  # always connected
