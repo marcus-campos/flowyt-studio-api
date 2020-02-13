@@ -4,7 +4,7 @@ import django_heroku
 from pathlib import Path
 from django.utils.module_loading import import_string
 from prettyconf import config
-from dj_database_url import parse as parse_db_url
+from dj_database_url
 from datetime import timedelta
 
 # Project Structure
@@ -79,7 +79,7 @@ TEMPLATES = [
 # Database
 DATABASES = {
     "default": dj_database_url.config(
-        default=config("DATABASE_URL", cast=parse_db_url),
+        default=config("DATABASE_URL", cast=dj_database_url.parse),
         ssl_require=False
     )
 }
