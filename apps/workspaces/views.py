@@ -24,16 +24,19 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 class EnvironmentViewSet(viewsets.ModelViewSet):
     queryset = Environment.objects.all()
     serializer_class = EnvironmentSerializer
+    filter_fields = ("workspace__id",)
 
 
 class IntegrationViewSet(viewsets.ModelViewSet):
     queryset = Integration.objects.all()
     serializer_class = IntegrationSerializer
+    filter_fields = ("workspace__id",)
 
 
 class FunctionFileViewSet(viewsets.ModelViewSet):
     queryset = FunctionFile.objects.all()
     serializer_class = FunctionFileSerializer
+    filter_fields = ("workspace__id",)
 
 
 class FlowViewSet(viewsets.ModelViewSet):

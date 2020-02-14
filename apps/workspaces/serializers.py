@@ -52,4 +52,3 @@ class FlowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flow
         fields = "__all__"
-        filter_fields = ("workspace__id",)
