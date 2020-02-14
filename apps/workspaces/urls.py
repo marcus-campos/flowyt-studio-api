@@ -12,7 +12,7 @@ router.register(r"function-file", views.IntegrationViewSet)
 
 urlpatterns = [
     path(
-        "workspaces/<uuid:id>/release/", views.ReleaseView.as_view(), name="release"
+        "releases/workspaces/<uuid:id>/", views.ReleaseView.as_view(), name="release"
     ),
     path("", include(router.urls)),
 ]

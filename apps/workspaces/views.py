@@ -1,8 +1,10 @@
 import copy
+import json
 
+from django.core import serializers
 from rest_framework import generics, viewsets
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from apps.workspaces.models import (Environment, Flow, FunctionFile,
                                     Integration, Workspace)
@@ -54,5 +56,7 @@ class ReleaseView(generics.GenericAPIView):
 
         serializer.is_valid(raise_exception=True)
         release = serializer.create(serializer.validated_data)
+        serialized_release = serializers.serialize('python', [release])[0]
+        serialized_release["fields"]["id"] = serialized_release["pk"]
 
-        return Response(data=release, status=200)
+        return Response(data=serialized_release["fields"], status=200)
