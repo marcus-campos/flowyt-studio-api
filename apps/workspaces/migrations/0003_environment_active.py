@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0002_auto_20200209_2240'),
+        ("workspaces", "0002_auto_20200209_2240"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='environment',
-            name='active',
-            field=models.BooleanField(default=False, help_text='(Opcional)'),
+            model_name="environment",
+            name="active",
+            field=models.BooleanField(default=False, help_text="(Opcional)"),
         ),
     ]
