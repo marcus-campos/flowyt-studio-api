@@ -151,7 +151,6 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     environment = models.ForeignKey("Environment", on_delete=models.CASCADE)
 
@@ -172,7 +171,6 @@ class IntegrationRelease(AutoCreatedUpdatedMixin):
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     integration = models.ForeignKey("Integration", on_delete=models.CASCADE)
 
@@ -185,12 +183,14 @@ class IntegrationRelease(AutoCreatedUpdatedMixin):
 
 class FunctionFileRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Function Name", max_length=255)
+    description = models.TextField(
+        "Description", null=True, blank=True, help_text="(Opcional)"
+    )
     function_data = JSONField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)"
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     function_file = models.ForeignKey("FunctionFile", on_delete=models.CASCADE)
 
