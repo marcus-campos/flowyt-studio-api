@@ -2,12 +2,12 @@ import copy
 import json
 
 from django.core import serializers
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Workspace)
+                                    Integration, Workspace, Release)
 from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
                                          FunctionFileSerializer,
                                          IntegrationSerializer,
@@ -44,7 +44,21 @@ class FlowViewSet(viewsets.ModelViewSet):
     filter_fields = ("workspace__id",)
 
 
-class ReleaseView(generics.GenericAPIView):
+class ReleaseViewSet(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
+    queryset = Release.objects.all()
+    serializer_class = FlowSerializer
+    filter_fields = ("workspace__id",)
+
+
+class ReleaseView(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     mixins.ListModelMixin,
+                     generics.GenericAPIView):
     serializer_class = ReleaseSerializer
     permission_classes = [IsAuthenticated]
 
