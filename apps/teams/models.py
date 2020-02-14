@@ -48,7 +48,8 @@ class Team(AutoCreatedUpdatedMixin):
 
 
 def generate_invite_code():
-    return base64.urlsafe_b64encode(uuid.uuid1().bytes.encode("base64").rstrip())[:25]
+    code = base64.urlsafe_b64encode(uuid.uuid1().bytes.rstrip())[:25]
+    return code.decode("utf-8")
 
 
 class TeamInvitationManager(models.Manager):

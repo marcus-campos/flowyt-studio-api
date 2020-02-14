@@ -96,7 +96,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
 
     ACTIVATED = "ALREADY ACTIVATED"
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     verification_key = models.CharField(max_length=40)
     objects = UserProfileRegistrationManager()
 
@@ -128,9 +128,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
         subject = render_to_string("registration/activation_email_subject.txt", context)
         subject = "".join(subject.splitlines())
         message = render_to_string("registration/activation_email_content.txt", context)
-        msg = EmailMultiAlternatives(
-            subject, "", settings.DEFAULT_FROM_EMAIL, [self.user.email]
-        )
+        msg = EmailMultiAlternatives(subject=subject, to=[self.user.email])
         msg.attach_alternative(message, "text/html")
         msg.send()
 
