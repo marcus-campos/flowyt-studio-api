@@ -9,6 +9,10 @@ router.register(r"environment", views.EnvironmentViewSet)
 router.register(r"integration", views.IntegrationViewSet)
 router.register(r"function-file", views.IntegrationViewSet)
 
+
 urlpatterns = [
+    path(
+        "workspaces/<uuid:id>/release/", views.ReleaseView.as_view(), name="release"
+    ),
     path("", include(router.urls)),
 ]

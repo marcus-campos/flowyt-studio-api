@@ -151,7 +151,6 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     environment = models.ForeignKey("Environment", on_delete=models.CASCADE)
 
@@ -172,7 +171,6 @@ class IntegrationRelease(AutoCreatedUpdatedMixin):
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     integration = models.ForeignKey("Integration", on_delete=models.CASCADE)
 

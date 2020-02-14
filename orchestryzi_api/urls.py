@@ -40,6 +40,6 @@ urlpatterns = [
     path(
         "api/v1/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
     ),
-    url(r"^api/v1/", include("apps.workspaces.urls")),
+    path("api/v1/", include("apps.workspaces.urls")),
     url(r"^admin/", admin.site.urls),
 ]

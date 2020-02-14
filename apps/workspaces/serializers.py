@@ -6,12 +6,15 @@ from apps.workspaces.models import (
     FunctionFile,
     Integration,
     Workspace,
+    Release,
+    WorkspaceRelease,
+    EnvironmentRelease,
+    FunctionFileRelease,
+    IntegrationRelease
 )
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
-    envs = serializers.JSONField(required=False)
-    integrations = serializers.JSONField(required=False)
     workspace_color = serializers.CharField(required=False)
 
     class Meta:
@@ -52,3 +55,51 @@ class FlowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Flow
         fields = "__all__"
+
+
+
+class ReleaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Release
+        fields = "__all__"
+
+    def create(self, validated_data):
+        release = Release.objects.create(**validated_data)
+        
+        workspace_release = release.workspace.__dict__
+        workspace_release["workspace"] = release.workspace
+        workspace_release["release"] = release
+        del workspace_release["id"]
+        workspace_release = WorkspaceRelease.objects.create(**workspace_release)
+
+        # environments_release = workspace.environment_set.all()
+        # for environment in environments_release:
+        #     environment_rel = environment.__dict__
+        #     environment_rel["workspace_release"] = workspace_release
+        #     environment_rel["release"] = release
+        #     environment_rel["environment"] = environment
+        #     del environment_rel["id"]
+        #     environment = EnvironmentRelease.objects.create(**environment_rel)
+        
+
+        # integrations_release = workspace.integration_set.all()
+        # for integration in integrations_release:
+        #     integration_rel = integration.__dict__
+        #     integration_rel["workspace_release"] = workspace_release
+        #     integration_rel["release"] = release
+        #     integration_rel["integration"] = integration
+        #     del integration_rel["id"]
+        #     integration = IntegrationRelease.objects.create(**integration_rel)
+
+
+        # function_files_release = workspace.functionfile_set.all()
+        # for function_file in function_files_release:
+        #     function_file_rel = function_file.__dict__
+        #     function_file_rel["workspace_release"] = workspace_release
+        #     function_file_rel["release"] = release
+        #     function_file_rel["function_file"] = function_file
+        #     del function_file_rel["id"]
+        #     function_file = function_fileRelease.objects.create(**function_file_rel)
+
+        return release
+
