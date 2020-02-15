@@ -7,13 +7,16 @@ router.register(r"workspaces", views.WorkspaceViewSet)
 router.register(r"flows", views.FlowViewSet)
 router.register(r"environment", views.EnvironmentViewSet)
 router.register(r"integration", views.IntegrationViewSet)
-router.register(r"function-file", views.IntegrationViewSet)
+router.register(r"function-file", views.FunctionFile)
 router.register(r"releases", views.ReleaseViewSet)
 
 
 urlpatterns = [
     path(
         "releases/workspaces/<uuid:id>/", views.ReleaseView.as_view(), name="release"
+    ),
+    path(
+        "releases/<uuid:id>/publish/", views.ReleasePublishView.as_view(), name="publish"
     ),
     path("", include(router.urls)),
 ]

@@ -29,7 +29,7 @@ class Environment(AutoCreatedUpdatedMixin):
     environment_variables = JSONField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)"
     )
-    active = models.BooleanField(default=False, help_text="(Opcional)")
+    debug = models.BooleanField(default=False, help_text="(Default false)")
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
 
@@ -96,6 +96,7 @@ class Release(AutoCreatedUpdatedMixin):
     )
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
+    published = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["updated_at"]
