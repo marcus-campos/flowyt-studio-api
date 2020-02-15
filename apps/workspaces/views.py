@@ -8,13 +8,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Release, Workspace)
+                                    Integration, Release, Workspace,
+                                    WorkspaceRelease)
 from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
                                          FunctionFileSerializer,
                                          IntegrationSerializer,
                                          PublishSerializer, ReleaseSerializer,
                                          WorkspaceSerializer)
-from apps.workspaces.services import (ConfigTranslation, FlowTranslation)
+from apps.workspaces.services import ConfigTranslation, FlowTranslation
 
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
@@ -89,10 +90,10 @@ class ReleasePublishView(generics.GenericAPIView):
 
     def __run(self, validated_data):
         release = validated_data["release"]
-        workspace = release.workspace
-        flows = workspace.flow_set.all()
-        integrations = workspace.integration_set.all()
-        function_files = workspace.functionfile_set.all()
+        workspace = WorkspaceRelease.objects.get(release=release)
+        flows = workspace.flowrelease_set.all()
+        integrations = workspace.integrationrelease_set.all()
+        function_files = workspace.functionfilerelease_set.all()
 
         environments_to_publish = validated_data["environments"]
 
@@ -106,6 +107,6 @@ class ReleasePublishView(generics.GenericAPIView):
                 flows_list.append(
                     FlowTranslation().translate(flow)
                 )
-
+    
         
         pass

@@ -1,17 +1,10 @@
 from rest_framework import serializers
 
-from apps.workspaces.models import (
-    Environment,
-    Flow,
-    FunctionFile,
-    Integration,
-    Workspace,
-    Release,
-    WorkspaceRelease,
-    EnvironmentRelease,
-    FunctionFileRelease,
-    IntegrationRelease
-)
+from apps.workspaces.models import (Environment, EnvironmentRelease, Flow,
+                                    FlowRelease, FunctionFile,
+                                    FunctionFileRelease, Integration,
+                                    IntegrationRelease, Release, Workspace,
+                                    WorkspaceRelease)
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -83,6 +76,22 @@ class ReleaseSerializer(serializers.ModelSerializer):
         workspace_release.workspace_color = release.workspace.workspace_color
 
         workspace_release.save()
+
+        # Flows
+        flows_release = release.workspace.flow_set.all()
+        for flow in flows_release:
+            flow_rel = FlowRelease()
+
+            flow_rel.workspace_release = workspace_release
+            flow_rel.release = release
+            flow_rel.flow = flow
+
+            flow_rel.name = flow.name
+            flow_rel.description = flow.description
+            flow_rel.flow_layout = flow.flow_layout
+            flow_rel.flow_data = flow.flow_data
+           
+            flow_rel.save()
         
         # Environments
         environments_release = release.workspace.environment_set.all()
@@ -114,7 +123,6 @@ class ReleaseSerializer(serializers.ModelSerializer):
             integration_rel.integration_variables = integration.integration_variables
             
             integration_rel.save()
-
 
         # Function file
         function_files_release = release.workspace.functionfile_set.all()

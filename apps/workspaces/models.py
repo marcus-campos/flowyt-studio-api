@@ -78,6 +78,9 @@ class FunctionFile(AutoCreatedUpdatedMixin):
 
 class Flow(AutoCreatedUpdatedMixin):
     name = models.CharField("Flow Name", max_length=255)
+    description = models.TextField(
+        "Description", null=True, blank=True, help_text="(Opcional)"
+    )
     flow_layout = JSONField(
         "Flow Layout", null=True, blank=True, help_text="(Opcional)"
     )
@@ -130,11 +133,13 @@ class WorkspaceRelease(AutoCreatedUpdatedMixin):
 
 class FlowRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Flow Name", max_length=255)
+    description = models.TextField(
+        "Description", null=True, blank=True, help_text="(Opcional)"
+    )
     flow_layout = JSONField("Flow Layout")
     flow_data = JSONField("Flow Data", null=True, blank=True, help_text="(Opcional)")
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     flow = models.ForeignKey("Flow", on_delete=models.CASCADE)
 

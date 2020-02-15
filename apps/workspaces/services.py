@@ -48,10 +48,13 @@ class FlowTranslation():
         "next_action": ""
     }
 
-    def translate(self, flow):
-        flow_data, flow_node_data
+    def translate(self, flow_queryset):
+        flow_data = flow_queryset.flow_layout
+        flow_node_data = flow_queryset.flow_data
 
         flow = copy.deepcopy(self.flow_model)
+        flow["id"] = flow_queryset.id
+        flow["name"] = flow_queryset.name
 
         flow_nodes = flow_data["nodes"]
         flow_links = flow_data["links"]
