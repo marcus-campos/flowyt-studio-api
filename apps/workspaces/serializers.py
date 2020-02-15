@@ -99,19 +99,20 @@ class ReleaseSerializer(serializers.ModelSerializer):
             flow_rel.save()
 
 
-        # Flows
+        # Routes
         routes_release = release.workspace.route_set.all()
         for route in routes_release:
             route_rel = RouteRelease()
 
             route_rel.workspace_release = workspace_release
+            route_rel.flow_release = route.flow_release
             route_rel.release = release
             route_rel.route = route
 
-            route_rel.name = route.name
+            route_rel.path = route.path
             route_rel.description = route.description
-            route_rel.route_layout = route.route_layout
-            route_rel.route_data = route.route_data
+            route_rel.method = route.method
+            route_rel.active = route.active
            
             route_rel.save()
         
