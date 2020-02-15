@@ -10,7 +10,7 @@ User = get_user_model()
 class TeamCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ["name", "description"]
+        fields = ["id", "name", "description"]
 
     def validate(self, data):
         user = self.context.get("user", None)
@@ -24,7 +24,8 @@ class TeamCreateSerializer(serializers.ModelSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
-        fields = ["id", "name", "description"]
+        fields = "__all__"
+        read_only_fields = ("id",)
 
 
 class TeamInvitationCreateSerializer(serializers.Serializer):

@@ -1,12 +1,14 @@
 import copy
-import json
+
+from django.db.models import Q
+from rest_framework import status
 
 from django.core import serializers
 from django.utils.text import slugify
 from rest_framework import generics, mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
     Flow,
@@ -35,6 +37,22 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     queryset = Workspace.objects.all()
     serializer_class = WorkspaceSerializer
     permission_classes = (IsInTeamPermission,)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(
+            data=request.data, context={"user": request.user}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(creator=request.user)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        teams = Team.members.filter(members__in=[self.request.user])
+        return queryset.filter(team__in=teams)
 
 
 class EnvironmentViewSet(viewsets.ModelViewSet):

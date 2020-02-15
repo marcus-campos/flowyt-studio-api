@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
     EnvironmentRelease,
@@ -23,6 +24,15 @@ class WorkspaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workspace
         fields = "__all__"
+        read_only_fields = ["creator"]
+
+    def validate(self, data):
+        creator = self.context.get("user", None)
+        if not creator:
+            raise serializers.ValidationError("User not found.")
+        if not Team.objects.filter(members__in=[creator]).exists():
+            raise serializers.ValidationError("User is not in the specified Team.")
+        return data
 
 
 class EnvironmentSerializer(serializers.ModelSerializer):
