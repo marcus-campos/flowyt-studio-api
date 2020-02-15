@@ -9,6 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from utils.email import EmailAsync
 from utils.models import AutoCreatedUpdatedMixin
 
 User = get_user_model()
@@ -140,8 +141,4 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
         message = render_to_string(
             "invitation_team/invitation_team_content.txt", context
         )
-        msg = EmailMultiAlternatives(
-            subject, "", settings.DEFAULT_FROM_EMAIL, [self.email]
-        )
-        msg.attach_alternative(message, "text/html")
-        msg.send()
+        EmailAsync(subject=subject, to=[self.email], html=message).send()

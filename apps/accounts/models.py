@@ -12,6 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.contrib.auth.tokens import default_token_generator
 
+from utils.email import EmailAsync
 from utils.models import AutoCreatedUpdatedMixin
 from utils import encodings
 
@@ -128,9 +129,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
         subject = render_to_string("registration/activation_email_subject.txt", context)
         subject = "".join(subject.splitlines())
         message = render_to_string("registration/activation_email_content.txt", context)
-        msg = EmailMultiAlternatives(subject=subject, to=[self.user.email])
-        msg.attach_alternative(message, "text/html")
-        msg.send()
+        EmailAsync(subject=subject, to=[self.user.email], html=message).send()
 
     def send_password_reset_email(self, site):
         context = {
@@ -148,8 +147,4 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
         message = render_to_string(
             "password_reset/password_reset_email_content.txt", context
         )
-        msg = EmailMultiAlternatives(
-            subject, "", settings.DEFAULT_FROM_EMAIL, [self.user.email]
-        )
-        msg.attach_alternative(message, "text/html")
-        msg.send()
+        EmailAsync(subject=subject, to=[self.user.email], html=message).send()
