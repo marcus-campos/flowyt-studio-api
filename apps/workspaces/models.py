@@ -1,7 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.conf import settings
 
 from utils.models import AutoCreatedUpdatedMixin
+
+User = get_user_model()
 
 
 class Workspace(AutoCreatedUpdatedMixin):
@@ -13,6 +17,8 @@ class Workspace(AutoCreatedUpdatedMixin):
     workspace_color = models.CharField(
         "Workspace Name", null=True, blank=True, max_length=6
     )
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    team = models.ForeignKey("teams.Team", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
