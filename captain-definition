@@ -7,6 +7,12 @@
     "ENV DEBUG False",
     "ENV ALLOWED_HOSTS *",
     "ENV DATABASE_URL postgresql://orch:or!v1G64@172.31.10.239:5432/orchestryzi_api",
+
+    "ENV EMAIL_HOST smtp.mailgun.org",
+    "ENV EMAIL_PORT 587",
+    "ENV EMAIL_HOST_USER postmaster@mg.orchestryzi.com",
+    "ENV EMAIL_HOST_PASSWORD 0aa791f046863ce25dbe5be07f4875ff-52b6835e-93fe4781"
+    "ENV EMAIL_USE_TLS True",
     
     "RUN pip install -U pip setuptools",
 
