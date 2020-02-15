@@ -2,17 +2,19 @@ import copy
 import json
 
 from django.core import serializers
-from rest_framework import generics, viewsets, mixins
+from django.utils.text import slugify
+from rest_framework import generics, mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Workspace, Release)
+                                    Integration, Release, Workspace)
 from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
                                          FunctionFileSerializer,
                                          IntegrationSerializer,
-                                         ReleaseSerializer,
+                                         PublishSerializer, ReleaseSerializer,
                                          WorkspaceSerializer)
+from apps.workspaces.services import (ConfigTranslation, FlowTranslation)
 
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
@@ -54,13 +56,8 @@ class ReleaseViewSet(mixins.RetrieveModelMixin,
     filter_fields = ("workspace__id",)
 
 
-class ReleaseView(mixins.RetrieveModelMixin,
-                     mixins.UpdateModelMixin,
-                     mixins.DestroyModelMixin,
-                     mixins.ListModelMixin,
-                     generics.GenericAPIView):
+class ReleaseView(generics.GenericAPIView):
     serializer_class = ReleaseSerializer
-    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
@@ -74,3 +71,41 @@ class ReleaseView(mixins.RetrieveModelMixin,
         serialized_release["fields"]["id"] = serialized_release["pk"]
 
         return Response(data=serialized_release["fields"], status=200)
+
+class ReleasePublishView(generics.GenericAPIView):
+    serializer_class = PublishSerializer
+    
+    def post(self, request, *args, **kwargs):
+        data = copy.deepcopy(request.data)
+        data["release"] = kwargs["id"]
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+    
+        self.__run(serializer.validated_data)
+
+        return Response(data={}, status=200)
+
+
+    def __run(self, validated_data):
+        release = validated_data["release"]
+        workspace = release.workspace
+        flows = workspace.flow_set.all()
+        integrations = workspace.integration_set.all()
+        function_files = workspace.functionfile_set.all()
+
+        environments_to_publish = validated_data["environments"]
+
+        for environment in environments_to_publish:
+            slug = slugify("{0}-{1}".format(workspace.name, environment.name))
+            config_settings = ConfigTranslation().settings_translate(release, workspace,
+                                                                     environment, integrations)
+            flows_list = []
+
+            for flow in flows:
+                flows_list.append(
+                    FlowTranslation().translate(flow)
+                )
+
+        
+        pass

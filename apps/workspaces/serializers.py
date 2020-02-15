@@ -56,8 +56,6 @@ class FlowSerializer(serializers.ModelSerializer):
         model = Flow
         fields = "__all__"
 
-
-
 class ReleaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Release
@@ -135,3 +133,25 @@ class ReleaseSerializer(serializers.ModelSerializer):
 
         return release
 
+
+class PublishSerializer(serializers.Serializer):
+    release = serializers.UUIDField(required=True)
+    environments = serializers.ListField(required=True)
+
+    def validate(self, data):
+        release = Release.objects.get(pk=str(data["release"]))
+
+        if not release:
+            raise serializers.ValidationError("This release does not exist")
+        
+        data["release"] = release
+
+        for index in range(len(data["environments"])):
+            environment = Environment.objects.get(pk=data["environments"][index])
+
+            if not environment:
+                raise serializers.ValidationError("The environment {0} does not exist".format(data["environments"][index]))
+            
+            data["environments"][index] = environment
+
+        return data
