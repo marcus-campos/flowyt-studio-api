@@ -17,6 +17,7 @@ from apps.workspaces.models import (
     Workspace,
     WorkspaceRelease,
 )
+from apps.workspaces.permissions import IsInTeamPermission, IsCreatorPermission
 from apps.workspaces.serializers import (
     EnvironmentSerializer,
     FlowSerializer,
@@ -33,36 +34,42 @@ from apps.workspaces.services import ConfigTranslation, FlowTranslation
 class WorkspaceViewSet(viewsets.ModelViewSet):
     queryset = Workspace.objects.all()
     serializer_class = WorkspaceSerializer
+    permission_classes = (IsInTeamPermission,)
 
 
 class EnvironmentViewSet(viewsets.ModelViewSet):
     queryset = Environment.objects.all()
     serializer_class = EnvironmentSerializer
     filter_fields = ("workspace__id",)
+    permission_classes = (IsInTeamPermission,)
 
 
 class IntegrationViewSet(viewsets.ModelViewSet):
     queryset = Integration.objects.all()
     serializer_class = IntegrationSerializer
     filter_fields = ("workspace__id",)
+    permission_classes = (IsInTeamPermission,)
 
 
 class FunctionFileViewSet(viewsets.ModelViewSet):
     queryset = FunctionFile.objects.all()
     serializer_class = FunctionFileSerializer
     filter_fields = ("workspace__id",)
+    permission_classes = (IsInTeamPermission,)
 
 
 class FlowViewSet(viewsets.ModelViewSet):
     queryset = Flow.objects.all()
     serializer_class = FlowSerializer
     filter_fields = ("workspace__id",)
+    permission_classes = (IsInTeamPermission,)
 
 
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
     filter_fields = ("flow__id", "workspace__id")
+    permission_classes = (IsInTeamPermission,)
 
 
 class ReleaseViewSet(
@@ -75,6 +82,7 @@ class ReleaseViewSet(
     queryset = Release.objects.all()
     serializer_class = FlowSerializer
     filter_fields = ("workspace__id",)
+    permission_classes = (IsCreatorPermission,)
 
 
 class ReleaseView(generics.GenericAPIView):

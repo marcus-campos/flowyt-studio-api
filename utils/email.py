@@ -26,9 +26,7 @@ class EmailAsync(threading.Thread):
         return self.start()
 
     def run(self):
-        msg = EmailMultiAlternatives(
-            self.subject, self.body, self.from_email, self.recipient_list
-        )
+        msg = EmailMultiAlternatives(self.subject, self.body, self.from_email, self.to)
         if self.html:
             msg.attach_alternative(self.html, "text/html")
         msg.send(self.fail_silently)
