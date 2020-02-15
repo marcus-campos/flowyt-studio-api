@@ -77,7 +77,6 @@ class ReleaseSerializer(serializers.ModelSerializer):
 
         workspace_release.name = release.workspace.name
         workspace_release.description = release.workspace.description
-        workspace_release.slug = release.workspace.slug
         workspace_release.workspace_color = release.workspace.workspace_color
 
         workspace_release.save()

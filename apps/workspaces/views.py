@@ -87,31 +87,45 @@ class ReleasePublishView(generics.GenericAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
     
-        self.__run(serializer.validated_data)
+        self.__make_workspaces(serializer.validated_data)
 
         return Response(data={}, status=200)
 
 
-    def __run(self, validated_data):
+    def __make_workspaces(self, validated_data):
         release = validated_data["release"]
         workspace = WorkspaceRelease.objects.get(release=release)
         flows = workspace.flowrelease_set.all()
+        routes = workspace.routesrelease_set.all()
         integrations = workspace.integrationrelease_set.all()
         function_files = workspace.functionfilerelease_set.all()
 
         environments_to_publish = validated_data["environments"]
 
-        slug = ""
-        config_settings = {}
-        flows_list = []
+        project_structure = {
+            "config": [],
+            "flows": [],
+            "functions": []
+        }
+
+        projects_to_publish = []
 
         for environment in environments_to_publish:
+            project = copy.deepcopy(project_structure)
+
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
-            config_settings = self.__config_settings(release, workspace, environment, integrations)
+
+            project["config"].append({
+                "name": "settings",
+                "data": self.__config_settings(release, workspace, environment, integrations)
+            })
             
-            flows_list = self.__flows(flows)
-    
-        pass
+            project["flows"] = self.__flows(flows)
+
+            projects_to_publish.append({
+                "name": slug,
+                "data": project
+            })
 
     def __config_settings(self, release, workspace, environment, integrations):
         config_settings = ConfigTranslation().settings_translate(release, workspace,
@@ -122,7 +136,9 @@ class ReleasePublishView(generics.GenericAPIView):
     def __flows(self, flows):
         flows_list = []
         for flow in flows:
-            flows_list.append(
-                FlowTranslation().translate(flow)
-            )
+            slug = slugify(flow.name)
+            flows_list.append({
+                "name": slug,
+                "data": FlowTranslation().translate(flow)
+            })
         return flows_list

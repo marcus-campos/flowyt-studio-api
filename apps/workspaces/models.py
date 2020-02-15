@@ -10,7 +10,6 @@ class Workspace(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)"
     )
-    slug = models.SlugField("Slug", null=True, blank=True, help_text="(Opcional)")
     workspace_color = models.CharField(
         "Workspace Name", null=True, blank=True, max_length=6
     )
@@ -138,7 +137,6 @@ class WorkspaceRelease(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)"
     )
-    slug = models.SlugField("Slug", null=True, blank=True, help_text="(Opcional)")
     workspace_color = models.CharField(
         "Workspace Name", null=True, blank=True, max_length=6
     )
