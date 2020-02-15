@@ -7,14 +7,26 @@ from rest_framework import generics, mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Release, Route, Workspace,
-                                    WorkspaceRelease)
-from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
-                                         FunctionFileSerializer,
-                                         IntegrationSerializer,
-                                         PublishSerializer, ReleaseSerializer,
-                                         RouteSerializer, WorkspaceSerializer)
+from apps.workspaces.models import (
+    Environment,
+    Flow,
+    FunctionFile,
+    Integration,
+    Release,
+    Route,
+    Workspace,
+    WorkspaceRelease,
+)
+from apps.workspaces.serializers import (
+    EnvironmentSerializer,
+    FlowSerializer,
+    FunctionFileSerializer,
+    IntegrationSerializer,
+    PublishSerializer,
+    ReleaseSerializer,
+    RouteSerializer,
+    WorkspaceSerializer,
+)
 from apps.workspaces.services import ConfigTranslation, FlowTranslation
 
 
@@ -46,16 +58,20 @@ class FlowViewSet(viewsets.ModelViewSet):
     serializer_class = FlowSerializer
     filter_fields = ("workspace__id",)
 
+
 class RouteViewSet(viewsets.ModelViewSet):
     queryset = Route.objects.all()
     serializer_class = RouteSerializer
     filter_fields = ("flow__id", "workspace__id")
 
-class ReleaseViewSet(mixins.RetrieveModelMixin,
-                     mixins.UpdateModelMixin,
-                     mixins.DestroyModelMixin,
-                     mixins.ListModelMixin,
-                     viewsets.GenericViewSet):
+
+class ReleaseViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = Release.objects.all()
     serializer_class = FlowSerializer
     filter_fields = ("workspace__id",)
@@ -72,25 +88,25 @@ class ReleaseView(generics.GenericAPIView):
 
         serializer.is_valid(raise_exception=True)
         release = serializer.create(serializer.validated_data)
-        serialized_release = serializers.serialize('python', [release])[0]
+        serialized_release = serializers.serialize("python", [release])[0]
         serialized_release["fields"]["id"] = serialized_release["pk"]
 
         return Response(data=serialized_release["fields"], status=200)
 
+
 class ReleasePublishView(generics.GenericAPIView):
     serializer_class = PublishSerializer
-    
+
     def post(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
         data["release"] = kwargs["id"]
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-    
+
         self.__make_workspaces(serializer.validated_data)
 
         return Response(data={}, status=200)
-
 
     def __make_workspaces(self, validated_data):
         release = validated_data["release"]
@@ -102,11 +118,7 @@ class ReleasePublishView(generics.GenericAPIView):
 
         environments_to_publish = validated_data["environments"]
 
-        project_structure = {
-            "config": [],
-            "flows": [],
-            "functions": []
-        }
+        project_structure = {"config": [], "flows": [], "functions": []}
 
         projects_to_publish = []
 
@@ -115,30 +127,28 @@ class ReleasePublishView(generics.GenericAPIView):
 
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
 
-            project["config"].append({
-                "name": "settings",
-                "data": self.__config_settings(release, workspace, environment, integrations)
-            })
-            
+            project["config"].append(
+                {
+                    "name": "settings",
+                    "data": self.__config_settings(
+                        release, workspace, environment, integrations
+                    ),
+                }
+            )
+
             project["flows"] = self.__flows(flows)
 
-            projects_to_publish.append({
-                "name": slug,
-                "data": project
-            })
+            projects_to_publish.append({"name": slug, "data": project})
 
     def __config_settings(self, release, workspace, environment, integrations):
-        config_settings = ConfigTranslation().settings_translate(release, workspace,
-                                                                 environment, integrations)
+        config_settings = ConfigTranslation().settings_translate(
+            release, workspace, environment, integrations
+        )
         return config_settings
-
 
     def __flows(self, flows):
         flows_list = []
         for flow in flows:
             slug = slugify(flow.name)
-            flows_list.append({
-                "name": slug,
-                "data": FlowTranslation().translate(flow)
-            })
+            flows_list.append({"name": slug, "data": FlowTranslation().translate(flow)})
         return flows_list
