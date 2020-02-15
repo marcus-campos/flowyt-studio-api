@@ -1,8 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.conf import settings
 
 from utils.models import AutoCreatedUpdatedMixin
 from utils.choices import HTTPMethodChoices
+
+User = get_user_model()
 
 
 class Workspace(AutoCreatedUpdatedMixin):
@@ -13,6 +17,8 @@ class Workspace(AutoCreatedUpdatedMixin):
     workspace_color = models.CharField(
         "Workspace Name", null=True, blank=True, max_length=6
     )
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    team = models.ForeignKey("teams.Team", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
@@ -96,7 +102,7 @@ class Flow(AutoCreatedUpdatedMixin):
 
 
 class Route(AutoCreatedUpdatedMixin):
-    
+
     path = models.CharField("Path", max_length=255)
     method = models.CharField(
         "HTTP Method", max_length=10, choices=HTTPMethodChoices.choices
@@ -142,7 +148,9 @@ class WorkspaceRelease(AutoCreatedUpdatedMixin):
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
-    workspace = models.ForeignKey("Workspace", null=True, blank=True, on_delete=models.SET_NULL)
+    workspace = models.ForeignKey(
+        "Workspace", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         ordering = ["name"]
@@ -203,7 +211,9 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
-    environment = models.ForeignKey("Environment", null=True, blank=True, on_delete=models.SET_NULL)
+    environment = models.ForeignKey(
+        "Environment", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         ordering = ["created_at"]
@@ -223,7 +233,9 @@ class IntegrationRelease(AutoCreatedUpdatedMixin):
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
-    integration = models.ForeignKey("Integration", null=True, blank=True, on_delete=models.SET_NULL)
+    integration = models.ForeignKey(
+        "Integration", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         ordering = ["created_at"]
@@ -243,7 +255,9 @@ class FunctionFileRelease(AutoCreatedUpdatedMixin):
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
-    function_file = models.ForeignKey("FunctionFile", null=True, blank=True, on_delete=models.SET_NULL)
+    function_file = models.ForeignKey(
+        "FunctionFile", null=True, blank=True, on_delete=models.SET_NULL
+    )
 
     class Meta:
         ordering = ["created_at"]

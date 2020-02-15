@@ -3,17 +3,14 @@ import copy
 import json
 
 
-class ConfigTranslation():
+class ConfigTranslation:
     settings_model = {
         "id": "",
         "name": "",
         "debug": True,
-        "release": {
-            "id": "",
-            "name": ""
-        },
+        "release": {"id": "", "name": ""},
         "integrations": {},
-        "env": {}
+        "env": {},
     }
 
     def settings_translate(self, release, workspace, environment, integrations):
@@ -27,26 +24,17 @@ class ConfigTranslation():
         settings["env"] = environment.environment_variables
 
         for integration in integrations:
-            settings["integrations"][integration.name] = integration.integration_variables
-        
+            settings["integrations"][
+                integration.name
+            ] = integration.integration_variables
+
         return settings
 
 
+class FlowTranslation:
+    flow_model = {"id": "", "name": "", "pipeline": []}
 
-class FlowTranslation():
-    flow_model = {
-        "id": "",
-        "name": "",
-        "pipeline": [
-        ]
-    }
-
-    action_model = {
-        "id": "",
-        "action": "",
-        "data": {},
-        "next_action": ""
-    }
+    action_model = {"id": "", "action": "", "data": {}, "next_action": ""}
 
     def translate(self, flow_queryset):
         flow_data = flow_queryset.flow_layout
@@ -64,7 +52,7 @@ class FlowTranslation():
             node_id = key
 
             _model = copy.deepcopy(self.action_model)
-            _model["id"] = node_id    
+            _model["id"] = node_id
             _model["action"] = value["properties"]["name"]
 
             # Get data
@@ -73,7 +61,7 @@ class FlowTranslation():
                     _model["data"] = flow_node_data[index]["data"]
                     del flow_node_data[index]
                     break
-            
+
             # Get links
             _links = []
             _aux_flow_links = copy.deepcopy(flow_links)
@@ -99,7 +87,7 @@ class FlowTranslation():
 
             if _model["action"] in ["response", "jump"]:
                 _model["next_action"] = None
-                
+
             flow["pipeline"].append(_model)
 
         return flow

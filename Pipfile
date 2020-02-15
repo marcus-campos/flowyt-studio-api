@@ -19,6 +19,7 @@ whitenoise = "*"
 django-heroku = "*"
 django-cors-headers = "*"
 djangorestframework_simplejwt = "*"
+django-username-email = "*"
 
 [dev-packages]
 flake8 = "*"

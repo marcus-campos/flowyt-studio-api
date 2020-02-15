@@ -38,11 +38,14 @@ INSTALLED_APPS = [
     "drf_yasg",
     # Libs
     "corsheaders",
+    "whitenoise.runserver_nostatic",
+    "cuser",
     # Apps
     "apps.workspaces",
-    "whitenoise.runserver_nostatic",
+    "apps.teams",
+    "apps.accounts",
 ]
-
+AUTH_USER_MODEL = "cuser.CUser"
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
@@ -188,6 +191,15 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(days=7),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=10),
 }
+
+EMAIL_HOST = config("EMAIL_HOST", cast=str)
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", cast=str)
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+DEFAULT_FROM_EMAIL = "Orchestryzi <noreply@orchestryzi.com>"
+
+SITE_NAME = "Orchestryzi"
 
 django_heroku.settings(locals())
 del DATABASES["default"]["OPTIONS"]["sslmode"]
