@@ -63,6 +63,9 @@ class FunctionFile(AutoCreatedUpdatedMixin):
     function_data = JSONField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)"
     )
+    description = models.TextField(
+        "Description", null=True, blank=True, help_text="(Opcional)"
+    )
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
 
