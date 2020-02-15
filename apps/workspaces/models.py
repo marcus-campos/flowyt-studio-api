@@ -95,6 +95,38 @@ class Flow(AutoCreatedUpdatedMixin):
         return self.name
 
 
+class Route(AutoCreatedUpdatedMixin):
+    
+    class HTTPMethods(models.TextChoices):
+        GET = "GET"
+        POST = "POST"
+        PUT = "PUT"
+        DELETE = "DELETE"
+        PATCH = "PATCH"
+        TRACE = "TRACE"
+        OPTIONS = "OPTIONS"
+        CONNECT = "CONNECT"
+
+
+    path = models.CharField("Path", max_length=255)
+    method = models.CharField(
+        "HTTP Method", max_length=10, choices=HTTPMethods.choices
+    )
+    description = models.TextField(
+        "Description", null=True, blank=True, help_text="(Opcional)"
+    )
+    active = models.BooleanField(default=True)
+
+    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
+    flow = models.ForeignKey("Flow", on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["path"]
+
+    def __str__(self):
+        return self.path
+
+
 class Release(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField(

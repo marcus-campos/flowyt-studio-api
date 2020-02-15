@@ -8,13 +8,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Release, Workspace,
+                                    Integration, Release, Route, Workspace,
                                     WorkspaceRelease)
 from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
                                          FunctionFileSerializer,
                                          IntegrationSerializer,
                                          PublishSerializer, ReleaseSerializer,
-                                         WorkspaceSerializer)
+                                         RouteSerializer, WorkspaceSerializer)
 from apps.workspaces.services import ConfigTranslation, FlowTranslation
 
 
@@ -46,6 +46,10 @@ class FlowViewSet(viewsets.ModelViewSet):
     serializer_class = FlowSerializer
     filter_fields = ("workspace__id",)
 
+class RouteViewSet(viewsets.ModelViewSet):
+    queryset = Route.objects.all()
+    serializer_class = RouteSerializer
+    filter_fields = ("flow__id", "workspace__id")
 
 class ReleaseViewSet(mixins.RetrieveModelMixin,
                      mixins.UpdateModelMixin,
@@ -97,16 +101,28 @@ class ReleasePublishView(generics.GenericAPIView):
 
         environments_to_publish = validated_data["environments"]
 
+        slug = ""
+        config_settings = {}
+        flows_list = []
+
         for environment in environments_to_publish:
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
-            config_settings = ConfigTranslation().settings_translate(release, workspace,
-                                                                     environment, integrations)
-            flows_list = []
-
-            for flow in flows:
-                flows_list.append(
-                    FlowTranslation().translate(flow)
-                )
+            config_settings = self.__config_settings(release, workspace, environment, integrations)
+            
+            flows_list = self.__flows(flows)
     
-        
         pass
+
+    def __config_settings(self, release, workspace, environment, integrations):
+        config_settings = ConfigTranslation().settings_translate(release, workspace,
+                                                                 environment, integrations)
+        return config_settings
+
+
+    def __flows(self, flows):
+        flows_list = []
+        for flow in flows:
+            flows_list.append(
+                FlowTranslation().translate(flow)
+            )
+        return flows_list

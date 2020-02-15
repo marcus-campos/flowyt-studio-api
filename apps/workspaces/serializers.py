@@ -3,8 +3,8 @@ from rest_framework import serializers
 from apps.workspaces.models import (Environment, EnvironmentRelease, Flow,
                                     FlowRelease, FunctionFile,
                                     FunctionFileRelease, Integration,
-                                    IntegrationRelease, Release, Workspace,
-                                    WorkspaceRelease)
+                                    IntegrationRelease, Release, Route,
+                                    Workspace, WorkspaceRelease)
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -47,6 +47,12 @@ class FlowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Flow
+        fields = "__all__"
+
+class RouteSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Route
         fields = "__all__"
 
 class ReleaseSerializer(serializers.ModelSerializer):
@@ -147,19 +153,17 @@ class PublishSerializer(serializers.Serializer):
     environments = serializers.ListField(required=True)
 
     def validate(self, data):
-        release = Release.objects.get(pk=str(data["release"]))
-
-        if not release:
+        try:
+            release = Release.objects.get(pk=str(data["release"]))
+            data["release"] = release
+        except Release.DoesNotExist:
             raise serializers.ValidationError("This release does not exist")
-        
-        data["release"] = release
 
         for index in range(len(data["environments"])):
-            environment = Environment.objects.get(pk=data["environments"][index])
-
-            if not environment:
+            try:
+                environment = Environment.objects.get(pk=data["environments"][index])
+                data["environments"][index] = environment
+            except Environment.DoesNotExist:
                 raise serializers.ValidationError("The environment {0} does not exist".format(data["environments"][index]))
-            
-            data["environments"][index] = environment
 
         return data
