@@ -51,7 +51,7 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        teams = Team.members.filter(members__in=[self.request.user])
+        teams = Team.objects.filter(members__in=[self.request.user])
         return queryset.filter(team__in=teams)
 
 

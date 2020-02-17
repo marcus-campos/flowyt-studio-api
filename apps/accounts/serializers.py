@@ -5,9 +5,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import serializers
 
 from apps.accounts.models import UserProfile
-from apps.teams.models import TeamInvitation
+from apps.teams.models import TeamInvitation, Team
 from apps.teams.serializers import TeamSerializer
 from utils import encodings as base_utils
+from django.db import transaction
 
 User = get_user_model()
 
@@ -77,24 +78,33 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         }
 
         is_active = True if team else False
+        with transaction.atomic():
 
-        user = UserProfile.objects.create_user_profile(
-            data=user_data,
-            is_active=is_active,
-            site=get_current_site(self.context["request"]),
-            send_email=True,
-        )
+            user = UserProfile.objects.create_user_profile(
+                data=user_data,
+                is_active=is_active,
+                site=get_current_site(self.context["request"]),
+                send_email=True,
+            )
 
-        if team:
-            team.members.add(user)
+            if team:
+                team.members.add(user)
 
-        if hasattr(self, "invitation"):
-            TeamInvitation.objects.accept_invitation(self.invitation)
+            if hasattr(self, "invitation"):
+                TeamInvitation.objects.accept_invitation(self.invitation)
 
-        TeamInvitation.objects.decline_pending_invitations(
-            email_ids=[validated_data.get("email")]
-        )
+            TeamInvitation.objects.decline_pending_invitations(
+                email_ids=[validated_data.get("email")]
+            )
 
+            personal_team = Team()
+            personal_team.name = "Personal"
+            personal_team.description = "Your personal team"
+            personal_team.owner = user
+            personal_team.members.set([user])
+            personal_team.save()
+
+            print(personal_team)
         return validated_data
 
 
