@@ -129,7 +129,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
             route_rel = RouteRelease()
 
             route_rel.workspace_release = workspace_release
-            route_rel.flow_release = route.flow_release
+            route_rel.flow_release = route.flow.flowrelease_set.all()[0]
             route_rel.release = release
             route_rel.route = route
 

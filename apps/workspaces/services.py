@@ -33,7 +33,6 @@ class ConfigTranslation:
 
 class FlowTranslation:
     flow_model = {"id": "", "name": "", "pipeline": []}
-
     action_model = {"id": "", "action": "", "data": {}, "next_action": ""}
 
     def translate(self, flow_queryset):

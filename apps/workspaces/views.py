@@ -105,6 +105,7 @@ class ReleaseViewSet(
 
 class ReleaseView(generics.GenericAPIView):
     serializer_class = ReleaseSerializer
+    permission_classes = (IsInTeamPermission,)
 
     def post(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
@@ -122,6 +123,7 @@ class ReleaseView(generics.GenericAPIView):
 
 class ReleasePublishView(generics.GenericAPIView):
     serializer_class = PublishSerializer
+    permission_classes = (IsInTeamPermission,)
 
     def post(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
