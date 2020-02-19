@@ -66,8 +66,8 @@ class Integration(AutoCreatedUpdatedMixin):
 
 class FunctionFile(AutoCreatedUpdatedMixin):
     name = models.CharField("Function Name", max_length=255)
-    function_data = JSONField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)"
+    function_data = models.TextField(
+        "Function data", null=True, blank=True, help_text="(Opcional)"
     )
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)"
@@ -249,8 +249,8 @@ class FunctionFileRelease(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)"
     )
-    function_data = JSONField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)"
+    function_data = models.TextField(
+        "Function data", null=True, blank=True, help_text="(Opcional)"
     )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)

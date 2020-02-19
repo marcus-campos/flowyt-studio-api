@@ -54,7 +54,6 @@ class IntegrationSerializer(serializers.ModelSerializer):
 
 
 class FunctionFileSerializer(serializers.ModelSerializer):
-    function_data = serializers.JSONField(required=False)
 
     class Meta:
         model = FunctionFile
@@ -85,10 +84,15 @@ class ReleaseSerializer(serializers.ModelSerializer):
         release = Release.objects.filter(
             name__exact=data["name"], workspace=data["workspace"]
         )
-
         if release.exists():
             raise serializers.ValidationError(
                 "There is already a release with this name"
+            )
+
+        environments = Environment.objects.filter(workspace=data["workspace"])
+        if not environments.exists():
+            raise serializers.ValidationError(
+                "You need to create at least one environment to generate a release"
             )
 
         return data
@@ -201,7 +205,7 @@ class PublishSerializer(serializers.Serializer):
 
         for index in range(len(data["environments"])):
             try:
-                environment = Environment.objects.get(pk=data["environments"][index])
+                environment = release.environmentrelease_set.get(pk=data["environments"][index])
                 data["environments"][index] = environment
             except Environment.DoesNotExist:
                 raise serializers.ValidationError(
