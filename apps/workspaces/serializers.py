@@ -85,32 +85,38 @@ class ReleaseSerializer(serializers.ModelSerializer):
         model = Release
         fields = "__all__"
 
-    def validate(self, data):
-        release = Release.objects.filter(name__exact=data["name"], workspace=data["workspace"])
-
-        if release.exists():
-            raise serializers.ValidationError("There is already a release with this name")
-
-        return data
-
     def create(self, validated_data):
         self.release = Release.objects.create(**validated_data)
 
         # Workspaces
-
-        self.workspace_release = WorkspaceRelease()
-        self.workspace_release.name = self.release.workspace.name
-        self.workspace_release.description = self.release.workspace.description
-        self.workspace_release.workspace_color = self.release.workspace.workspace_color
-        self.workspace_release.save()
-
-        # Flows
-        flows_release = self.release.workspace.flow_set.all()
-        self._create_release_copies(
-            FlowRelease, flows_release, ["name", "description", "flow_layout", "flow_data"],
+        self.workspace_release = WorkspaceRelease.objects.create(
+            name=self.release.workspace.name,
+            description=self.release.workspace.description,
+            workspace_color=self.release.workspace.workspace_color,
+            release=self.release,
         )
-
+        # Flows
+        self._create_release_copies(
+            Flow, FlowRelease, ["flow_layout", "flow_data"],
+        )
+        # Environments
+        self._create_release_copies(
+            EnvironmentRelease, Environment, ["environment_variables"],
+        )
+        # Integrations
+        self._create_release_copies(
+            IntegrationRelease, Integration, ["integration_variables"],
+        )
+        # Function file
+        self._create_release_copies(
+            FunctionFileRelease, FunctionFile, ["function_data"],
+        )
         # Routes
+        self._create_route_copies()
+
+        return self.release
+
+    def _create_route_copies(self):
         routes_release = self.release.workspace.route_set.all()
         for route in routes_release:
             self._copy_model_instance(
@@ -120,41 +126,23 @@ class ReleaseSerializer(serializers.ModelSerializer):
                 {"flow_release": route.flow.flowrelease_set.all().first()},
             )
 
-        # Environments
-        environments_release = self.release.workspace.environment_set.all()
-        self._create_release_copies(
-            EnvironmentRelease, environments_release, ["name", "description", "environment_variables"],
-        )
-
-        # Integrations
-        integrations_release = self.release.workspace.integration_set.all()
-        self._create_release_copies(
-            IntegrationRelease, integrations_release, ["name", "description", "integration_variables"],
-        )
-
-        # Function file
-        function_files_release = self.release.workspace.functionfile_set.all()
-        self._create_release_copies(
-            FunctionFileRelease, function_files_release, ["name", "description", "function_data"],
-        )
-
-        return self.release
-
-    def _create_release_copies(self, model_class, sources, copy=[]):
-        for source in sources:
+    def _create_release_copies(self, from_class, to_class, extra=[]):
+        instance_attr_name = from_class.__name__.lower()
+        sources = getattr(self.release.workspace, instance_attr_name).all()
+        for from_instance in sources:
             self._copy_model_instance(
-                model_class, source, copy,
+                to_class, from_instance, extra + ["name", "description"],
             )
 
-    def _copy_model_instance(self, model_class, instance, copy=[], add={}):
+    def _copy_model_instance(self, model_class, from_instance, copy=[], add={}):
         rel_instance = model_class()
         for field in copy:
-            setattr(rel_instance, field, getattr(instance, field))
+            setattr(rel_instance, field, getattr(from_instance, field))
         for field, value in add.items():
             setattr(rel_instance, field, value)
 
-        instance_attr_name = instance.__class__.__name__.lower()
-        setattr(rel_instance, instance_attr_name, instance)
+        instance_attr_name = from_instance.__class__.__name__.lower()
+        setattr(rel_instance, instance_attr_name, from_instance)
 
         rel_instance.workspace_release = self.workspace_release
         rel_instance.release = self.release
