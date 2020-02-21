@@ -1,6 +1,4 @@
-import uuid
 import copy
-import json
 
 
 class ConfigTranslation:
@@ -24,9 +22,7 @@ class ConfigTranslation:
         settings["env"] = environment.environment_variables
 
         for integration in integrations:
-            settings["integrations"][
-                integration.name
-            ] = integration.integration_variables
+            settings["integrations"][integration.name] = integration.integration_variables
 
         return settings
 
