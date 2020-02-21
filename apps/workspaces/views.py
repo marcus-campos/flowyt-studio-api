@@ -1,6 +1,8 @@
 import copy
 
 from django.db.models import Q
+
+from django.db import transaction
 from rest_framework import status
 
 from django.core import serializers
@@ -39,15 +41,11 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsInTeamPermission,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(
-            data=request.data, context={"user": request.user}
-        )
+        serializer = self.serializer_class(data=request.data, context={"user": request.user})
         serializer.is_valid(raise_exception=True)
         serializer.save(creator=request.user)
         headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -107,6 +105,7 @@ class ReleaseView(generics.GenericAPIView):
     serializer_class = ReleaseSerializer
     permission_classes = (IsInTeamPermission,)
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
         data["workspace"] = kwargs["id"]
@@ -145,9 +144,7 @@ class ReleasePublishView(generics.GenericAPIView):
         function_files = workspace.functionfilerelease_set.all()
 
         environments_to_publish = validated_data["environments"]
-
         project_structure = {"config": [], "flows": [], "functions": []}
-
         projects_to_publish = []
 
         for environment in environments_to_publish:
@@ -158,9 +155,7 @@ class ReleasePublishView(generics.GenericAPIView):
             project["config"].append(
                 {
                     "name": "settings",
-                    "data": self.__config_settings(
-                        release, workspace, environment, integrations
-                    ),
+                    "data": self.__config_settings(release, workspace, environment, integrations),
                 }
             )
 

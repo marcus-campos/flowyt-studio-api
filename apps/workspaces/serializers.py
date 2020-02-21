@@ -77,115 +77,89 @@ class RouteSerializer(serializers.ModelSerializer):
 
 
 class ReleaseSerializer(serializers.ModelSerializer):
+
+    workspace_release = None
+    release = None
+
     class Meta:
         model = Release
         fields = "__all__"
 
     def validate(self, data):
-        release = Release.objects.filter(
-            name__exact=data["name"], workspace=data["workspace"]
-        )
+        release = Release.objects.filter(name__exact=data["name"], workspace=data["workspace"])
 
         if release.exists():
-            raise serializers.ValidationError(
-                "There is already a release with this name"
-            )
+            raise serializers.ValidationError("There is already a release with this name")
 
         return data
 
     def create(self, validated_data):
-        release = Release.objects.create(**validated_data)
+        self.release = Release.objects.create(**validated_data)
 
         # Workspaces
-        workspace_release = WorkspaceRelease()
-        workspace_release.workspace = release.workspace
-        workspace_release.release = release
 
-        workspace_release.name = release.workspace.name
-        workspace_release.description = release.workspace.description
-        workspace_release.workspace_color = release.workspace.workspace_color
-
-        workspace_release.save()
+        self.workspace_release = WorkspaceRelease()
+        self.workspace_release.name = self.release.workspace.name
+        self.workspace_release.description = self.release.workspace.description
+        self.workspace_release.workspace_color = self.release.workspace.workspace_color
+        self.workspace_release.save()
 
         # Flows
-        flows_release = release.workspace.flow_set.all()
-        for flow in flows_release:
-            flow_rel = FlowRelease()
-
-            flow_rel.workspace_release = workspace_release
-            flow_rel.release = release
-            flow_rel.flow = flow
-
-            flow_rel.name = flow.name
-            flow_rel.description = flow.description
-            flow_rel.flow_layout = flow.flow_layout
-            flow_rel.flow_data = flow.flow_data
-
-            flow_rel.save()
+        flows_release = self.release.workspace.flow_set.all()
+        self._create_release_copies(
+            FlowRelease, flows_release, ["name", "description", "flow_layout", "flow_data"],
+        )
 
         # Routes
-        routes_release = release.workspace.route_set.all()
+        routes_release = self.release.workspace.route_set.all()
         for route in routes_release:
-            route_rel = RouteRelease()
-
-            route_rel.workspace_release = workspace_release
-            route_rel.flow_release = route.flow.flowrelease_set.all()[0]
-            route_rel.release = release
-            route_rel.route = route
-
-            route_rel.path = route.path
-            route_rel.description = route.description
-            route_rel.method = route.method
-            route_rel.active = route.active
-
-            route_rel.save()
+            self._copy_model_instance(
+                RouteRelease,
+                route,
+                ["path", "description", "method", "active"],
+                {"flow_release": route.flow.flowrelease_set.all().first()},
+            )
 
         # Environments
-        environments_release = release.workspace.environment_set.all()
-        for environment in environments_release:
-            environment_rel = EnvironmentRelease()
-
-            environment_rel.workspace_release = workspace_release
-            environment_rel.release = release
-            environment_rel.environment = environment
-
-            environment_rel.name = environment.name
-            environment_rel.description = environment.description
-            environment_rel.environment_variables = environment.environment_variables
-
-            environment_rel.save()
+        environments_release = self.release.workspace.environment_set.all()
+        self._create_release_copies(
+            EnvironmentRelease, environments_release, ["name", "description", "environment_variables"],
+        )
 
         # Integrations
-        integrations_release = release.workspace.integration_set.all()
-        for integration in integrations_release:
-            integration_rel = IntegrationRelease()
-
-            integration_rel.workspace_release = workspace_release
-            integration_rel.release = release
-            integration_rel.integration = integration
-
-            integration_rel.name = integration.name
-            integration_rel.description = integration.description
-            integration_rel.integration_variables = integration.integration_variables
-
-            integration_rel.save()
+        integrations_release = self.release.workspace.integration_set.all()
+        self._create_release_copies(
+            IntegrationRelease, integrations_release, ["name", "description", "integration_variables"],
+        )
 
         # Function file
-        function_files_release = release.workspace.functionfile_set.all()
-        for function_file in function_files_release:
-            function_file_rel = FunctionFileRelease()
+        function_files_release = self.release.workspace.functionfile_set.all()
+        self._create_release_copies(
+            FunctionFileRelease, function_files_release, ["name", "description", "function_data"],
+        )
 
-            function_file_rel.workspace_release = workspace_release
-            function_file_rel.release = release
-            function_file_rel.function_file = function_file
+        return self.release
 
-            function_file_rel.name = function_file.name
-            function_file_rel.description = function_file.description
-            function_file_rel.function_data = function_file.function_data
+    def _create_release_copies(self, model_class, sources, copy=[]):
+        for source in sources:
+            self._copy_model_instance(
+                model_class, source, copy,
+            )
 
-            function_file_rel.save()
+    def _copy_model_instance(self, model_class, instance, copy=[], add={}):
+        rel_instance = model_class()
+        for field in copy:
+            setattr(rel_instance, field, getattr(instance, field))
+        for field, value in add.items():
+            setattr(rel_instance, field, value)
 
-        return release
+        instance_attr_name = instance.__class__.__name__.lower()
+        setattr(rel_instance, instance_attr_name, instance)
+
+        rel_instance.workspace_release = self.workspace_release
+        rel_instance.release = self.release
+        rel_instance.save()
+        return rel_instance
 
 
 class PublishSerializer(serializers.Serializer):
@@ -205,9 +179,7 @@ class PublishSerializer(serializers.Serializer):
                 data["environments"][index] = environment
             except Environment.DoesNotExist:
                 raise serializers.ValidationError(
-                    "The environment {0} does not exist".format(
-                        data["environments"][index]
-                    )
+                    "The environment {0} does not exist".format(data["environments"][index])
                 )
 
         return data
