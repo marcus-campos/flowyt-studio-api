@@ -163,6 +163,7 @@ class RouteRelease(AutoCreatedUpdatedMixin):
 
     class Meta:
         ordering = ["path"]
+        unique_together = ["path", "method", "workspace"]
 
     def __str__(self):
         return self.path
