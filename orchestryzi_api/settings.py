@@ -141,6 +141,7 @@ SWAGGER_SETTINGS = {
         "api_key": {"type": "apiKey", "in": "header", "name": "Authorization"}
     },
     "JSON_EDITOR": True,
+    "DEFAULT_API_URL": config("DEFAULT_API_URL", default=None)
 }
 
 # Accept all
