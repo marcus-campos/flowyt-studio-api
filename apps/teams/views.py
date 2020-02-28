@@ -1,12 +1,14 @@
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
 from . import serializers
 from .models import Team, TeamInvitation
+from .permissions import IsTeamOwnerPermission
 
 
-class CreateTeamAPIView(generics.CreateAPIView):
+class CreateTeamAPIView(generics.ListCreateAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.TeamCreateSerializer
@@ -20,6 +22,16 @@ class CreateTeamAPIView(generics.CreateAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        return self.queryset.filter(Q(owner=self.request.user) | Q(members__in=[self.request.user]))
+
+
+class UpdateTeamAPIView(generics.UpdateAPIView):
+
+    permission_classes = (IsTeamOwnerPermission,)
+    serializer_class = serializers.TeamSerializer
+    queryset = Team.objects.all()
 
 
 class InviteToTeamAPIView(generics.CreateAPIView):

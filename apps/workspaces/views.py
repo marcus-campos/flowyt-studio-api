@@ -1,13 +1,10 @@
 import copy
 
-from django.db.models import Q
-
-from django.db import transaction
-from rest_framework import status
-
 from django.core import serializers
+from django.db import transaction
 from django.utils.text import slugify
 from rest_framework import generics, mixins, viewsets
+from rest_framework import status
 from rest_framework.response import Response
 
 from apps.teams.models import Team
