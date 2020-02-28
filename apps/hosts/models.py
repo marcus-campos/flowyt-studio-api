@@ -1,7 +1,7 @@
 from django.db import models
 from utils.models import AutoCreatedUpdatedMixin
 
-# Create your models here.
+
 class Host(AutoCreatedUpdatedMixin):
     host = models.CharField("Host", max_length=255)
     secret_token = models.CharField("Secret", max_length=255)
