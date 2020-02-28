@@ -156,11 +156,11 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    team = TeamSerializer(many=True)
+    teams = TeamSerializer(many=True)
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "last_name", "team"]
+        fields = ["email", "first_name", "last_name", "teams"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -175,6 +175,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class TokenObtainPairWithUserInfoSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        user = UserSerializer(self.user)
-        data["user"] = user.to_representation(self.user)
+        user = UserProfileSerializer()
+        data["user"] = user.to_representation(self.user.userprofile)
         return data
