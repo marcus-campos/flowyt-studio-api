@@ -17,8 +17,7 @@ User = get_user_model()
 
 class TeamManager(models.Manager):
     def has_create_permission(self, user):
-
-        return False if user.team.all().exists() else True
+        return True
 
 
 class Team(AutoCreatedUpdatedMixin):
@@ -26,18 +25,14 @@ class Team(AutoCreatedUpdatedMixin):
     name = models.CharField(max_length=255)
     description = models.TextField()
     owner = models.ForeignKey(
-        User,
-        related_name="owned_teams",
-        null=True,
-        blank=False,
-        on_delete=models.SET_NULL,
+        User, related_name="owned_teams", null=True, blank=False, on_delete=models.SET_NULL,
     )
-    members = models.ManyToManyField(User, related_name="team")
+    members = models.ManyToManyField(User, related_name="teams")
     objects = TeamManager()
 
     class Meta:
-        verbose_name = u"team"
-        verbose_name_plural = u"teams"
+        verbose_name = "team"
+        verbose_name_plural = "teams"
 
     def __str__(self):
         return str(self.name)
@@ -56,9 +51,7 @@ def generate_invite_code():
 class TeamInvitationManager(models.Manager):
     def validate_code(self, email, value):
         try:
-            invitation = self.get(
-                email=email, code=value, status=TeamInvitation.PENDING
-            )
+            invitation = self.get(email=email, code=value, status=TeamInvitation.PENDING)
         except ObjectDoesNotExist:
             return None
         return invitation
@@ -71,16 +64,13 @@ class TeamInvitationManager(models.Manager):
         return False
 
     def decline_pending_invitations(self, email_ids):
-        self.filter(email__in=email_ids, status=TeamInvitation.PENDING).update(
-            status=TeamInvitation.DECLINED
-        )
+        self.filter(email__in=email_ids, status=TeamInvitation.PENDING).update(status=TeamInvitation.DECLINED)
 
     def expired(self):
         now = timezone.now() if settings.USE_TZ else datetime.datetime.now()
 
         return self.filter(models.Q(status=TeamInvitation.PENDING)).filter(
-            timestamp_created__lt=now
-            - datetime.timedelta(getattr(settings, "INVITATION_VALIDITY_DAYS", 7))
+            timestamp_created__lt=now - datetime.timedelta(getattr(settings, "INVITATION_VALIDITY_DAYS", 7))
         )
 
     def expire_invitations(self):
@@ -102,11 +92,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
     )
 
     invited_by = models.ForeignKey(
-        User,
-        related_name="invitations_sent",
-        null=True,
-        blank=False,
-        on_delete=models.SET_NULL,
+        User, related_name="invitations_sent", null=True, blank=False, on_delete=models.SET_NULL,
     )
     email = models.EmailField()
     code = models.CharField(max_length=25, default=generate_invite_code)
@@ -118,8 +104,8 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
             "email",
             "code",
         )
-        verbose_name = u"team invitation"
-        verbose_name_plural = u"team invitations"
+        verbose_name = "team invitation"
+        verbose_name_plural = "team invitations"
 
     def __str__(self):
         return "To : %s | From %s" % (self.email, self.invited_by)
@@ -134,11 +120,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
             "email": self.email,
         }
 
-        subject = render_to_string(
-            "invitation_team/invitation_team_subject.txt", context
-        )
+        subject = render_to_string("invitation_team/invitation_team_subject.txt", context)
         subject = "".join(subject.splitlines())
-        message = render_to_string(
-            "invitation_team/invitation_team_content.txt", context
-        )
+        message = render_to_string("invitation_team/invitation_team_content.txt", context)
         EmailAsync(subject=subject, to=[self.email], html=message).send()

@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.accounts.models import UserProfile
 from apps.teams.models import TeamInvitation, Team
@@ -16,9 +17,7 @@ User = get_user_model()
 class UserRegistrationSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(required=True, label="Email Address")
-    password = serializers.CharField(
-        required=True, label="Password", style={"input_type": "password"}
-    )
+    password = serializers.CharField(required=True, label="Password", style={"input_type": "password"})
     password_2 = serializers.CharField(
         required=True, label="Confirm Password", style={"input_type": "password"}
     )
@@ -45,8 +44,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         if len(value) < getattr(settings, "PASSWORD_MIN_LENGTH", 8):
             raise serializers.ValidationError(
-                "Password should be atleast %s characters long."
-                % getattr(settings, "PASSWORD_MIN_LENGTH", 8)
+                "Password should be atleast %s characters long." % getattr(settings, "PASSWORD_MIN_LENGTH", 8)
             )
         return value
 
@@ -93,9 +91,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             if hasattr(self, "invitation"):
                 TeamInvitation.objects.accept_invitation(self.invitation)
 
-            TeamInvitation.objects.decline_pending_invitations(
-                email_ids=[validated_data.get("email")]
-            )
+            TeamInvitation.objects.decline_pending_invitations(email_ids=[validated_data.get("email")])
 
             personal_team = Team()
             personal_team.name = "Personal"
@@ -160,11 +156,11 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    team = TeamSerializer(many=True)
+    teams = TeamSerializer(many=True)
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "last_name", "team"]
+        fields = ["email", "first_name", "last_name", "teams"]
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -174,3 +170,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ["user", "has_email_verified"]
+
+
+class TokenObtainPairWithUserInfoSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        user = UserProfileSerializer()
+        data["user"] = user.to_representation(self.user.userprofile)
+        return data

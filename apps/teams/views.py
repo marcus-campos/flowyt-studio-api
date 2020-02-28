@@ -1,6 +1,5 @@
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import generics, permissions, status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 
 from . import serializers
@@ -14,9 +13,7 @@ class CreateTeamAPIView(generics.CreateAPIView):
     queryset = Team.objects.all()
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(
-            data=request.data, context={"user": request.user}
-        )
+        serializer = self.serializer_class(data=request.data, context={"user": request.user})
         if serializer.is_valid(raise_exception=True):
             team = serializer.save(owner=request.user)
             team.members.add(request.user)
@@ -43,10 +40,7 @@ class InviteToTeamAPIView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def create_invitations(self, email_ids, invited_by):
-        invitations = [
-            TeamInvitation(email=email_id, invited_by=invited_by)
-            for email_id in email_ids
-        ]
+        invitations = [TeamInvitation(email=email_id, invited_by=invited_by) for email_id in email_ids]
         invitations = TeamInvitation.objects.bulk_create(invitations)
         self.send_email_invites(invitations)
 

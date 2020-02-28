@@ -90,9 +90,7 @@ DATABASES["default"]["OPTIONS"] = {"sslmode": "disable"}
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
@@ -128,20 +126,16 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.TemplateHTMLRenderer",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication",],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 20,
 }
 
 SWAGGER_SETTINGS = {
-    "SECURITY_DEFINITIONS": {
-        "api_key": {"type": "apiKey", "in": "header", "name": "Authorization"}
-    },
+    "SECURITY_DEFINITIONS": {"api_key": {"type": "apiKey", "in": "header", "name": "Authorization"}},
     "JSON_EDITOR": True,
-    "DEFAULT_API_URL": config("DEFAULT_API_URL", default=None)
+    "DEFAULT_API_URL": config("DEFAULT_API_URL", default=None),
 }
 
 # Accept all
@@ -198,9 +192,9 @@ EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", cast=str)
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-DEFAULT_FROM_EMAIL = "Orchestryzi <noreply@orchestryzi.com>"
+DEFAULT_FROM_EMAIL = "Flowyt <noreply@flowyt.com>"
 
-SITE_NAME = "Orchestryzi"
+SITE_NAME = "Flowyt"
 
 django_heroku.settings(locals())
 del DATABASES["default"]["OPTIONS"]["sslmode"]
