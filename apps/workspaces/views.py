@@ -151,7 +151,7 @@ class ReleasePublishView(generics.GenericAPIView):
 
         environments_to_publish = validated_data["environments"]
 
-        project_structure = {"config": [], "flows": [], "functions": []}
+        project_structure = {"config": [], "flows": [], "functions": [], "routes": []}
 
         projects_to_publish = []
 
@@ -172,18 +172,24 @@ class ReleasePublishView(generics.GenericAPIView):
 
             # Flows and Routes
             flows_list = []
-            routes_list = []
             for flow in flows:
                 slug = slugify(flow.name)
                 flow_id = str(flow.id)
                 
-                for route in routes:
-                    if route.flow_release_id == flow_id:
-                        print(slug)
-                
-
                 flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
+                
             project["flows"] = flows_list
+            
+
+            # Routes
+            for route in routes:
+                project["routes"].append(
+                    {
+                        "path": route.path,
+                        "method": route.method,
+                        "flow": slugify(route.flow_release.name)
+                    }
+                )
 
             # Functions
             for function in function_files:
@@ -203,10 +209,17 @@ class ReleasePublishView(generics.GenericAPIView):
             self.__create_project_file(project, "config", "json")
             self.__create_project_file(project, "flows", "json")
             self.__create_project_file(project, "functions", "py")
+            self.__create_project_file(project, "routes", "json")
 
     def __create_project_file(self, project, key, extension):
         WORKSPACE_DIR = BASE_DIR + "/storage/tmp/workspaces/"
         project_folder = WORKSPACE_DIR + project["name"]
+
+        if key == "routes":
+            file = open("{0}/{1}.{2}".format(project_folder, key, extension), "w+")
+            file.write(json.dumps(project["data"]["routes"]))
+            file.close()
+            return
 
         if os.path.exists(project_folder+"/{0}".format(key)):
             shutil.rmtree(project_folder+"/{0}".format(key))
