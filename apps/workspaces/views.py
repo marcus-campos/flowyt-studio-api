@@ -10,15 +10,27 @@ from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 
 from apps.teams.models import Team
-from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, Release, Route, Workspace,
-                                    WorkspaceRelease)
+from apps.workspaces.models import (
+    Environment,
+    Flow,
+    FunctionFile,
+    Integration,
+    Release,
+    Route,
+    Workspace,
+    WorkspaceRelease,
+)
 from apps.workspaces.permissions import IsCreatorPermission, IsInTeamPermission
-from apps.workspaces.serializers import (EnvironmentSerializer, FlowSerializer,
-                                         FunctionFileSerializer,
-                                         IntegrationSerializer,
-                                         PublishSerializer, ReleaseSerializer,
-                                         RouteSerializer, WorkspaceSerializer)
+from apps.workspaces.serializers import (
+    EnvironmentSerializer,
+    FlowSerializer,
+    FunctionFileSerializer,
+    IntegrationSerializer,
+    PublishSerializer,
+    ReleaseSerializer,
+    RouteSerializer,
+    WorkspaceSerializer,
+)
 from apps.workspaces.services import ConfigTranslation, FlowTranslation
 from orchestryzi_api.settings import BASE_DIR
 from utils.models import to_dict
@@ -98,13 +110,15 @@ class ReleaseViewSet(
         response["environments"] = []
         for release in release.environmentrelease_set.all():
             environment = to_dict(release)
-            response["environments"].append({
-                "id": environment["id"],
-                "name": environment["name"],
-                "description": environment["description"],
-                "created_at": environment["created_at"],
-                "updated_at": environment["updated_at"],
-            })
+            response["environments"].append(
+                {
+                    "id": environment["id"],
+                    "name": environment["name"],
+                    "description": environment["description"],
+                    "created_at": environment["created_at"],
+                    "updated_at": environment["updated_at"],
+                }
+            )
         return Response(data=response, status=200)
 
 
@@ -164,9 +178,11 @@ class ReleasePublishView(generics.GenericAPIView):
             project["config"].append(
                 {
                     "name": "settings",
-                    "data": json.dumps(self.__config_settings(
-                        release, workspace, environment, integrations
-                    )),
+                    "data": json.dumps(
+                        self.__config_settings(
+                            release, workspace, environment, integrations
+                        )
+                    ),
                 }
             )
 
@@ -194,14 +210,11 @@ class ReleasePublishView(generics.GenericAPIView):
             # Functions
             for function in function_files:
                 project["functions"].append(
-                    {
-                        "name": function.name.lower(),
-                        "data": function.function_data
-                    }
+                    {"name": function.name.lower(), "data": function.function_data}
                 )
 
             projects_to_publish.append({"name": slug, "data": project})
-        
+
         self.__create_project_and_zip(projects_to_publish)
 
     def __create_project_and_zip(self, projects):
@@ -226,10 +239,12 @@ class ReleasePublishView(generics.GenericAPIView):
         os.makedirs(project_folder+"/{0}".format(key))
 
         for item in project["data"][key]:
-            file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+")
+            file = open(
+                "{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension),
+                "w+",
+            )
             file.write(item["data"])
             file.close()
-
 
     def __config_settings(self, release, workspace, environment, integrations):
         config_settings = ConfigTranslation().settings_translate(
@@ -241,5 +256,7 @@ class ReleasePublishView(generics.GenericAPIView):
         flows_list = []
         for flow in flows:
             slug = slugify(flow.name)
-            flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
+            flows_list.append(
+                {"name": slug, "data": json.dumps(FlowTranslation().translate(flow))}
+            )
         return flows_list

@@ -8,22 +8,54 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Host',
+            name="Host",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True, null=True, verbose_name='Criado em')),
-                ('updated_at', models.DateTimeField(auto_now=True, db_index=True, null=True, verbose_name='Atualizado em')),
-                ('host', models.CharField(max_length=255, verbose_name='Host')),
-                ('secret_token', models.CharField(max_length=255, verbose_name='Secret')),
-                ('description', models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Description')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        db_index=True,
+                        null=True,
+                        verbose_name="Criado em",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        db_index=True,
+                        null=True,
+                        verbose_name="Atualizado em",
+                    ),
+                ),
+                ("host", models.CharField(max_length=255, verbose_name="Host")),
+                (
+                    "secret_token",
+                    models.CharField(max_length=255, verbose_name="Secret"),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        blank=True,
+                        help_text="(Opcional)",
+                        null=True,
+                        verbose_name="Description",
+                    ),
+                ),
             ],
-            options={
-                'ordering': ['created_at'],
-            },
+            options={"ordering": ["created_at"],},
         ),
     ]
