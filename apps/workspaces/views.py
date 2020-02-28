@@ -4,6 +4,7 @@ import shutil
 import json
 
 from django.core import serializers
+from django.db import transaction
 from django.db.models import Q
 from django.utils.text import slugify
 from rest_framework import generics, mixins, status, viewsets
@@ -54,6 +55,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if not self.request.user.is_authenticated:
+            return queryset.none()
         teams = Team.objects.filter(members__in=[self.request.user])
         return queryset.filter(team__in=teams)
 
@@ -126,6 +129,7 @@ class ReleaseView(generics.GenericAPIView):
     serializer_class = ReleaseSerializer
     permission_classes = (IsInTeamPermission,)
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
         data["workspace"] = kwargs["id"]

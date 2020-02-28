@@ -5,10 +5,7 @@ from apps.workspaces.permissions import IsInTeamPermission
 
 
 class HostViewSet(
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.CreateModelMixin,
-    viewsets.GenericViewSet,
+    mixins.UpdateModelMixin, mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet,
 ):
 
     permission_classes = (permissions.IsAdminUser,)

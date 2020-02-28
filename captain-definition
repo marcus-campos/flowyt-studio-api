@@ -5,8 +5,9 @@
     "ENV PYTHONUNBUFFERED 1",
     "ENV SECRET_KEY e72t)7a5^d9nrfrz_i=%=dsa2%%v7kf*9hqp*9toe3ff)%s2&j",
     "ENV DEBUG False",
+    "ENV DEFAULT_API_URL https://studio-api.sptitan.flowyt.com/",
     "ENV ALLOWED_HOSTS *",
-    "ENV DATABASE_URL postgresql://orch:or!v1G64@172.31.10.239:5432/orchestryzi_api",
+    "ENV DATABASE_URL postgresql://orch:or!v1G64@172.31.5.149:5432/orchestryzi_api",
 
     "ENV EMAIL_HOST smtp.mailgun.org",
     "ENV EMAIL_PORT 587",

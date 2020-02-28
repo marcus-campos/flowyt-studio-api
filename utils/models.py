@@ -3,6 +3,7 @@ import uuid
 from itertools import chain
 
 from django.db import models
+from django.utils.translation import ugettext as translate
 from django.utils.timezone import now
 from django.utils.translation import ugettext as translate
 
@@ -19,12 +20,8 @@ def to_dict(instance):
 
 class AutoCreatedUpdatedMixin(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    created_at = models.DateTimeField(
-        "Criado em", null=True, blank=True, db_index=True, auto_now_add=True
-    )
-    updated_at = models.DateTimeField(
-        "Atualizado em", null=True, blank=True, db_index=True, auto_now=True
-    )
+    created_at = models.DateTimeField("Criado em", null=True, blank=True, db_index=True, auto_now_add=True)
+    updated_at = models.DateTimeField("Atualizado em", null=True, blank=True, db_index=True, auto_now=True)
 
     class Meta:
         abstract = True
@@ -33,11 +30,7 @@ class AutoCreatedUpdatedMixin(models.Model):
 class SoftDeleteMixin(models.Model):
 
     deleted_at = models.DateTimeField(
-        verbose_name=translate("deleted at"),
-        unique=False,
-        null=True,
-        blank=True,
-        db_index=True,
+        verbose_name=translate("deleted at"), unique=False, null=True, blank=True, db_index=True,
     )
 
     class Meta:

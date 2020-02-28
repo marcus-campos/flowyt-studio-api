@@ -25,7 +25,7 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = "__all__"
-        read_only_fields = ("id",)
+        read_only_fields = ("id", "created_at", "updated_at", "owner", "members")
 
 
 class TeamInvitationCreateSerializer(serializers.Serializer):
@@ -50,9 +50,7 @@ class TeamInvitationCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError("Team does not exist.")
 
         if team.has_invite_permissions(user):
-            email_ids_existing = User.objects.filter(email__in=emails).values_list(
-                "email", flat=True
-            )
+            email_ids_existing = User.objects.filter(email__in=emails).values_list("email", flat=True)
             if email_ids_existing:
                 raise serializers.ValidationError(
                     "One or more of the email ID's provided is already associated with accounts. (%s)"

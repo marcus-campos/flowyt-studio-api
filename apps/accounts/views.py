@@ -1,8 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import generics, permissions, status, views
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenViewBase
 
 from . import serializers
 from .models import UserProfile
@@ -60,8 +60,7 @@ class PasswordResetConfirmView(views.APIView):
     def post(self, request, *args, **kwargs):
 
         serializer = self.serializer_class(
-            data=request.data,
-            context={"uidb64": kwargs["uidb64"], "token": kwargs["token"]},
+            data=request.data, context={"uidb64": kwargs["uidb64"], "token": kwargs["token"]},
         )
 
         if serializer.is_valid(raise_exception=True):
@@ -81,3 +80,7 @@ class UserProfileAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user.userprofile
+
+
+class TokenObtainPairWithUserInfoView(TokenViewBase):
+    serializer_class = serializers.TokenObtainPairWithUserInfoSerializer
