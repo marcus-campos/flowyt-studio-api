@@ -6,18 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0001_initial'),
+        ("workspaces", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='functionfile',
-            name='function_data',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Function data'),
+            model_name="functionfile",
+            name="function_data",
+            field=models.TextField(
+                blank=True,
+                help_text="(Opcional)",
+                null=True,
+                verbose_name="Function data",
+            ),
         ),
         migrations.AlterField(
-            model_name='functionfilerelease',
-            name='function_data',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Function data'),
+            model_name="functionfilerelease",
+            name="function_data",
+            field=models.TextField(
+                blank=True,
+                help_text="(Opcional)",
+                null=True,
+                verbose_name="Function data",
+            ),
         ),
     ]

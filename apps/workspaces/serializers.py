@@ -54,7 +54,6 @@ class IntegrationSerializer(serializers.ModelSerializer):
 
 
 class FunctionFileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = FunctionFile
         fields = "__all__"
@@ -206,7 +205,9 @@ class PublishSerializer(serializers.Serializer):
 
         for index in range(len(data["environments"])):
             try:
-                environment = release.environmentrelease_set.get(pk=data["environments"][index])
+                environment = release.environmentrelease_set.get(
+                    pk=data["environments"][index]
+                )
                 data["environments"][index] = environment
             except Environment.DoesNotExist:
                 raise serializers.ValidationError(
