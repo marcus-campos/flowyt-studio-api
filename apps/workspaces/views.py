@@ -191,11 +191,15 @@ class ReleasePublishView(generics.GenericAPIView):
             for flow in flows:
                 slug = slugify(flow.name)
                 flow_id = str(flow.id)
-                
-                flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
-                
+
+                flows_list.append(
+                    {
+                        "name": slug,
+                        "data": json.dumps(FlowTranslation().translate(flow)),
+                    }
+                )
+
             project["flows"] = flows_list
-            
 
             # Routes
             for route in routes:
@@ -203,7 +207,7 @@ class ReleasePublishView(generics.GenericAPIView):
                     {
                         "path": route.path,
                         "method": route.method,
-                        "flow": slugify(route.flow_release.name)
+                        "flow": slugify(route.flow_release.name),
                     }
                 )
 
@@ -234,9 +238,9 @@ class ReleasePublishView(generics.GenericAPIView):
             file.close()
             return
 
-        if os.path.exists(project_folder+"/{0}".format(key)):
-            shutil.rmtree(project_folder+"/{0}".format(key))
-        os.makedirs(project_folder+"/{0}".format(key))
+        if os.path.exists(project_folder + "/{0}".format(key)):
+            shutil.rmtree(project_folder + "/{0}".format(key))
+        os.makedirs(project_folder + "/{0}".format(key))
 
         for item in project["data"][key]:
             file = open(
