@@ -24,7 +24,7 @@ class CreateTeamAPIView(generics.ListCreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
-        return self.queryset.filter(Q(owner=self.request.user) | Q(members__in=[self.request.user]))
+        return self.queryset.filter(members__in=[self.request.user])
 
 
 class UpdateTeamAPIView(generics.UpdateAPIView):
