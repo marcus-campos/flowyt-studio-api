@@ -170,8 +170,20 @@ class ReleasePublishView(generics.GenericAPIView):
                 }
             )
 
-            # Flows
-            project["flows"] = self.__flows(flows)
+            # Flows and Routes
+            flows_list = []
+            routes_list = []
+            for flow in flows:
+                slug = slugify(flow.name)
+                flow_id = str(flow.id)
+                
+                for route in routes:
+                    if route.flow_release_id == flow_id:
+                        print(slug)
+                
+
+                flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
+            project["flows"] = flows_list
 
             # Functions
             for function in function_files:

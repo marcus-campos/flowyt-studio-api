@@ -97,6 +97,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
 
         return data
 
+    # TODO: Essa função precisa ser transacional (ou seja, se der merda ela faz o rollback automático)
     def create(self, validated_data):
         release = Release.objects.create(**validated_data)
 
@@ -133,7 +134,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
             route_rel = RouteRelease()
 
             route_rel.workspace_release = workspace_release
-            route_rel.flow_release = route.flow.flowrelease_set.all()[0]
+            route_rel.flow_release = release.flowrelease_set.filter(flow=route.flow).first()
             route_rel.release = release
             route_rel.route = route
 
