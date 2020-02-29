@@ -28,6 +28,8 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         creator = self.context.get("user", None)
+        if self.instance:
+            creator = self.instance.creator
         if not creator:
             raise serializers.ValidationError("User not found.")
         if not Team.objects.filter(members__in=[creator]).exists():
