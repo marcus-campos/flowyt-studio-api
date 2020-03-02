@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "apps.workspaces",
     "apps.teams",
     "apps.accounts",
+    "apps.hosts",
 ]
 AUTH_USER_MODEL = "cuser.CUser"
 MIDDLEWARE = [

@@ -56,8 +56,6 @@ class IntegrationSerializer(serializers.ModelSerializer):
 
 
 class FunctionFileSerializer(serializers.ModelSerializer):
-    function_data = serializers.JSONField(required=False)
-
     class Meta:
         model = FunctionFile
         fields = "__all__"

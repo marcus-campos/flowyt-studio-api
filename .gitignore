@@ -95,3 +95,5 @@ docs/_build/
 
 .env
 .pytest_cache
+
+storage/

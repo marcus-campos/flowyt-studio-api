@@ -14,10 +14,10 @@ class ConfigTranslation:
     def settings_translate(self, release, workspace, environment, integrations):
         settings = copy.deepcopy(self.settings_model)
 
-        settings["id"] = workspace.id
+        settings["id"] = str(workspace.id)
         settings["name"] = workspace.name
         settings["debug"] = True
-        settings["release"]["id"] = release.id
+        settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
         settings["env"] = environment.environment_variables
 
@@ -36,7 +36,7 @@ class FlowTranslation:
         flow_node_data = flow_queryset.flow_data
 
         flow = copy.deepcopy(self.flow_model)
-        flow["id"] = flow_queryset.id
+        flow["id"] = str(flow_queryset.id)
         flow["name"] = flow_queryset.name
 
         flow_nodes = flow_data["nodes"]
