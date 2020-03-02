@@ -10,11 +10,7 @@ urlpatterns = [
         views.UserEmailVerificationAPIView.as_view(),
         name="email_verify",
     ),
-    url(
-        r"^password_reset/$",
-        views.PasswordResetAPIView.as_view(),
-        name="password_change",
-    ),
+    url(r"^password_reset/$", views.PasswordResetAPIView.as_view(), name="password_change",),
     url(
         r"^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
         views.PasswordResetConfirmView.as_view(),

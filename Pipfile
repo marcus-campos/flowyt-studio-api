@@ -24,6 +24,8 @@ django-username-email = {git = "https://github.com/wdeoliveirawill/django-userna
 [dev-packages]
 flake8 = "*"
 ipdb = "*"
+black = "*"
+pylint = "*"
 
 [requires]
 python_full_version = "3.8.1"

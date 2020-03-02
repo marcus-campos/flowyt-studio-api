@@ -22,57 +22,34 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Environment Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Environment Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "environment_variables",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Environment variables",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables",
                     ),
                 ),
-                (
-                    "debug",
-                    models.BooleanField(default=False, help_text="(Default false)"),
-                ),
+                ("debug", models.BooleanField(default=False, help_text="(Default false)"),),
             ],
             options={"ordering": ["created_at"],},
         ),
@@ -81,57 +58,37 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
                 ("name", models.CharField(max_length=255, verbose_name="Flow Name")),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "flow_layout",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Flow Layout",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Flow Layout",
                     ),
                 ),
                 (
                     "flow_data",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Flow Data",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Flow Data",
                     ),
                 ),
             ],
@@ -142,54 +99,32 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
                 ("name", models.CharField(max_length=255, verbose_name="Flow Name")),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
-                (
-                    "flow_layout",
-                    django.contrib.postgres.fields.jsonb.JSONField(
-                        verbose_name="Flow Layout"
-                    ),
-                ),
+                ("flow_layout", django.contrib.postgres.fields.jsonb.JSONField(verbose_name="Flow Layout"),),
                 (
                     "flow_data",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Flow Data",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Flow Data",
                     ),
                 ),
                 (
@@ -209,51 +144,31 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Function Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Function Name"),),
                 (
                     "function_data",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Environment variables",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables",
                     ),
                 ),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
             ],
@@ -264,51 +179,31 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Integration Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Integration Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "integration_variables",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Environment variables",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables",
                     ),
                 ),
             ],
@@ -319,42 +214,25 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Workspace Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Workspace Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 ("published", models.BooleanField(default=False)),
@@ -366,29 +244,18 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
                 ("path", models.CharField(max_length=255, verbose_name="Path")),
@@ -412,19 +279,13 @@ class Migration(migrations.Migration):
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 ("active", models.BooleanField(default=True)),
                 (
                     "flow",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.Flow",
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Flow",),
                 ),
             ],
             options={"ordering": ["path"],},
@@ -434,66 +295,38 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Workspace Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Workspace Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "workspace_color",
-                    models.CharField(
-                        blank=True,
-                        max_length=6,
-                        null=True,
-                        verbose_name="Workspace Name",
-                    ),
+                    models.CharField(blank=True, max_length=6, null=True, verbose_name="Workspace Name",),
                 ),
                 (
                     "creator",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL,
                     ),
                 ),
-                (
-                    "team",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="teams.Team"
-                    ),
-                ),
+                ("team", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="teams.Team"),),
             ],
             options={"ordering": ["name"],},
         ),
@@ -502,59 +335,34 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Workspace Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Workspace Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "workspace_color",
-                    models.CharField(
-                        blank=True,
-                        max_length=6,
-                        null=True,
-                        verbose_name="Workspace Name",
-                    ),
+                    models.CharField(blank=True, max_length=6, null=True, verbose_name="Workspace Name",),
                 ),
                 (
                     "release",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.Release",
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release",),
                 ),
                 (
                     "workspace",
@@ -573,29 +381,18 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
                 ("path", models.CharField(max_length=255, verbose_name="Path")),
@@ -619,26 +416,19 @@ class Migration(migrations.Migration):
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 ("active", models.BooleanField(default=True)),
                 (
                     "flow_release",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.FlowRelease",
+                        on_delete=django.db.models.deletion.CASCADE, to="workspaces.FlowRelease",
                     ),
                 ),
                 (
                     "release",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.Release",
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release",),
                 ),
                 (
                     "route",
@@ -652,8 +442,7 @@ class Migration(migrations.Migration):
                 (
                     "workspace_release",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.WorkspaceRelease",
+                        on_delete=django.db.models.deletion.CASCADE, to="workspaces.WorkspaceRelease",
                     ),
                 ),
             ],
@@ -662,67 +451,43 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="route",
             name="workspace",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"),
         ),
         migrations.AddField(
             model_name="release",
             name="workspace",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"),
         ),
         migrations.CreateModel(
             name="IntegrationRelease",
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Integration Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Integration Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "integration_variables",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Environment variables",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables",
                     ),
                 ),
                 (
@@ -736,16 +501,12 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "release",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.Release",
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release",),
                 ),
                 (
                     "workspace_release",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.WorkspaceRelease",
+                        on_delete=django.db.models.deletion.CASCADE, to="workspaces.WorkspaceRelease",
                     ),
                 ),
             ],
@@ -754,60 +515,38 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="integration",
             name="workspace",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"),
         ),
         migrations.CreateModel(
             name="FunctionFileRelease",
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Function Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Function Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "function_data",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Environment variables",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables",
                     ),
                 ),
                 (
@@ -821,16 +560,12 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "release",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.Release",
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release",),
                 ),
                 (
                     "workspace_release",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.WorkspaceRelease",
+                        on_delete=django.db.models.deletion.CASCADE, to="workspaces.WorkspaceRelease",
                     ),
                 ),
             ],
@@ -839,82 +574,55 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="functionfile",
             name="workspace",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"),
         ),
         migrations.AddField(
             model_name="flowrelease",
             name="release",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release"),
         ),
         migrations.AddField(
             model_name="flowrelease",
             name="workspace_release",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
-                to="workspaces.WorkspaceRelease",
+                on_delete=django.db.models.deletion.CASCADE, to="workspaces.WorkspaceRelease",
             ),
         ),
         migrations.AddField(
             model_name="flow",
             name="workspace",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"),
         ),
         migrations.CreateModel(
             name="EnvironmentRelease",
             fields=[
                 (
                     "id",
-                    models.UUIDField(
-                        default=uuid.uuid4,
-                        editable=False,
-                        primary_key=True,
-                        serialize=False,
-                    ),
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False,),
                 ),
                 (
                     "created_at",
                     models.DateTimeField(
-                        auto_now_add=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Criado em",
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em",
                     ),
                 ),
                 (
                     "updated_at",
                     models.DateTimeField(
-                        auto_now=True,
-                        db_index=True,
-                        null=True,
-                        verbose_name="Atualizado em",
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em",
                     ),
                 ),
-                (
-                    "name",
-                    models.CharField(max_length=255, verbose_name="Environment Name"),
-                ),
+                ("name", models.CharField(max_length=255, verbose_name="Environment Name"),),
                 (
                     "description",
                     models.TextField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Description",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Description",
                     ),
                 ),
                 (
                     "environment_variables",
                     django.contrib.postgres.fields.jsonb.JSONField(
-                        blank=True,
-                        help_text="(Opcional)",
-                        null=True,
-                        verbose_name="Environment variables",
+                        blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables",
                     ),
                 ),
                 (
@@ -928,16 +636,12 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "release",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.Release",
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Release",),
                 ),
                 (
                     "workspace_release",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="workspaces.WorkspaceRelease",
+                        on_delete=django.db.models.deletion.CASCADE, to="workspaces.WorkspaceRelease",
                     ),
                 ),
             ],
@@ -946,8 +650,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="environment",
             name="workspace",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="workspaces.Workspace"),
         ),
     ]

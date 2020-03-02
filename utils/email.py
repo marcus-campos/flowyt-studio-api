@@ -6,13 +6,7 @@ from django.conf import settings
 
 class EmailAsync(threading.Thread):
     def __init__(
-        self,
-        subject,
-        to,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        fail_silently=True,
-        body="",
-        html="",
+        self, subject, to, from_email=settings.DEFAULT_FROM_EMAIL, fail_silently=True, body="", html="",
     ):
         self.subject = subject
         self.body = body

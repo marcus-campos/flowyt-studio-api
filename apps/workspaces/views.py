@@ -43,15 +43,11 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsInTeamPermission,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(
-            data=request.data, context={"user": request.user}
-        )
+        serializer = self.serializer_class(data=request.data, context={"user": request.user})
         serializer.is_valid(raise_exception=True)
         serializer.save(creator=request.user)
         headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -97,10 +93,7 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 
 class ReleaseViewSet(
-    mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
+    mixins.UpdateModelMixin, mixins.DestroyModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet,
 ):
     queryset = Release.objects.all()
     serializer_class = ReleaseSerializer
@@ -178,18 +171,6 @@ class ReleasePublishView(generics.GenericAPIView):
 
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
 
-            # Configs
-            project["config"].append(
-                {
-                    "name": "settings",
-                    "data": json.dumps(
-                        self.__config_settings(
-                            release, workspace, environment, integrations
-                        )
-                    ),
-                }
-            )
-
             # Flows and Routes
             flows_list = []
             for flow in flows:
@@ -197,10 +178,7 @@ class ReleasePublishView(generics.GenericAPIView):
                 flow_id = str(flow.id)
 
                 flows_list.append(
-                    {
-                        "name": slug,
-                        "data": json.dumps(FlowTranslation().translate(flow)),
-                    }
+                    {"name": slug, "data": json.dumps(FlowTranslation().translate(flow)),}
                 )
 
             project["flows"] = flows_list
@@ -208,22 +186,27 @@ class ReleasePublishView(generics.GenericAPIView):
             # Routes
             for route in routes:
                 project["routes"].append(
-                    {
-                        "path": route.path,
-                        "method": route.method,
-                        "flow": slugify(route.flow_release.name),
-                    }
+                    {"path": route.path, "method": route.method, "flow": slugify(route.flow_release.name),}
                 )
 
             # Functions
             for function in function_files:
-                project["functions"].append(
-                    {"name": function.name.lower(), "data": function.function_data}
-                )
+                project["functions"].append({"name": function.name.lower(), "data": function.function_data})
 
             projects_to_publish.append({"name": slug, "data": project})
 
         self.__create_project_and_zip(projects_to_publish)
+
+    def _settings(self, project):
+        # Configs
+        project["config"].append(
+            {
+                "name": "settings",
+                "data": json.dumps(self.__config_settings(release, workspace, environment, integrations)),
+            }
+        )
+
+        return project
 
     def __create_project_and_zip(self, projects):
         for project in projects:
@@ -247,10 +230,7 @@ class ReleasePublishView(generics.GenericAPIView):
         os.makedirs(project_folder + "/{0}".format(key))
 
         for item in project["data"][key]:
-            file = open(
-                "{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension),
-                "w+",
-            )
+            file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+",)
             file.write(item["data"])
             file.close()
 
@@ -264,7 +244,5 @@ class ReleasePublishView(generics.GenericAPIView):
         flows_list = []
         for flow in flows:
             slug = slugify(flow.name)
-            flows_list.append(
-                {"name": slug, "data": json.dumps(FlowTranslation().translate(flow))}
-            )
+            flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
         return flows_list
