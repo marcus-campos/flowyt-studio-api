@@ -101,15 +101,15 @@ class ReleaseSerializer(serializers.ModelSerializer):
         )
         # Environments
         self._create_release_copies(
-            EnvironmentRelease, Environment, ["environment_variables"],
+            Environment, EnvironmentRelease, ["environment_variables"],
         )
         # Integrations
         self._create_release_copies(
-            IntegrationRelease, Integration, ["integration_variables"],
+            Integration, IntegrationRelease, ["integration_variables"],
         )
         # Function file
         self._create_release_copies(
-            FunctionFileRelease, FunctionFile, ["function_data"],
+            FunctionFile, FunctionFileRelease, ["function_data"],
         )
         # Routes
         self._create_route_copies()
@@ -127,7 +127,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
             )
 
     def _create_release_copies(self, from_class, to_class, extra=[]):
-        instance_attr_name = from_class.__name__.lower()
+        instance_attr_name = "{0}_set".format(from_class.__name__.lower())
         sources = getattr(self.release.workspace, instance_attr_name).all()
         for from_instance in sources:
             self._copy_model_instance(
@@ -163,7 +163,7 @@ class PublishSerializer(serializers.Serializer):
 
         for index in range(len(data["environments"])):
             try:
-                environment = Environment.objects.get(pk=data["environments"][index])
+                environment = EnvironmentRelease.objects.get(pk=data["environments"][index])
                 data["environments"][index] = environment
             except Environment.DoesNotExist:
                 raise serializers.ValidationError(

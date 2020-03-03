@@ -1,7 +1,5 @@
 import copy
 import json
-import os
-import shutil
 
 from apps.teams.models import Team
 from apps.workspaces.models import (
@@ -25,11 +23,10 @@ from apps.workspaces.serializers import (
     RouteSerializer,
     WorkspaceSerializer,
 )
-from apps.workspaces.services import ConfigTranslation, FlowTranslation, Release
+from apps.workspaces.services import ConfigTranslation, FlowTranslation, ReleaseBuilder
 from django.core import serializers
 from django.db import transaction
 from django.db.models import Q
-from orchestryzi_api.settings import BASE_DIR
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 from utils.models import to_dict
@@ -146,7 +143,7 @@ class ReleasePublishView(generics.GenericAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
-        self.__make_workspaces(serializer.validated_data)
+        self._make_workspaces(serializer.validated_data)
 
         return Response(data={}, status=200)
 
@@ -158,4 +155,6 @@ class ReleasePublishView(generics.GenericAPIView):
         integrations = workspace.integrationrelease_set.all()
         function_files = workspace.functionfilerelease_set.all()
 
-        return Release().make(validated_data, release, workspace, flows, routes, integrations, function_files)
+        return ReleaseBuilder().make(
+            validated_data, release, workspace, flows, routes, integrations, function_files
+        )

@@ -1,16 +1,25 @@
 import copy
 import json
-
+import os
+import shutil
 
 from django.utils.text import slugify
+from orchestryzi_api.settings import BASE_DIR
+from utils.zipdir import zipdir
 
 
-class Release:
+class ReleaseBuilder:
     def make(self, validated_data, release, workspace, flows, routes, integrations, function_files):
+        projects_to_publish = self._load_projects(
+            validated_data, release, workspace, flows, routes, integrations, function_files
+        )
+        projects_to_publish = self._create_and_zip(projects_to_publish)
+        return projects_to_publish
+
+    def _load_projects(self, validated_data, release, workspace, flows, routes, integrations, function_files):
         environments_to_publish = validated_data["environments"]
 
         project_structure = {"config": [], "flows": [], "functions": [], "routes": []}
-
         projects_to_publish = []
 
         for environment in environments_to_publish:
@@ -29,14 +38,15 @@ class Release:
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
             projects_to_publish.append({"name": slug, "data": project})
 
-        self._create_project_and_zip(projects_to_publish)
+        return projects_to_publish
 
     def _settings(self, project, release, workspace, environment, integrations):
+        config_settings = ConfigTranslation().settings_translate(
+            release, workspace, environment, integrations
+        )
+
         project["config"].append(
-            {
-                "name": "settings",
-                "data": json.dumps(self._config_settings(release, workspace, environment, integrations)),
-            }
+            {"name": "settings", "data": json.dumps(config_settings),}
         )
 
         return project
@@ -45,9 +55,10 @@ class Release:
         flows_list = []
         for flow in flows:
             slug = slugify(flow.name)
+            translated_flow = FlowTranslation().translate(flow)
 
             flows_list.append(
-                {"name": slug, "data": json.dumps(FlowTranslation().translate(flow)),}
+                {"name": slug, "data": json.dumps(translated_flow),}
             )
 
         project["flows"] = flows_list
@@ -68,20 +79,31 @@ class Release:
 
         return project
 
-    def _create_project_and_zip(self, projects):
-        for index, item in enumerate(projects):
+    def _create_and_zip(self, projects):
+        projects_zips = []
+
+        for index, project in enumerate(projects):
             WORKSPACE_DIR = BASE_DIR + "/storage/tmp/workspaces/"
             project_folder = WORKSPACE_DIR + project["name"]
 
-            self._create_project_file(item, project_folder, "config", "json")
-            self._create_project_file(item, project_folder, "flows", "json")
-            self._create_project_file(item, project_folder, "functions", "py")
-            self._create_project_file(item, project_folder, "routes", "json")
-            
+            self._create_project_file(project, project_folder, "config", "json")
+            self._create_project_file(project, project_folder, "flows", "json")
+            self._create_project_file(project, project_folder, "functions", "py")
+            self._create_project_file(project, project_folder, "routes", "json")
+
+            # Zip
+            zipdir("{0}".format(project_folder))
+
             projects[index]["project_folder"] = project_folder
 
-        return projects
-            
+            projects_zips.append({
+                project["name"]: open("{0}.zip".format(project_folder), "rb")
+            })
+
+        return {
+            "projects_zips": projects_zips,
+            "projects": projects
+        }
 
     def _create_project_file(self, project, project_folder, key, extension):
         if key == "routes":
@@ -98,19 +120,6 @@ class Release:
             file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+",)
             file.write(item["data"])
             file.close()
-
-    def _config_settings(self, release, workspace, environment, integrations):
-        config_settings = ConfigTranslation().settings_translate(
-            release, workspace, environment, integrations
-        )
-        return config_settings
-
-    def _flows(self, flows):
-        flows_list = []
-        for flow in flows:
-            slug = slugify(flow.name)
-            flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
-        return flows_list
 
 
 class ConfigTranslation:
@@ -151,9 +160,8 @@ class FlowTranslation:
         flow["id"] = str(flow_queryset.id)
         flow["name"] = flow_queryset.name
 
-        flow_nodes = flow_data["nodes"]
-        flow_links = flow_data["links"]
-        flow_nodes_aux = copy.deepcopy(flow_nodes)
+        flow_nodes = flow_data["nodes"] if flow_data else {}
+        flow_links = flow_data["links"] if flow_data else {}
 
         for key, value in flow_nodes.items():
             node_id = key
@@ -172,28 +180,27 @@ class FlowTranslation:
             # Get links
             _links = []
             _aux_flow_links = copy.deepcopy(flow_links)
-            for k, val in flow_links.items():
-                if val["from"]["nodeId"] == node_id:
-                    _links.append(val["to"]["nodeId"])
-                    del _aux_flow_links[k]
+            for key, value in flow_links.items():
+                if value["from"]["nodeId"] == node_id:
+                    _links.append(value["to"]["nodeId"])
+                    del _aux_flow_links[key]
             flow_links = _aux_flow_links
 
             # Add links to model
             if _model["action"] in ["request", "validation"]:
                 if len(_links) < 2:
                     return False
-
                 _model["data"]["next_action_success"] = _links[0]
                 _model["data"]["next_action_fail"] = _links[1]
                 _model["next_action"] = "${pipeline.next_action}"
-
-            if _model["action"] in ["if", "switch"]:
+            elif _model["action"] in ["if", "switch"]:
                 for key, value in _model["data"]["conditions"].items():
                     _model["data"]["conditions"][key]["next_action"] = _links[key]
                 _model["data"]["next_action_else"] = _links[len(_links)]
-
-            if _model["action"] in ["response", "jump"]:
+            elif _model["action"] in ["response", "jump"]:
                 _model["next_action"] = None
+            else:
+                _model["next_action"] = _links[0]
 
             flow["pipeline"].append(_model)
 
