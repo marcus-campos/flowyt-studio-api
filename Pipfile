@@ -26,6 +26,8 @@ django-3-jet = "*"
 [dev-packages]
 flake8 = "*"
 ipdb = "*"
+black = "*"
+pylint = "*"
 
 [requires]
 python_full_version = "3.8.1"

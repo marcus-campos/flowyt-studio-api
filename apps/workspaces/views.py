@@ -171,14 +171,6 @@ class ReleasePublishView(generics.GenericAPIView):
 
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
 
-            # Configs
-            project["config"].append(
-                {
-                    "name": "settings",
-                    "data": json.dumps(self.__config_settings(release, workspace, environment, integrations)),
-                }
-            )
-
             # Flows and Routes
             flows_list = []
             for flow in flows:
@@ -204,6 +196,17 @@ class ReleasePublishView(generics.GenericAPIView):
             projects_to_publish.append({"name": slug, "data": project})
 
         self.__create_project_and_zip(projects_to_publish)
+
+    def _settings(self, project):
+        # Configs
+        project["config"].append(
+            {
+                "name": "settings",
+                "data": json.dumps(self.__config_settings(release, workspace, environment, integrations)),
+            }
+        )
+
+        return project
 
     def __create_project_and_zip(self, projects):
         for project in projects:

@@ -43,9 +43,7 @@ class UserProfileRegistrationManager(models.Manager):
         user_profile = self.create_profile(user)
 
         if send_email:
-            user_profile.send_activation_email(
-                site
-            )  # To be made asynchronous in production
+            user_profile.send_activation_email(site)  # To be made asynchronous in production
 
         return user
 
@@ -78,8 +76,7 @@ class UserProfileRegistrationManager(models.Manager):
         now = timezone.now() if settings.USE_TZ else datetime.datetime.now()
 
         return self.exclude(
-            models.Q(user__is_active=True)
-            | models.Q(verification_key=UserProfile.ACTIVATED)
+            models.Q(user__is_active=True) | models.Q(verification_key=UserProfile.ACTIVATED)
         ).filter(
             user__date_joined__lt=now
             - datetime.timedelta(getattr(settings, "VERIFICATION_KEY_EXPIRY_DAYS", 4))
@@ -102,16 +99,14 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
     objects = UserProfileRegistrationManager()
 
     class Meta:
-        verbose_name = u"user profile"
-        verbose_name_plural = u"user profiles"
+        verbose_name = "user profile"
+        verbose_name_plural = "user profiles"
 
     def __str__(self):
         return str(self.user)
 
     def verification_key_expired(self):
-        expiration_date = datetime.timedelta(
-            days=getattr(settings, "VERIFICATION_KEY_EXPIRY_DAYS", 4)
-        )
+        expiration_date = datetime.timedelta(days=getattr(settings, "VERIFICATION_KEY_EXPIRY_DAYS", 4))
 
         return self.verification_key == self.ACTIVATED or (
             self.user.date_joined + expiration_date <= timezone.now()
@@ -140,11 +135,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
             "user": self.user,
             "token": token_generator.make_token(self.user),
         }
-        subject = render_to_string(
-            "password_reset/password_reset_email_subject.txt", context
-        )
+        subject = render_to_string("password_reset/password_reset_email_subject.txt", context)
         subject = "".join(subject.splitlines())
-        message = render_to_string(
-            "password_reset/password_reset_email_content.txt", context
-        )
+        message = render_to_string("password_reset/password_reset_email_content.txt", context)
         EmailAsync(subject=subject, to=[self.user.email], html=message).send()
