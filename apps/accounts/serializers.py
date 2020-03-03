@@ -8,6 +8,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from apps.accounts.models import UserProfile
 from apps.teams.models import TeamInvitation, Team
 from apps.teams.serializers import TeamSerializer
+from apps.workspaces.models import Environment
 from utils import encodings as base_utils
 from django.db import transaction
 
@@ -100,7 +101,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             personal_team.members.set([user])
             personal_team.save()
 
-            print(personal_team)
         return validated_data
 
 

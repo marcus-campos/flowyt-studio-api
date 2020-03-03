@@ -36,6 +36,18 @@ class WorkspaceSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User is not in the specified Team.")
         return data
 
+    def create(self, validated_data):
+        workspace = super(WorkspaceSerializer, self).create(validated_data)
+        debug_env = Environment()
+        debug_env.name = "debug"
+        debug_env.description = "Debug Environment"
+        debug_env.workspace = workspace
+        debug_env.can_delete = False
+        debug_env.debug = True
+        debug_env.save()
+
+        return workspace
+
 
 class EnvironmentSerializer(serializers.ModelSerializer):
     description = serializers.CharField(required=False)
@@ -43,7 +55,7 @@ class EnvironmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Environment
-        fields = "__all__"
+        exclude = ["can_delete"]
 
 
 class IntegrationSerializer(serializers.ModelSerializer):

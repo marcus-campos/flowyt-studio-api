@@ -41,7 +41,7 @@ class Environment(AutoCreatedUpdatedMixin):
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
     environment_variables = JSONField("Environment variables", null=True, blank=True, help_text="(Opcional)")
     debug = models.BooleanField(default=False, help_text="(Default false)")
-
+    can_delete = models.BooleanField(default=True)
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
 
     class Meta:

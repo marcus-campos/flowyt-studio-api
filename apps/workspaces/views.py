@@ -6,8 +6,10 @@ import json
 from django.core import serializers
 from django.db import transaction
 from django.db.models import Q
+from django.http import HttpResponseForbidden
 from django.utils.text import slugify
 from rest_framework import generics, mixins, status, viewsets
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from apps.teams.models import Team
@@ -62,6 +64,11 @@ class EnvironmentViewSet(viewsets.ModelViewSet):
     serializer_class = EnvironmentSerializer
     filter_fields = ("workspace__id",)
     permission_classes = (IsInTeamPermission,)
+
+    def perform_destroy(self, instance):
+        if not instance.can_delete:
+            raise PermissionDenied(detail="The default debug environment cant be removed")
+        return super(EnvironmentViewSet, self).perform_destroy(instance)
 
 
 class IntegrationViewSet(viewsets.ModelViewSet):

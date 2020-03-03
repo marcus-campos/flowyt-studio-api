@@ -12,6 +12,18 @@ class WorkspaceAdmin(admin.ModelAdmin):
     list_select_related = ("creator", "team")
     form = WorkspaceAdminForm
 
+    def save_model(self, request, obj, form, change):
+        result = super(WorkspaceAdmin, self).save_model(request, obj, form, change)
+        if not change:
+            debug_env = Environment()
+            debug_env.name = "debug"
+            debug_env.description = "Debug Environment"
+            debug_env.workspace = obj
+            debug_env.can_delete = False
+            debug_env.debug = True
+            debug_env.save()
+        return result
+
 
 @admin.register(Environment)
 class EnvironmentAdmin(admin.ModelAdmin):
@@ -20,6 +32,11 @@ class EnvironmentAdmin(admin.ModelAdmin):
     list_filter = ["workspace", "workspace__team"]
     search_fields = ["name", "description"]
     list_select_related = ("workspace",)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj:
+            return obj.can_delete
+        return True
 
 
 @admin.register(Integration)
