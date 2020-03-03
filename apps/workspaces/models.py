@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.conf import settings
+from django.template.defaultfilters import safe
 
 from utils.models import AutoCreatedUpdatedMixin
 from utils.choices import HTTPMethodChoices
@@ -12,7 +13,7 @@ User = get_user_model()
 class Workspace(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
-    workspace_color = models.CharField("Workspace Name", null=True, blank=True, max_length=6)
+    workspace_color = models.CharField("Workspace Color", null=True, blank=True, max_length=7)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     team = models.ForeignKey("teams.Team", on_delete=models.CASCADE)
 
@@ -22,6 +23,17 @@ class Workspace(AutoCreatedUpdatedMixin):
 
     def __str__(self):
         return self.name
+
+    def workspae_color_render(self):
+        html = """<div style='background-color:{0}; 
+                    width:10px; height: 10px; 
+                    display:inline-block; 
+                    margin-right:5px;'></div>{0}""".format(
+            self.workspace_color or "#FFFFFF"
+        )
+        return safe(html)
+
+    workspae_color_render.short_description = "Workspace Color"
 
 
 class Environment(AutoCreatedUpdatedMixin):
