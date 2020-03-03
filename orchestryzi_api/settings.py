@@ -27,6 +27,7 @@ ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=config.list)
 
 
 INSTALLED_APPS = [
+    "jet",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -196,6 +197,7 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
 DEFAULT_FROM_EMAIL = "Flowyt <noreply@flowyt.com>"
 
 SITE_NAME = "Flowyt"
+
 
 django_heroku.settings(locals())
 del DATABASES["default"]["OPTIONS"]["sslmode"]
