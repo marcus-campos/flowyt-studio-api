@@ -1,6 +1,9 @@
 import copy
 import json
+import shutil
+import os
 
+import requests
 from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
@@ -27,6 +30,7 @@ from apps.workspaces.services import ConfigTranslation, FlowTranslation, Release
 from django.core import serializers
 from django.db import transaction
 from django.db.models import Q
+from orchestryzi_api.settings import ENGINE_ENDPOINTS
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
 from utils.models import to_dict
@@ -143,9 +147,24 @@ class ReleasePublishView(generics.GenericAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
-        self._make_workspaces(serializer.validated_data)
+        # Make
+        projects_to_publish = self._make_workspaces(serializer.validated_data)
 
-        return Response(data={}, status=200)
+        # Publish
+        has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
+
+        # Delete release files
+        self._delete_release_files(projects_to_publish)
+
+        # Response
+        urls = ["{0}/{1}".format(serializer.validated_data["host"].host, project["name"]) for project in projects_to_publish["projects"]]
+        
+        if has_errors:
+            response = {"msg": "Something went wrong! This release could not be published.", "urls": urls}
+            return Response(data=response, status=400)
+
+        response = {"msg": "The projects were published successfully!", "urls": urls}
+        return Response(data=response, status=200)
 
     def _make_workspaces(self, validated_data):
         release = validated_data["release"]
@@ -158,3 +177,32 @@ class ReleasePublishView(generics.GenericAPIView):
         return ReleaseBuilder().make(
             validated_data, release, workspace, flows, routes, integrations, function_files
         )
+
+    def _publish(self, projects, host):
+        url_publish = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["publish"])
+        url_reload = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["reload"])
+        has_errors = False
+
+        for project_zip in projects["projects_zips"]:
+            if not has_errors:
+                result = requests.post(
+                    url_publish,
+                    files={"workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])},
+                    headers={"X-Orchestryzi-Token": host.secret_token},
+                )
+
+                if result.status_code != 200:
+                    has_errors = True
+
+        result = requests.get(url_reload, headers={"X-Orchestryzi-Token": host.secret_token})
+
+        return has_errors
+
+    def _delete_release_files(self, projects):
+        try:
+            for project in projects["projects"]:
+                shutil.rmtree(project["project_folder"])
+                os.remove("{0}.zip".format(project["project_folder"]))
+            return True
+        except:
+            return False

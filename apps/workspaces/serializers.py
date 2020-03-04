@@ -1,5 +1,4 @@
-from rest_framework import serializers
-
+from apps.hosts.models import Host
 from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
@@ -12,10 +11,11 @@ from apps.workspaces.models import (
     IntegrationRelease,
     Release,
     Route,
+    RouteRelease,
     Workspace,
     WorkspaceRelease,
-    RouteRelease,
 )
+from rest_framework import serializers
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -153,6 +153,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
 class PublishSerializer(serializers.Serializer):
     release = serializers.UUIDField(required=True)
     environments = serializers.ListField(required=True)
+    host = serializers.UUIDField(required=True)
 
     def validate(self, data):
         try:
@@ -169,5 +170,11 @@ class PublishSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     "The environment {0} does not exist".format(data["environments"][index])
                 )
+
+        try:
+            host = Host.objects.get(pk=str(data["host"]))
+            data["host"] = host
+        except Host.DoesNotExist:
+            raise serializers.ValidationError("This host does not exist")
 
         return data

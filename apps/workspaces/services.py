@@ -95,15 +95,14 @@ class ReleaseBuilder:
             zipdir("{0}".format(project_folder))
 
             projects[index]["project_folder"] = project_folder
-
+            
+            zipfile = open("{0}.zip".format(project_folder), "rb")
             projects_zips.append({
-                project["name"]: open("{0}.zip".format(project_folder), "rb")
+                "name": project["name"],
+                "file": zipfile
             })
 
-        return {
-            "projects_zips": projects_zips,
-            "projects": projects
-        }
+        return {"projects_zips": projects_zips, "projects": projects}
 
     def _create_project_file(self, project, project_folder, key, extension):
         if key == "routes":
