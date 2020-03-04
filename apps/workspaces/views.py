@@ -163,8 +163,11 @@ class ReleasePublishView(generics.GenericAPIView):
         self._delete_release_files(projects_to_publish)
 
         # Response
-        urls = ["{0}/{1}".format(serializer.validated_data["host"].host, project["name"]) for project in projects_to_publish["projects"]]
-        
+        urls = [
+            "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
+            for project in projects_to_publish["projects"]
+        ]
+
         if has_errors:
             response = {"msg": "Something went wrong! This release could not be published.", "urls": urls}
             return Response(data=response, status=400)

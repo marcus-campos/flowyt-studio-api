@@ -95,12 +95,9 @@ class ReleaseBuilder:
             zipdir("{0}".format(project_folder))
 
             projects[index]["project_folder"] = project_folder
-            
+
             zipfile = open("{0}.zip".format(project_folder), "rb")
-            projects_zips.append({
-                "name": project["name"],
-                "file": zipfile
-            })
+            projects_zips.append({"name": project["name"], "file": zipfile})
 
         return {"projects_zips": projects_zips, "projects": projects}
 
