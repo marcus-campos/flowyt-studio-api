@@ -33,6 +33,7 @@ from django.db.models import Q
 from orchestryzi_api.settings import ENGINE_ENDPOINTS
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from utils.models import to_dict
 
 
@@ -61,6 +62,11 @@ class EnvironmentViewSet(viewsets.ModelViewSet):
     serializer_class = EnvironmentSerializer
     filter_fields = ("workspace__id",)
     permission_classes = (IsInTeamPermission,)
+
+    def perform_destroy(self, instance):
+        if not instance.can_delete:
+            raise PermissionDenied(detail="The default debug environment cant be removed")
+        return super(EnvironmentViewSet, self).perform_destroy(instance)
 
 
 class IntegrationViewSet(viewsets.ModelViewSet):
@@ -157,8 +163,11 @@ class ReleasePublishView(generics.GenericAPIView):
         self._delete_release_files(projects_to_publish)
 
         # Response
-        urls = ["{0}/{1}".format(serializer.validated_data["host"].host, project["name"]) for project in projects_to_publish["projects"]]
-        
+        urls = [
+            "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
+            for project in projects_to_publish["projects"]
+        ]
+
         if has_errors:
             response = {"msg": "Something went wrong! This release could not be published.", "urls": urls}
             return Response(data=response, status=400)

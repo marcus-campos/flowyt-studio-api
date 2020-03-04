@@ -7,6 +7,7 @@ from .models import Team, TeamInvitation
 class TeamAdmin(admin.ModelAdmin):
 
     list_display = ("id", "name", "description", "owner")
+    search_fields = ["name", "description", "owner"]
 
 
 @admin.register(TeamInvitation)

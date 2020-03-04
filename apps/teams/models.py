@@ -35,7 +35,7 @@ class Team(AutoCreatedUpdatedMixin):
         verbose_name_plural = "teams"
 
     def __str__(self):
-        return str(self.name)
+        return "{0} - {1}".format(self.name, self.owner.email)
 
     def has_invite_permissions(self, user):
         if self.owner == user:

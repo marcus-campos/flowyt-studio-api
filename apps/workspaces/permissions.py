@@ -26,5 +26,5 @@ class IsInTeamPermission(IsCreatorPermission, PermissionMixin):
         if not workspace.id:
             return True
         allowed = super(IsInTeamPermission, self).has_object_permission(request, view, obj)
-        user_profile = request.user.userprofile
-        return allowed or Team.object.filter(id=workspace.team, members__in=[user_profile]).exists()
+        user = request.user
+        return allowed or Team.object.filter(id=workspace.team, members__in=[user]).exists()

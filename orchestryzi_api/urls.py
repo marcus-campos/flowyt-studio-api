@@ -11,11 +11,11 @@ from apps.accounts.views import TokenObtainPairWithUserInfoView
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Orchestryzi API",
+        title="Flowyt API",
         default_version="v1",
         description="API to save workspaces related items",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
+        contact=openapi.Contact(email="contact@flowyt.com"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
@@ -29,5 +29,6 @@ urlpatterns = [
     path("api/v1/token/", TokenObtainPairWithUserInfoView.as_view(), name="token_obtain_pair",),
     path("api/v1/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh",),
     url(r"^api/v1/", include("apps.urls")),
+    url(r"^jet/", include("jet.urls", "jet")),
     url(r"^admin/", admin.site.urls),
 ]

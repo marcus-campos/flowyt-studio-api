@@ -1,25 +1,20 @@
 from rest_framework import generics, mixins, status, viewsets, permissions
 from apps.hosts.models import Host
 from . import serializers
-from apps.workspaces.permissions import IsInTeamPermission
+from .permissions import IsInHostTeamMemberPermission
+from ..teams.models import Team
 
 
-class HostViewSet(
-    mixins.UpdateModelMixin, mixins.DestroyModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet,
-):
-
-    permission_classes = (permissions.IsAdminUser,)
+class HostViewSet(generics.ListAPIView):
     serializer_class = serializers.HostSerializer
-    queryset = Host.objects.all()
+
+    def get_queryset(self):
+        teams_id = Team.objects.filter(members__in=[self.request.user]).values_list("id", flat=True)
+        queryset = Host.objects.filter(team__id__in=teams_id)
+        return queryset
 
 
-class HostDetailViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet,
-):
-
-    permission_classes = (
-        IsInTeamPermission,
-        permissions.IsAdminUser,
-    )
+class HostDetailViewSet(generics.RetrieveAPIView):
+    permission_classes = (IsInHostTeamMemberPermission,)
     serializer_class = serializers.HostSerializer
     queryset = Host.objects.all()

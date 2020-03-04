@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
 
+from apps.hosts.serializers import HostSerializer
 from apps.teams.models import Team
 
 User = get_user_model()
@@ -22,6 +23,8 @@ class TeamCreateSerializer(serializers.ModelSerializer):
 
 
 class TeamSerializer(serializers.ModelSerializer):
+    team_hosts = HostSerializer(many=True)
+
     class Meta:
         model = Team
         fields = "__all__"

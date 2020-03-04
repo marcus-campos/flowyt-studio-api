@@ -43,7 +43,7 @@ class UserProfileRegistrationManager(models.Manager):
         user_profile = self.create_profile(user)
 
         if send_email:
-            user_profile.send_activation_email(site)  # To be made asynchronous in production
+            user_profile.send_activation_email(site)
 
         return user
 
