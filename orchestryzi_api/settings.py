@@ -189,6 +189,8 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=10),
 }
 
+ENGINE_ENDPOINTS = {"publish": "/_engine/publish", "reload": "/_engine/reload", "setup": "/_engine/setup"}
+
 EMAIL_HOST = config("EMAIL_HOST", cast=str)
 EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", cast=str)

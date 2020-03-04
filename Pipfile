@@ -22,6 +22,7 @@ djangorestframework_simplejwt = "*"
 django-username-email = {git = "https://github.com/wdeoliveirawill/django-username-email.git"}
 django-select2 = "*"
 django-3-jet = "*"
+requests = "*"
 
 [dev-packages]
 flake8 = "*"
