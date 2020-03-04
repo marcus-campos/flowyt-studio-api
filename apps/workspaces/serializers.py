@@ -178,7 +178,7 @@ class PublishSerializer(serializers.Serializer):
             try:
                 environment = EnvironmentRelease.objects.get(pk=data["environments"][index])
                 data["environments"][index] = environment
-            except Environment.DoesNotExist:
+            except EnvironmentRelease.DoesNotExist:
                 raise serializers.ValidationError(
                     "The environment {0} does not exist".format(data["environments"][index])
                 )

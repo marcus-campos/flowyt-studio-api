@@ -133,8 +133,8 @@ class ConfigTranslation:
 
         settings["id"] = str(workspace.id)
         settings["name"] = workspace.name
-        settings["debug"] = environment.debug
-        settings["safe_mode"] = environment.safe_mode
+        settings["debug"] = environment.environment.debug
+        settings["safe_mode"] = environment.environment.safe_mode
         settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
         settings["env"] = environment.environment_variables
@@ -191,9 +191,9 @@ class FlowTranslation:
                 _model["data"]["next_action_fail"] = _links[1]
                 _model["next_action"] = "${pipeline.next_action}"
             elif _model["action"] in ["if", "switch"]:
-                for key, value in _model["data"]["conditions"].items():
+                for key, value in enumerate(_model["data"]["conditions"]):
                     _model["data"]["conditions"][key]["next_action"] = _links[key]
-                _model["data"]["next_action_else"] = _links[len(_links)]
+                _model["data"]["next_action_else"] = _links[(len(_links) - 1)]
             elif _model["action"] in ["response", "jump"]:
                 _model["next_action"] = None
             else:
