@@ -1,15 +1,9 @@
 import copy
-import os
-import shutil
 import json
+import shutil
+import os
 
-from django.core import serializers
-from django.db import transaction
-from django.db.models import Q
-from django.utils.text import slugify
-from rest_framework import generics, mixins, status, viewsets
-from rest_framework.response import Response
-
+import requests
 from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
@@ -32,8 +26,13 @@ from apps.workspaces.serializers import (
     RouteSerializer,
     WorkspaceSerializer,
 )
-from apps.workspaces.services import ConfigTranslation, FlowTranslation
-from orchestryzi_api.settings import BASE_DIR
+from apps.workspaces.services import ConfigTranslation, FlowTranslation, ReleaseBuilder
+from django.core import serializers
+from django.db import transaction
+from django.db.models import Q
+from orchestryzi_api.settings import ENGINE_ENDPOINTS
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.response import Response
 from utils.models import to_dict
 
 
@@ -148,11 +147,26 @@ class ReleasePublishView(generics.GenericAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
-        self.__make_workspaces(serializer.validated_data)
+        # Make
+        projects_to_publish = self._make_workspaces(serializer.validated_data)
 
-        return Response(data={}, status=200)
+        # Publish
+        has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
 
-    def __make_workspaces(self, validated_data):
+        # Delete release files
+        self._delete_release_files(projects_to_publish)
+
+        # Response
+        urls = ["{0}/{1}".format(serializer.validated_data["host"].host, project["name"]) for project in projects_to_publish["projects"]]
+        
+        if has_errors:
+            response = {"msg": "Something went wrong! This release could not be published.", "urls": urls}
+            return Response(data=response, status=400)
+
+        response = {"msg": "The projects were published successfully!", "urls": urls}
+        return Response(data=response, status=200)
+
+    def _make_workspaces(self, validated_data):
         release = validated_data["release"]
         workspace = WorkspaceRelease.objects.get(release=release)
         flows = workspace.flowrelease_set.all()
@@ -160,89 +174,35 @@ class ReleasePublishView(generics.GenericAPIView):
         integrations = workspace.integrationrelease_set.all()
         function_files = workspace.functionfilerelease_set.all()
 
-        environments_to_publish = validated_data["environments"]
-
-        project_structure = {"config": [], "flows": [], "functions": [], "routes": []}
-
-        projects_to_publish = []
-
-        for environment in environments_to_publish:
-            project = copy.deepcopy(project_structure)
-
-            slug = slugify("{0}-{1}".format(workspace.name, environment.name))
-
-            # Flows and Routes
-            flows_list = []
-            for flow in flows:
-                slug = slugify(flow.name)
-                flow_id = str(flow.id)
-
-                flows_list.append(
-                    {"name": slug, "data": json.dumps(FlowTranslation().translate(flow)),}
-                )
-
-            project["flows"] = flows_list
-
-            # Routes
-            for route in routes:
-                project["routes"].append(
-                    {"path": route.path, "method": route.method, "flow": slugify(route.flow_release.name),}
-                )
-
-            # Functions
-            for function in function_files:
-                project["functions"].append({"name": function.name.lower(), "data": function.function_data})
-
-            projects_to_publish.append({"name": slug, "data": project})
-
-        self.__create_project_and_zip(projects_to_publish)
-
-    def _settings(self, project):
-        # Configs
-        project["config"].append(
-            {
-                "name": "settings",
-                "data": json.dumps(self.__config_settings(release, workspace, environment, integrations)),
-            }
+        return ReleaseBuilder().make(
+            validated_data, release, workspace, flows, routes, integrations, function_files
         )
 
-        return project
+    def _publish(self, projects, host):
+        url_publish = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["publish"])
+        url_reload = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["reload"])
+        has_errors = False
 
-    def __create_project_and_zip(self, projects):
-        for project in projects:
-            self.__create_project_file(project, "config", "json")
-            self.__create_project_file(project, "flows", "json")
-            self.__create_project_file(project, "functions", "py")
-            self.__create_project_file(project, "routes", "json")
+        for project_zip in projects["projects_zips"]:
+            if not has_errors:
+                result = requests.post(
+                    url_publish,
+                    files={"workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])},
+                    headers={"X-Orchestryzi-Token": host.secret_token},
+                )
 
-    def __create_project_file(self, project, key, extension):
-        WORKSPACE_DIR = BASE_DIR + "/storage/tmp/workspaces/"
-        project_folder = WORKSPACE_DIR + project["name"]
+                if result.status_code != 200:
+                    has_errors = True
 
-        if key == "routes":
-            file = open("{0}/{1}.{2}".format(project_folder, key, extension), "w+")
-            file.write(json.dumps(project["data"]["routes"]))
-            file.close()
-            return
+        result = requests.get(url_reload, headers={"X-Orchestryzi-Token": host.secret_token})
 
-        if os.path.exists(project_folder + "/{0}".format(key)):
-            shutil.rmtree(project_folder + "/{0}".format(key))
-        os.makedirs(project_folder + "/{0}".format(key))
+        return has_errors
 
-        for item in project["data"][key]:
-            file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+",)
-            file.write(item["data"])
-            file.close()
-
-    def __config_settings(self, release, workspace, environment, integrations):
-        config_settings = ConfigTranslation().settings_translate(
-            release, workspace, environment, integrations
-        )
-        return config_settings
-
-    def __flows(self, flows):
-        flows_list = []
-        for flow in flows:
-            slug = slugify(flow.name)
-            flows_list.append({"name": slug, "data": json.dumps(FlowTranslation().translate(flow))})
-        return flows_list
+    def _delete_release_files(self, projects):
+        try:
+            for project in projects["projects"]:
+                shutil.rmtree(project["project_folder"])
+                os.remove("{0}.zip".format(project["project_folder"]))
+            return True
+        except:
+            return False

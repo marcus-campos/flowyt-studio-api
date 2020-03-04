@@ -88,6 +88,9 @@ pip-delete-this-directory.txt
 # Translations
 *.mo
 
+# IDE
+.vscode
+
 # Sphinx documentation
 docs/_build/
 

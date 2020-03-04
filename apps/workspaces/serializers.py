@@ -1,5 +1,4 @@
-from rest_framework import serializers
-
+from apps.hosts.models import Host
 from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
@@ -12,10 +11,11 @@ from apps.workspaces.models import (
     IntegrationRelease,
     Release,
     Route,
+    RouteRelease,
     Workspace,
     WorkspaceRelease,
-    RouteRelease,
 )
+from rest_framework import serializers
 
 
 class WorkspaceSerializer(serializers.ModelSerializer):
@@ -101,15 +101,15 @@ class ReleaseSerializer(serializers.ModelSerializer):
         )
         # Environments
         self._create_release_copies(
-            EnvironmentRelease, Environment, ["environment_variables"],
+            Environment, EnvironmentRelease, ["environment_variables"],
         )
         # Integrations
         self._create_release_copies(
-            IntegrationRelease, Integration, ["integration_variables"],
+            Integration, IntegrationRelease, ["integration_variables"],
         )
         # Function file
         self._create_release_copies(
-            FunctionFileRelease, FunctionFile, ["function_data"],
+            FunctionFile, FunctionFileRelease, ["function_data"],
         )
         # Routes
         self._create_route_copies()
@@ -127,7 +127,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
             )
 
     def _create_release_copies(self, from_class, to_class, extra=[]):
-        instance_attr_name = from_class.__name__.lower()
+        instance_attr_name = "{0}_set".format(from_class.__name__.lower())
         sources = getattr(self.release.workspace, instance_attr_name).all()
         for from_instance in sources:
             self._copy_model_instance(
@@ -153,6 +153,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
 class PublishSerializer(serializers.Serializer):
     release = serializers.UUIDField(required=True)
     environments = serializers.ListField(required=True)
+    host = serializers.UUIDField(required=True)
 
     def validate(self, data):
         try:
@@ -163,11 +164,17 @@ class PublishSerializer(serializers.Serializer):
 
         for index in range(len(data["environments"])):
             try:
-                environment = Environment.objects.get(pk=data["environments"][index])
+                environment = EnvironmentRelease.objects.get(pk=data["environments"][index])
                 data["environments"][index] = environment
             except Environment.DoesNotExist:
                 raise serializers.ValidationError(
                     "The environment {0} does not exist".format(data["environments"][index])
                 )
+
+        try:
+            host = Host.objects.get(pk=str(data["host"]))
+            data["host"] = host
+        except Host.DoesNotExist:
+            raise serializers.ValidationError("This host does not exist")
 
         return data
