@@ -133,7 +133,8 @@ class ConfigTranslation:
 
         settings["id"] = str(workspace.id)
         settings["name"] = workspace.name
-        settings["debug"] = True
+        settings["debug"] = environment.debug
+        settings["safe_mode"] = environment.safe_mode
         settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
         settings["env"] = environment.environment_variables
