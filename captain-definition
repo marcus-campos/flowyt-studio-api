@@ -3,18 +3,17 @@
   "dockerfileLines": [
     "FROM python:3.8.1",
     "ENV PYTHONUNBUFFERED 1",
-
-    "ENV SECRET_KEY $SECRET_KEY",
-    "ENV DEBUG $DEBUG",
-    "ENV DEFAULT_API_URL $DEFAULT_API_URL",
-    "ENV ALLOWED_HOSTS $ALLOWED_HOSTS",
+    "ENV SECRET_KEY e72t)7a5^d9nrfrz_i=%=dsa2%%v7kf*9hqp*9toe3ff)%s2&j",
+    "ENV DEBUG False",
+    "ENV DEFAULT_API_URL https://studio-api.sptitan.flowyt.com/",
+    "ENV ALLOWED_HOSTS *",
     "ENV DATABASE_URL postgresql://orch:or!v1G64@172.31.5.149:5432/orchestryzi_api",
 
-    "ENV EMAIL_HOST $EMAIL_HOST",
-    "ENV EMAIL_PORT $EMAIL_PORT",
-    "ENV EMAIL_HOST_USER $EMAIL_HOST_USER",
-    "ENV EMAIL_HOST_PASSWORD $EMAIL_HOST_PASSWORD",
-    "ENV EMAIL_USE_TLS $EMAIL_USE_TLS",
+    "ENV EMAIL_HOST smtp.mailgun.org",
+    "ENV EMAIL_PORT 587",
+    "ENV EMAIL_HOST_USER postmaster@mg.flowyt.com",
+    "ENV EMAIL_HOST_PASSWORD ffcc84b696e1f48e21503368a62e8c67-9dda225e-70c7e481",
+    "ENV EMAIL_USE_TLS True",
     
     "RUN pip install -U pip setuptools",
 
