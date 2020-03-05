@@ -150,8 +150,8 @@ class FlowTranslation:
     action_model = {"id": "", "action": "", "data": {}, "next_action": ""}
 
     def translate(self, flow_queryset):
-        flow_data = flow_queryset.flow_layout
-        flow_node_data = flow_queryset.flow_data
+        flow_data = flow_queryset.flow_layout if flow_queryset.flow_layout else {}
+        flow_node_data = flow_queryset.flow_data if flow_queryset.flow_data else {}
 
         flow = copy.deepcopy(self.flow_model)
         flow["id"] = str(flow_queryset.id)
