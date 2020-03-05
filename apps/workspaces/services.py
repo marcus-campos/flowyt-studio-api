@@ -174,8 +174,8 @@ class FlowTranslation:
                         try:
                             _model["data"] = json.loads(flow_node_data[index]["data"][key])
                         except:
-                            _model["data"] = flow_node_data[index]["data"] 
-                    
+                            _model["data"] = flow_node_data[index]["data"]
+
                     del flow_node_data[index]
                     break
 

@@ -153,14 +153,20 @@ class ReleasePublishView(generics.GenericAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
-        # Make
-        projects_to_publish = self._make_workspaces(serializer.validated_data)
+        try:
+            # Make
+            projects_to_publish = self._make_workspaces(serializer.validated_data)
 
-        # Publish
-        has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
+            # Publish
+            has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
 
-        # Delete release files
-        self._delete_release_files(projects_to_publish)
+            # Delete release files
+            self._delete_release_files(projects_to_publish)
+        except:
+            response = {
+                "msg": "It was not possible to generate a build for this release. Check that there is no incomplete data and create a new release."
+            }
+            return Response(data=response, status=400)
 
         # Response
         urls = [
