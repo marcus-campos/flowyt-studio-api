@@ -9,6 +9,7 @@ from utils.zipdir import zipdir
 
 
 class ReleaseBuilder:
+
     def make(self, validated_data, release, workspace, flows, routes, integrations, function_files):
         projects_to_publish = self._load_projects(
             validated_data, release, workspace, flows, routes, integrations, function_files
@@ -200,6 +201,7 @@ class FlowTranslation:
                     for key, value in enumerate(_model["data"]["conditions"]):
                         _model["data"]["conditions"][key]["next_action"] = _links[key]
                     _model["data"]["next_action_else"] = _links[(len(_links) - 1)]
+                    _model["next_action"] = "${pipeline.next_action}"
                 elif _model["action"] in ["response", "jump"]:
                     _model["next_action"] = None
                 else:
