@@ -137,7 +137,7 @@ class ConfigTranslation:
         settings["safe_mode"] = environment.environment.safe_mode
         settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
-        settings["env"] = environment.environment_variables
+        settings["env"] = json.loads(environment.environment_variables)
 
         for integration in integrations:
             settings["integrations"][integration.name] = integration.integration_variables
@@ -170,7 +170,11 @@ class FlowTranslation:
             # Get data
             for index in range(len(flow_node_data)):
                 if flow_node_data[index]["id"] == node_id:
-                    _model["data"] = flow_node_data[index]["data"]
+                    if type(flow_node_data[index]["data"]) is str:
+                        _model["data"] = json.loads(flow_node_data[index]["data"])
+                    else:
+                        _model["data"] = flow_node_data[index]["data"]
+                    
                     del flow_node_data[index]
                     break
 
@@ -184,21 +188,22 @@ class FlowTranslation:
             flow_links = _aux_flow_links
 
             # Add links to model
-            if _model["action"] in ["request", "validation"]:
-                if len(_links) < 2:
-                    return False
-                _model["data"]["next_action_success"] = _links[0]
-                _model["data"]["next_action_fail"] = _links[1]
-                _model["next_action"] = "${pipeline.next_action}"
-            elif _model["action"] in ["if", "switch"]:
-                for key, value in enumerate(_model["data"]["conditions"]):
-                    _model["data"]["conditions"][key]["next_action"] = _links[key]
-                _model["data"]["next_action_else"] = _links[(len(_links) - 1)]
-            elif _model["action"] in ["response", "jump"]:
-                _model["next_action"] = None
-            else:
-                _model["next_action"] = _links[0]
+            if _links:
+                if _model["action"] in ["request", "validation"]:
+                    if len(_links) < 2:
+                        return False
+                    _model["data"]["next_action_success"] = _links[0]
+                    _model["data"]["next_action_fail"] = _links[1]
+                    _model["next_action"] = "${pipeline.next_action}"
+                elif _model["action"] in ["if", "switch"]:
+                    for key, value in enumerate(_model["data"]["conditions"]):
+                        _model["data"]["conditions"][key]["next_action"] = _links[key]
+                    _model["data"]["next_action_else"] = _links[(len(_links) - 1)]
+                elif _model["action"] in ["response", "jump"]:
+                    _model["next_action"] = None
+                else:
+                    _model["next_action"] = _links[0]
 
-            flow["pipeline"].append(_model)
+                flow["pipeline"].append(_model)
 
         return flow
