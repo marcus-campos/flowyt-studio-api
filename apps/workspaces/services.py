@@ -170,10 +170,11 @@ class FlowTranslation:
             # Get data
             for index in range(len(flow_node_data)):
                 if flow_node_data[index]["id"] == node_id:
-                    if type(flow_node_data[index]["data"]) is str:
-                        _model["data"] = json.loads(flow_node_data[index]["data"])
-                    else:
-                        _model["data"] = flow_node_data[index]["data"]
+                    for key, value in flow_node_data[index]["data"].items():
+                        try:
+                            _model["data"] = json.loads(flow_node_data[index]["data"][key])
+                        except:
+                            _model["data"] = flow_node_data[index]["data"] 
                     
                     del flow_node_data[index]
                     break
