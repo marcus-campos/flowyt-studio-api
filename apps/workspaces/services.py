@@ -6,6 +6,7 @@ import shutil
 from django.utils.text import slugify
 from orchestryzi_api.settings import BASE_DIR
 from utils.zipdir import zipdir
+from operator import itemgetter
 
 
 class ReleaseBuilder:
@@ -182,28 +183,30 @@ class FlowTranslation:
             # Get links
             _links = []
             _aux_flow_links = copy.deepcopy(flow_links)
-            for key, value in _aux_flow_links.items():
+            for key, value in flow_links.items():
                 if value["from"]["nodeId"] == node_id:
-                    _links.append(value["to"]["nodeId"])
+                    _links.append({"node_id": value["to"]["nodeId"], "port_id": value["from"]["portId"]})
                     del _aux_flow_links[key]
+            flow_links = _aux_flow_links
+            _links = sorted(_links, key=itemgetter("port_id"))
 
             # Add links to model
             if _links:
                 if _model["action"] in ["request", "validation"]:
                     if len(_links) < 2:
                         return False
-                    _model["data"]["next_action_success"] = _links[0]
-                    _model["data"]["next_action_fail"] = _links[1]
+                    _model["data"]["next_action_success"] = _links[0]["node_id"]
+                    _model["data"]["next_action_fail"] = _links[1]["node_id"]
                     _model["next_action"] = "${pipeline.next_action}"
                 elif _model["action"] in ["if", "switch"]:
                     for key, value in enumerate(_model["data"]["conditions"]):
-                        _model["data"]["conditions"][key]["next_action"] = _links[key]
-                    _model["data"]["next_action_else"] = _links[(len(_links) - 1)]
+                        _model["data"]["conditions"][key]["next_action"] = _links[key]["node_id"]
+                    _model["data"]["next_action_else"] = _links[(len(_links) - 1)]["node_id"]
                     _model["next_action"] = "${pipeline.next_action}"
                 elif _model["action"] in ["response", "jump"]:
                     _model["next_action"] = None
                 else:
-                    _model["next_action"] = _links[0]
+                    _model["next_action"] = _links[0]["node_id"]
 
                 flow["pipeline"].append(_model)
 
