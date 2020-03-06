@@ -135,7 +135,7 @@ class Release(AutoCreatedUpdatedMixin):
 class WorkspaceRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
-    workspace_color = models.CharField("Workspace Name", null=True, blank=True, max_length=6)
+    workspace_color = models.CharField("Workspace Color", null=True, blank=True, max_length=6)
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace = models.ForeignKey("Workspace", null=True, blank=True, on_delete=models.SET_NULL)
