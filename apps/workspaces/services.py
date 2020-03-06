@@ -182,11 +182,10 @@ class FlowTranslation:
             # Get links
             _links = []
             _aux_flow_links = copy.deepcopy(flow_links)
-            for key, value in flow_links.items():
+            for key, value in _aux_flow_links.items():
                 if value["from"]["nodeId"] == node_id:
                     _links.append(value["to"]["nodeId"])
                     del _aux_flow_links[key]
-            flow_links = _aux_flow_links
 
             # Add links to model
             if _links:
