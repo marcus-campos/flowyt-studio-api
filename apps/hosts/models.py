@@ -3,6 +3,7 @@ from utils.models import AutoCreatedUpdatedMixin
 
 
 class Host(AutoCreatedUpdatedMixin):
+    name = models.CharField("Name", null=True, blank=True, max_length=100, help_text="(Opcional)")
     host = models.CharField("Host", max_length=255)
     secret_token = models.CharField("Secret", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
