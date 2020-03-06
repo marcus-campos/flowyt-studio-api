@@ -9,7 +9,6 @@ from utils.zipdir import zipdir
 
 
 class ReleaseBuilder:
-
     def make(self, validated_data, release, workspace, flows, routes, integrations, function_files):
         projects_to_publish = self._load_projects(
             validated_data, release, workspace, flows, routes, integrations, function_files

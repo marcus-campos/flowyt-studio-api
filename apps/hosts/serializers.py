@@ -5,4 +5,4 @@ from apps.hosts.models import Host
 class HostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Host
-        fields = "__all__"
+        exclude = ["secret_token"]

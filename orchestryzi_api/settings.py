@@ -200,6 +200,7 @@ DEFAULT_FROM_EMAIL = "Flowyt <noreply@flowyt.com>"
 
 SITE_NAME = "Flowyt"
 
+JET_SIDE_MENU_COMPACT = True
 
 django_heroku.settings(locals())
 del DATABASES["default"]["OPTIONS"]["sslmode"]
