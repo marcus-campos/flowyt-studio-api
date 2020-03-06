@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "whitenoise.runserver_nostatic",
     "cuser",
+    "django_ace",
     # Apps
     "apps.workspaces",
     "apps.teams",
