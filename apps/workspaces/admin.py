@@ -1,7 +1,13 @@
 from django.contrib import admin
 from jet.admin import CompactInline
 
-from apps.workspaces.forms import WorkspaceAdminForm
+from apps.workspaces.forms import (
+    WorkspaceAdminForm,
+    EnvironmentAdminForm,
+    IntegrationAdminForm,
+    FunctionFileAdminForm,
+    FlowAdminForm,
+)
 from apps.workspaces.models import (
     Workspace,
     Environment,
@@ -85,6 +91,7 @@ class EnvironmentAdmin(admin.ModelAdmin):
     list_filter = ["workspace", "workspace__team"]
     search_fields = ["name", "description"]
     list_select_related = ("workspace",)
+    form = EnvironmentAdminForm
 
     def has_delete_permission(self, request, obj=None):
         if obj:
@@ -99,6 +106,7 @@ class IntegrationAdmin(admin.ModelAdmin):
     list_filter = ["workspace", "workspace__team"]
     search_fields = ["name", "description"]
     list_select_related = ("workspace",)
+    form = IntegrationAdminForm
 
 
 @admin.register(FunctionFile)
@@ -108,6 +116,7 @@ class FunctionFileAdmin(admin.ModelAdmin):
     list_filter = ["workspace", "workspace__team"]
     search_fields = ["name", "description"]
     list_select_related = ("workspace",)
+    form = FunctionFileAdminForm
 
 
 @admin.register(Flow)
@@ -117,6 +126,7 @@ class FlowAdmin(admin.ModelAdmin):
     list_filter = ["workspace", "workspace__team"]
     search_fields = ["name", "description"]
     list_select_related = ("workspace",)
+    form = FlowAdminForm
 
 
 @admin.register(Route)

@@ -23,11 +23,11 @@ django-username-email = {git = "https://github.com/wdeoliveirawill/django-userna
 django-select2 = "*"
 django-3-jet = "*"
 requests = "*"
+django-ace = "*"
 
 [dev-packages]
 flake8 = "*"
 ipdb = "*"
-black = "*"
 pylint = "*"
 
 [requires]
