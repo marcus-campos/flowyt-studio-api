@@ -125,7 +125,7 @@ class Release(AutoCreatedUpdatedMixin):
     published = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ["updated_at"]
+        ordering = ["-created_at"]
         unique_together = ["name", "workspace"]
 
     def __str__(self):
