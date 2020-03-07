@@ -2,11 +2,12 @@ import copy
 import json
 import os
 import shutil
+from operator import itemgetter
 
+from apps.workspaces.actions import ACTIONS
 from django.utils.text import slugify
 from orchestryzi_api.settings import BASE_DIR
 from utils.zipdir import zipdir
-from operator import itemgetter
 
 
 class ReleaseBuilder:
@@ -145,10 +146,8 @@ class ConfigTranslation:
 
         return settings
 
-
 class FlowTranslation:
     flow_model = {"id": "", "name": "", "pipeline": []}
-    action_model = {"id": "", "action": "", "data": {}, "next_action": ""}
 
     def translate(self, flow_queryset):
         flow_data = flow_queryset.flow_layout if flow_queryset.flow_layout else {}
@@ -164,50 +163,79 @@ class FlowTranslation:
         for key, value in flow_nodes.items():
             node_id = key
 
-            _model = copy.deepcopy(self.action_model)
-            _model["id"] = node_id
-            _model["action"] = value["properties"]["name"]
-
             # Get data
-            for index in range(len(flow_node_data)):
-                if flow_node_data[index]["id"] == node_id:
-                    for key, value in flow_node_data[index]["data"].items():
-                        try:
-                            _model["data"] = json.loads(flow_node_data[index]["data"][key])
-                        except:
-                            _model["data"] = flow_node_data[index]["data"]
+            action_data = self._get_data(node_id, flow_node_data)
 
-                    del flow_node_data[index]
-                    break
-
+            # Get action
+            action_name = value["properties"]["name"]
+            action = ACTIONS[action_name](action_data)
+            action.id = node_id
+            
             # Get links
-            _links = []
-            _aux_flow_links = copy.deepcopy(flow_links)
-            for key, value in flow_links.items():
-                if value["from"]["nodeId"] == node_id:
-                    _links.append({"node_id": value["to"]["nodeId"], "port_id": value["from"]["portId"]})
-                    del _aux_flow_links[key]
-            flow_links = _aux_flow_links
-            _links = sorted(_links, key=itemgetter("port_id"))
+            flow_links, links = self._get_links(node_id, flow_links)
 
-            # Add links to model
-            if _links:
-                if _model["action"] in ["request", "validation"]:
-                    if len(_links) < 2:
-                        return False
-                    _model["data"]["next_action_success"] = _links[0]["node_id"]
-                    _model["data"]["next_action_fail"] = _links[1]["node_id"]
-                    _model["next_action"] = "${pipeline.next_action}"
-                elif _model["action"] in ["if", "switch"]:
-                    for key, value in enumerate(_model["data"]["conditions"]):
-                        _model["data"]["conditions"][key]["next_action"] = _links[key]["node_id"]
-                    _model["data"]["next_action_else"] = _links[(len(_links) - 1)]["node_id"]
-                    _model["next_action"] = "${pipeline.next_action}"
-                elif _model["action"] in ["response", "jump"]:
-                    _model["next_action"] = None
-                else:
-                    _model["next_action"] = _links[0]["node_id"]
+            # Add links to action
+            flow = self._set_links(action, flow, links)
 
-                flow["pipeline"].append(_model)
+        return flow
+
+    def _get_data(self, node_id, flow_node_data):
+        data = {}
+        for index in range(len(flow_node_data)):
+            if flow_node_data[index]["id"] == node_id:
+                for key, value in flow_node_data[index]["data"].items():
+                    try:
+                        data[key] = json.loads(flow_node_data[index]["data"][key])
+                    except:
+                        data[key] = flow_node_data[index]["data"][key]
+
+                del flow_node_data[index]
+                break
+
+        return data
+
+    def _get_links(self, node_id, flow_links):
+        links = []
+        aux_flow_links = copy.deepcopy(flow_links)
+
+        for key, value in flow_links.items():
+            if value["from"]["nodeId"] == node_id:
+                links.append({"node_id": value["to"]["nodeId"], "port_id": value["from"]["portId"]})
+                del aux_flow_links[key]
+        flow_links = aux_flow_links
+        links = sorted(links, key=itemgetter("port_id"))
+
+        return flow_links, links
+
+    def _set_links(self, action, flow, links):
+        if not links:
+            action.next_action = None
+            flow["pipeline"].append(action.__dict__)
+            return flow
+            
+        if action.action in ["request", "validation"]:
+            if len(links) < 2:
+                raise "Action {0} needs at least 2 links".format(action.action)
+
+            action.data["next_action_success"] = links[0]["node_id"]
+            action.data["next_action_fail"] = links[1]["node_id"]
+            action.next_action = "${pipeline.next_action}"
+
+        elif action.action in ["if", "switch"]:
+            if len(links) < 2:
+                raise "Action {0} needs at least 2 links".format(action.action)
+                
+            for key, value in enumerate(action.data["conditions"]):
+                action.data["conditions"][key]["next_action"] = links[key]["node_id"]
+            action.data["next_action_else"] = links[(len(links) - 1)]["node_id"]
+            action.next_action = "${pipeline.next_action}"
+            
+        elif action.action in ["response", "jump"]:
+            action.next_action = None
+
+        else:
+            action.next_action = links[0]["node_id"]
+
+        flow["pipeline"].append(action.__dict__)
 
         return flow
