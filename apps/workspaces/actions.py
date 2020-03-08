@@ -16,6 +16,7 @@ class Action(BaseAction):
 
 class FlowVar(BaseAction):
     def __init__(self, data):
+        self.action = "flow_var"
         self.data = data
 
 class WorkspaceVar(BaseAction):
