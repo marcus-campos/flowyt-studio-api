@@ -186,10 +186,12 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Environment Name", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
     environment_variables = JSONField("Environment variables", null=True, blank=True, help_text="(Opcional)")
-
+    debug = models.BooleanField(default=False, help_text="(Default false)")
+    safe_mode = JSONField("Environment variables", default=dict(enable=True, safe_time=10), null=True, blank=True, help_text="(Opcional)")
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     environment = models.ForeignKey("Environment", null=True, blank=True, on_delete=models.SET_NULL)
+    
 
     class Meta:
         ordering = ["created_at"]
