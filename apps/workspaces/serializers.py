@@ -122,7 +122,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
         )
         # Environments
         self._create_release_copies(
-            Environment, EnvironmentRelease, ["environment_variables"],
+            Environment, EnvironmentRelease, ["environment_variables", "debug", "safe_mode"],
         )
         # Integrations
         self._create_release_copies(
