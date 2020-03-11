@@ -3,6 +3,7 @@ import json
 import os
 import shutil
 from operator import itemgetter
+import io
 
 from apps.workspaces.actions import ACTIONS
 from django.utils.text import slugify
@@ -98,14 +99,14 @@ class ReleaseBuilder:
 
             projects[index]["project_folder"] = project_folder
 
-            zipfile = open("{0}.zip".format(project_folder), "rb", encoding="utf8")
+            zipfile = io.open("{0}.zip".format(project_folder), "rb")
             projects_zips.append({"name": project["name"], "file": zipfile})
 
         return {"projects_zips": projects_zips, "projects": projects}
 
     def _create_project_file(self, project, project_folder, key, extension):
         if key == "routes":
-            file = open("{0}/{1}.{2}".format(project_folder, key, extension), "w+",)
+            file = io.open("{0}/{1}.{2}".format(project_folder, key, extension), "w+", encoding="utf8")
             file.write(json.dumps(project["data"]["routes"], ensure_ascii=False))
             file.close()
             return
@@ -115,7 +116,7 @@ class ReleaseBuilder:
         os.makedirs(project_folder + "/{0}".format(key))
 
         for item in project["data"][key]:
-            file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+",)
+            file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+", encoding="utf8")
             file.write(item["data"])
             file.close()
 
