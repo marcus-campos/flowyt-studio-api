@@ -60,6 +60,12 @@ class EnvironmentSerializer(serializers.ModelSerializer):
         model = Environment
         exclude = ["can_delete"]
 
+    def create(self, validated_data):
+        validated_data["safe_mode"] = json.dumps({"enable": True, "safe_time": 10})
+        workspace = super(EnvironmentSerializer, self).create(validated_data)
+
+        return workspace
+
 
 class IntegrationSerializer(serializers.ModelSerializer):
     description = serializers.CharField(required=False)
