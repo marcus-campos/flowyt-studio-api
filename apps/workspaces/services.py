@@ -146,6 +146,7 @@ class ConfigTranslation:
 
         return settings
 
+
 class FlowTranslation:
     flow_model = {"id": "", "name": "", "pipeline": []}
 
@@ -170,7 +171,7 @@ class FlowTranslation:
             action_name = value["properties"]["name"]
             action = ACTIONS[action_name](action_data)
             action.id = node_id
-            
+
             # Get links
             flow_links, links = self._get_links(node_id, flow_links)
 
@@ -212,7 +213,7 @@ class FlowTranslation:
             action.next_action = None
             flow["pipeline"].append(action.__dict__)
             return flow
-            
+
         if action.action in ["request", "validation"]:
             if len(links) < 2:
                 raise "Action {0} needs at least 2 links".format(action.action)
@@ -224,12 +225,12 @@ class FlowTranslation:
         elif action.action in ["if", "switch"]:
             if len(links) < 2:
                 raise "Action {0} needs at least 2 links".format(action.action)
-                
+
             for key, value in enumerate(action.data["conditions"]):
                 action.data["conditions"][key]["next_action"] = links[key]["node_id"]
             action.data["next_action_else"] = links[(len(links) - 1)]["node_id"]
             action.next_action = "${pipeline.next_action}"
-            
+
         elif action.action in ["response", "jump"]:
             action.next_action = None
 

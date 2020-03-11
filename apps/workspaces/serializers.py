@@ -1,3 +1,5 @@
+import json
+
 from apps.hosts.models import Host
 from apps.teams.models import Team
 from apps.workspaces.models import (
@@ -44,6 +46,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         debug_env.workspace = workspace
         debug_env.can_delete = False
         debug_env.debug = True
+        debug_env.safe_mode = json.dumps({"enable": True, "safe_time": 10})
         debug_env.save()
 
         return workspace
