@@ -133,13 +133,20 @@ class ConfigTranslation:
     def settings_translate(self, release, workspace, environment, integrations):
         settings = copy.deepcopy(self.settings_model)
 
+        safe_mode = environment.environment.safe_mode if environment.environment.safe_mode else "{}"
+        environment_variables = (
+            environment.environment.environment_variables
+            if environment.environment.environment_variables
+            else "{}"
+        )
+
         settings["id"] = str(workspace.id)
         settings["name"] = workspace.name
         settings["debug"] = environment.environment.debug
-        settings["safe_mode"] = environment.environment.safe_mode
+        settings["safe_mode"] = json.loads(safe_mode)
         settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
-        settings["env"] = json.loads(environment.environment_variables)
+        settings["env"] = json.loads(environment_variables)
 
         for integration in integrations:
             settings["integrations"][integration.name] = integration.integration_variables
