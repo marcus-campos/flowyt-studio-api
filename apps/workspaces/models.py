@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -41,7 +43,7 @@ class Environment(AutoCreatedUpdatedMixin):
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
     environment_variables = JSONField("Environment variables", null=True, blank=True, help_text="(Opcional)")
     debug = models.BooleanField(default=False, help_text="(Default false)")
-    safe_mode = JSONField("Environment variables", default=dict(enable=True, safe_time=10), null=True, blank=True, help_text="(Opcional)")
+    safe_mode = JSONField("Environment variables", default=json.dumps(dict(enable=True, safe_time=10)), null=True, blank=True, help_text="(Opcional)")
     can_delete = models.BooleanField(default=True)
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
 
@@ -187,7 +189,7 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
     environment_variables = JSONField("Environment variables", null=True, blank=True, help_text="(Opcional)")
     debug = models.BooleanField(default=False, help_text="(Default false)")
-    safe_mode = JSONField("Environment variables", default=dict(enable=True, safe_time=10), null=True, blank=True, help_text="(Opcional)")
+    safe_mode = JSONField("Environment variables", default=json.dumps(dict(enable=True, safe_time=10)), null=True, blank=True, help_text="(Opcional)")
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey("WorkspaceRelease", on_delete=models.CASCADE)
     environment = models.ForeignKey("Environment", null=True, blank=True, on_delete=models.SET_NULL)
