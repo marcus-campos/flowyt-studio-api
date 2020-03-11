@@ -48,7 +48,7 @@ class ReleaseBuilder:
         )
 
         project["config"].append(
-            {"name": "settings", "data": json.dumps(config_settings),}
+            {"name": "settings", "data": json.dumps(config_settings, ensure_ascii=False),}
         )
 
         return project
@@ -60,7 +60,7 @@ class ReleaseBuilder:
             translated_flow = FlowTranslation().translate(flow)
 
             flows_list.append(
-                {"name": slug, "data": json.dumps(translated_flow),}
+                {"name": slug, "data": json.dumps(translated_flow, ensure_ascii=False),}
             )
 
         project["flows"] = flows_list
@@ -98,15 +98,15 @@ class ReleaseBuilder:
 
             projects[index]["project_folder"] = project_folder
 
-            zipfile = open("{0}.zip".format(project_folder), "rb")
+            zipfile = open("{0}.zip".format(project_folder), "rb", encoding="utf8")
             projects_zips.append({"name": project["name"], "file": zipfile})
 
         return {"projects_zips": projects_zips, "projects": projects}
 
     def _create_project_file(self, project, project_folder, key, extension):
         if key == "routes":
-            file = open("{0}/{1}.{2}".format(project_folder, key, extension), "w+")
-            file.write(json.dumps(project["data"]["routes"]))
+            file = open("{0}/{1}.{2}".format(project_folder, key, extension), "w+",)
+            file.write(json.dumps(project["data"]["routes"], ensure_ascii=False))
             file.close()
             return
 

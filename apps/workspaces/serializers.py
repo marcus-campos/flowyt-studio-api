@@ -46,7 +46,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         debug_env.workspace = workspace
         debug_env.can_delete = False
         debug_env.debug = True
-        debug_env.safe_mode = json.dumps({"enable": True, "safe_time": 10})
+        debug_env.safe_mode = json.dumps({"enable": True, "safe_time": 10}, ensure_ascii=False)
         debug_env.save()
 
         return workspace
@@ -61,7 +61,7 @@ class EnvironmentSerializer(serializers.ModelSerializer):
         exclude = ["can_delete"]
 
     def create(self, validated_data):
-        validated_data["safe_mode"] = json.dumps({"enable": True, "safe_time": 10})
+        validated_data["safe_mode"] = json.dumps({"enable": True, "safe_time": 10}, ensure_ascii=False)
         workspace = super(EnvironmentSerializer, self).create(validated_data)
 
         return workspace
