@@ -28,6 +28,7 @@ class Team(AutoCreatedUpdatedMixin):
         User, related_name="owned_teams", null=True, blank=False, on_delete=models.SET_NULL,
     )
     members = models.ManyToManyField(User, related_name="teams")
+    can_delete = models.BooleanField(default=True)
     objects = TeamManager()
 
     class Meta:

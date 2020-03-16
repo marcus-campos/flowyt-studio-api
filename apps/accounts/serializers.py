@@ -98,6 +98,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             personal_team.name = "Personal"
             personal_team.description = "Your personal team"
             personal_team.owner = user
+            personal_team.can_delete = False
             personal_team.members.set([user])
             personal_team.save()
 

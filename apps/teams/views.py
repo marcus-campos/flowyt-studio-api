@@ -7,6 +7,8 @@ from . import serializers
 from .models import Team, TeamInvitation
 from apps.accounts.models import UserProfile
 from .permissions import IsTeamOwnerPermission
+from rest_framework.exceptions import PermissionDenied
+
 
 
 class ListCreateTeamAPIView(generics.ListCreateAPIView):
@@ -32,6 +34,11 @@ class RetriveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveD
     permission_classes = (IsTeamOwnerPermission,)
     serializer_class = serializers.TeamSerializer
     queryset = Team.objects.all()
+
+    def perform_destroy(self, instance):
+        if not instance.can_delete:
+            raise PermissionDenied(detail="The default Personal team cant be removed")
+        return super(RetriveDestroyUpdateTeamAPIView, self).perform_destroy(instance)
 
     def get(self, request, *args, **kwargs):
         team = self.queryset.get(pk=str(kwargs["pk"]))
