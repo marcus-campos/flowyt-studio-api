@@ -5,6 +5,7 @@ from rest_framework.response import Response
 
 from . import serializers
 from .models import Team, TeamInvitation
+from apps.accounts.models import UserProfile
 from .permissions import IsTeamOwnerPermission
 
 
@@ -31,6 +32,20 @@ class RetriveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveD
     permission_classes = (IsTeamOwnerPermission,)
     serializer_class = serializers.TeamSerializer
     queryset = Team.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        team = self.queryset.get(pk=str(kwargs["pk"]))
+        serializer = self.get_serializer(team)
+        for index, value in enumerate(team.members.all()):
+            member = {
+                "id": str(value.id),
+                "first_name": value.first_name,
+                "last_name": value.last_name,
+                "is_owner": True if str(value.id) == str(team.owner.id) else False,
+                "email": value.email
+            }
+            serializer.data["members"][index] = member
+        return Response(serializer.data)
 
 
 class InviteToTeamAPIView(generics.CreateAPIView):
