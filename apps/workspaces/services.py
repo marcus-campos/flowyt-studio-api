@@ -116,7 +116,9 @@ class ReleaseBuilder:
         os.makedirs(project_folder + "/{0}".format(key))
 
         for item in project["data"][key]:
-            file = open("{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+", encoding="utf8")
+            file = open(
+                "{0}/{1}/{2}.{3}".format(project_folder, key, item["name"], extension), "w+", encoding="utf8"
+            )
             file.write(item["data"])
             file.close()
 

@@ -95,6 +95,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
     invited_by = models.ForeignKey(
         User, related_name="invitations_sent", null=True, blank=False, on_delete=models.SET_NULL,
     )
+    team = models.ForeignKey("teams.Team", null=True, blank=True, on_delete=models.PROTECT)
     email = models.EmailField()
     code = models.CharField(max_length=25, default=generate_invite_code)
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
@@ -117,7 +118,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
             "site_name": getattr(settings, "SITE_NAME", None),
             "code": self.code,
             "invited_by": self.invited_by,
-            "team": self.invited_by.team.last(),
+            "team": self.team,
             "email": self.email,
         }
 

@@ -10,7 +10,6 @@ from .permissions import IsTeamOwnerPermission
 from rest_framework.exceptions import PermissionDenied
 
 
-
 class ListCreateTeamAPIView(generics.ListCreateAPIView):
 
     permission_classes = (permissions.IsAuthenticated,)
@@ -28,6 +27,7 @@ class ListCreateTeamAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return self.queryset.filter(members__in=[self.request.user])
+
 
 class RetriveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveDestroyAPIView):
 
@@ -49,7 +49,7 @@ class RetriveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveD
                 "first_name": value.first_name,
                 "last_name": value.last_name,
                 "is_owner": True if str(value.id) == str(team.owner.id) else False,
-                "email": value.email
+                "email": value.email,
             }
             serializer.data["members"][index] = member
         return Response(serializer.data)
@@ -67,13 +67,16 @@ class InviteToTeamAPIView(generics.CreateAPIView):
         )
         if serializer.is_valid(raise_exception=True):
             email_ids = serializer.validated_data.get("emails")
-            self.create_invitations(email_ids=email_ids, invited_by=request.user)
+            team = Team.objects.get(pk=kwargs["pk"])
+            self.create_invitations(email_ids=email_ids, invited_by=request.user, team=team)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def create_invitations(self, email_ids, invited_by):
-        invitations = [TeamInvitation(email=email_id, invited_by=invited_by) for email_id in email_ids]
+    def create_invitations(self, email_ids, invited_by, team):
+        invitations = [
+            TeamInvitation(email=email_id, invited_by=invited_by, team=team) for email_id in email_ids
+        ]
         invitations = TeamInvitation.objects.bulk_create(invitations)
         self.send_email_invites(invitations)
 

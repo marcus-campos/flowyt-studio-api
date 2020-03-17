@@ -6,17 +6,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('teams', '0003_teaminvitation_can_delete'),
+        ("teams", "0003_teaminvitation_can_delete"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='teaminvitation',
-            name='can_delete',
-        ),
-        migrations.AddField(
-            model_name='team',
-            name='can_delete',
-            field=models.BooleanField(default=True),
-        ),
+        migrations.RemoveField(model_name="teaminvitation", name="can_delete",),
+        migrations.AddField(model_name="team", name="can_delete", field=models.BooleanField(default=True),),
     ]

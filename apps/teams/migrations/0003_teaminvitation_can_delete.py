@@ -6,13 +6,11 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('teams', '0002_auto_20200303_0159'),
+        ("teams", "0002_auto_20200303_0159"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='teaminvitation',
-            name='can_delete',
-            field=models.BooleanField(default=True),
+            model_name="teaminvitation", name="can_delete", field=models.BooleanField(default=True),
         ),
     ]
