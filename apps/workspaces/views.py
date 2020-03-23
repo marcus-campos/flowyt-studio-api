@@ -14,6 +14,7 @@ from apps.workspaces.models import (
     Route,
     Workspace,
     WorkspaceRelease,
+    Language,
 )
 from apps.workspaces.permissions import IsCreatorPermission, IsInTeamPermission
 from apps.workspaces.serializers import (
@@ -25,6 +26,7 @@ from apps.workspaces.serializers import (
     ReleaseSerializer,
     RouteSerializer,
     WorkspaceSerializer,
+    LanguageSerializer,
 )
 from apps.workspaces.services import ConfigTranslation, FlowTranslation, ReleaseBuilder
 from django.core import serializers
@@ -36,6 +38,12 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from utils.models import to_dict
 from utils.redis import redis
+
+
+class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Language.objects.filter(active=True)
+    serializer_class = LanguageSerializer
+
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
     queryset = Workspace.objects.all()
@@ -162,7 +170,7 @@ class ReleasePublishView(generics.GenericAPIView):
 
         # Response
         response = {"msg": "The projects were published successfully!"}
-        
+
         if WORKSPACE_PUBLISH_MODE == "upload":
             # Delete release files
             self._delete_release_files(projects_to_publish)
@@ -172,7 +180,7 @@ class ReleasePublishView(generics.GenericAPIView):
                 "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
                 for project in projects_to_publish["projects"]
             ]
-            
+
             response = {"msg": "The projects were published successfully!", "urls": urls}
 
         # except:
@@ -209,7 +217,9 @@ class ReleasePublishView(generics.GenericAPIView):
                 if not has_errors:
                     result = requests.post(
                         url_publish,
-                        files={"workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])},
+                        files={
+                            "workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])
+                        },
                         headers={"X-Orchestryzi-Token": host.secret_token},
                     )
 
@@ -220,7 +230,7 @@ class ReleasePublishView(generics.GenericAPIView):
 
         elif WORKSPACE_PUBLISH_MODE == "redis":
             for project in projects:
-                project_key = project["name"] #TODO: Set subdomain
+                project_key = project["name"]  # TODO: Set subdomain
                 parsed_data = self._transform_redis(project["data"])
                 redis.set(project_key, json.dumps(parsed_data))
 
@@ -236,13 +246,7 @@ class ReleasePublishView(generics.GenericAPIView):
             return False
 
     def _transform_redis(self, project):
-        projects = []
-        model = {
-            "config": {},
-            "flows": {},
-            "functions": {},
-            "routes": []
-        }
+        model = {"config": {}, "flows": {}, "functions": {}, "routes": []}
 
         model["routes"] = project["routes"]
         model["config"] = {config["name"]: json.loads(config["data"]) for config in project["config"]}

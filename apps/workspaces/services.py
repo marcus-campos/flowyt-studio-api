@@ -19,7 +19,7 @@ class ReleaseBuilder:
 
         if WORKSPACE_PUBLISH_MODE == "upload":
             return self._create_and_zip(projects_to_publish)
-        
+
         return projects_to_publish
 
     def _load_projects(self, validated_data, release, workspace, flows, routes, integrations, function_files):

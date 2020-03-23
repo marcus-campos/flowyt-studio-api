@@ -10,6 +10,7 @@ router.register(r"integration", views.IntegrationViewSet)
 router.register(r"function-file", views.FunctionFileViewSet)
 router.register(r"releases", views.ReleaseViewSet)
 router.register(r"routes", views.RouteViewSet)
+router.register(r"languages", views.LanguageViewSet)
 
 
 urlpatterns = [
