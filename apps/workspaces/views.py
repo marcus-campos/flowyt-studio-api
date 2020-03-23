@@ -249,7 +249,7 @@ class ReleasePublishView(generics.GenericAPIView):
             model["routes"] = project["data"]["routes"]
             model["config"] = {config["name"]: json.loads(config["data"]) for config in project["data"]["config"]}
             model["flows"] = {flow["name"]: json.loads(flow["data"]) for flow in project["data"]["flows"]}
-            model["functions"] = project["data"]["functions"]
+            model["functions"] = {function["name"]: function["data"] for function in project["data"]["functions"]}
             
             projects.append({
                 "name": project["name"],
