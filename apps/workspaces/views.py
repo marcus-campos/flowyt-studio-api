@@ -221,7 +221,8 @@ class ReleasePublishView(generics.GenericAPIView):
         elif WORKSPACE_PUBLISH_MODE == "redis":
             for project in projects:
                 project_key = project["name"] #TODO: Set subdomain
-                redis.set(project_key, json.dumps(project["data"]))
+                parsed_data = self._transform_redis(project["data"])
+                redis.set(project_key, json.dumps(parsed_data))
 
         return has_errors
 
@@ -234,26 +235,18 @@ class ReleasePublishView(generics.GenericAPIView):
         except:
             return False
 
-    def _transform_redis(self, projects_to_publish):
+    def _transform_redis(self, project):
         projects = []
-        base_model = {
+        model = {
             "config": {},
             "flows": {},
             "functions": {},
             "routes": []
         }
 
-        for project in projects_to_publish:
-            model = copy.deepcopy(base_model)
+        model["routes"] = project["routes"]
+        model["config"] = {config["name"]: json.loads(config["data"]) for config in project["config"]}
+        model["flows"] = {flow["name"]: json.loads(flow["data"]) for flow in project["flows"]}
+        model["functions"] = project["functions"]
 
-            model["routes"] = project["data"]["routes"]
-            model["config"] = {config["name"]: json.loads(config["data"]) for config in project["data"]["config"]}
-            model["flows"] = {flow["name"]: json.loads(flow["data"]) for flow in project["data"]["flows"]}
-            model["functions"] = project["data"]["function"]
-            
-            projects.append({
-                "name": project["name"],
-                "data": model
-            })
-
-        return projects
+        return model
