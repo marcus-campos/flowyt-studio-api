@@ -14,6 +14,7 @@ from apps.workspaces.models import (
     Route,
     Workspace,
     WorkspaceRelease,
+    Language,
 )
 from apps.workspaces.permissions import IsCreatorPermission, IsInTeamPermission
 from apps.workspaces.serializers import (
@@ -25,6 +26,7 @@ from apps.workspaces.serializers import (
     ReleaseSerializer,
     RouteSerializer,
     WorkspaceSerializer,
+    LanguageSerializer,
 )
 from apps.workspaces.services import ConfigTranslation, FlowTranslation, ReleaseBuilder
 from django.core import serializers
@@ -36,6 +38,11 @@ from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from utils.models import to_dict
 from utils.redis import redis
+
+
+class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Language.objects.filter(active=True)
+    serializer_class = LanguageSerializer
 
 
 class WorkspaceViewSet(viewsets.ModelViewSet):
