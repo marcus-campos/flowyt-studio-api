@@ -10,12 +10,25 @@ from utils.choices import HTTPMethodChoices
 User = get_user_model()
 
 
+class Language(AutoCreatedUpdatedMixin):
+    language = models.CharField("Language", max_length=255)
+    active = models.BooleanField("Active?", default=True)
+
+    class Meta:
+        ordering = ["language"]
+        verbose_name = "Programming Language"
+
+    def __str__(self):
+        return self.language
+
+
 class Workspace(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
     workspace_color = models.CharField("Workspace Color", null=True, blank=True, max_length=7)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     team = models.ForeignKey("teams.Team", on_delete=models.CASCADE)
+    language = models.ForeignKey("Language", on_delete=models.PROTECT, null=True, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -136,6 +149,7 @@ class WorkspaceRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
     workspace_color = models.CharField("Workspace Color", null=True, blank=True, max_length=6)
+    language = models.ForeignKey("Language", on_delete=models.CASCADE, null=True, blank=True)
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace = models.ForeignKey("Workspace", null=True, blank=True, on_delete=models.SET_NULL)

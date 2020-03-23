@@ -37,6 +37,7 @@ from rest_framework.exceptions import PermissionDenied
 from utils.models import to_dict
 from utils.redis import redis
 
+
 class WorkspaceViewSet(viewsets.ModelViewSet):
     queryset = Workspace.objects.all()
     serializer_class = WorkspaceSerializer
@@ -162,7 +163,7 @@ class ReleasePublishView(generics.GenericAPIView):
 
         # Response
         response = {"msg": "The projects were published successfully!"}
-        
+
         if WORKSPACE_PUBLISH_MODE == "upload":
             # Delete release files
             self._delete_release_files(projects_to_publish)
@@ -172,7 +173,7 @@ class ReleasePublishView(generics.GenericAPIView):
                 "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
                 for project in projects_to_publish["projects"]
             ]
-            
+
             response = {"msg": "The projects were published successfully!", "urls": urls}
 
         # except:
@@ -209,7 +210,9 @@ class ReleasePublishView(generics.GenericAPIView):
                 if not has_errors:
                     result = requests.post(
                         url_publish,
-                        files={"workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])},
+                        files={
+                            "workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])
+                        },
                         headers={"X-Orchestryzi-Token": host.secret_token},
                     )
 
@@ -220,7 +223,7 @@ class ReleasePublishView(generics.GenericAPIView):
 
         elif WORKSPACE_PUBLISH_MODE == "redis":
             for project in projects:
-                project_key = project["name"] #TODO: Set subdomain
+                project_key = project["name"]  # TODO: Set subdomain
                 redis.set(project_key, json.dumps(project["data"]))
 
         return has_errors
@@ -236,24 +239,18 @@ class ReleasePublishView(generics.GenericAPIView):
 
     def _transform_redis(self, projects_to_publish):
         projects = []
-        base_model = {
-            "config": {},
-            "flows": {},
-            "functions": {},
-            "routes": []
-        }
+        base_model = {"config": {}, "flows": {}, "functions": {}, "routes": []}
 
         for project in projects_to_publish:
             model = copy.deepcopy(base_model)
 
             model["routes"] = project["data"]["routes"]
-            model["config"] = {config["name"]: json.loads(config["data"]) for config in project["data"]["config"]}
+            model["config"] = {
+                config["name"]: json.loads(config["data"]) for config in project["data"]["config"]
+            }
             model["flows"] = {flow["name"]: json.loads(flow["data"]) for flow in project["data"]["flows"]}
             model["functions"] = project["data"]["function"]
-            
-            projects.append({
-                "name": project["name"],
-                "data": model
-            })
+
+            projects.append({"name": project["name"], "data": model})
 
         return projects
