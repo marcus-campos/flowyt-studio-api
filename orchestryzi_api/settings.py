@@ -205,3 +205,12 @@ JET_SIDE_MENU_COMPACT = True
 
 django_heroku.settings(locals())
 del DATABASES["default"]["OPTIONS"]["sslmode"]
+
+WORKSPACE_PUBLISH_MODE = config("WORKSPACE_PUBLISH_MODE", default="redis", cast=str)  # redis, upload
+
+REDIS = {
+    "HOST": config("REDIS_HOST", cast=str, default="127.0.0.1"),
+    "PORT": config("REDIS_PORT", cast=int, default=6379),
+    "PASSWORD": config("REDIS_PASSWORD", cast=str, default=""),
+    "DB": config("REDIS_DB", cast=int, default=0),
+}

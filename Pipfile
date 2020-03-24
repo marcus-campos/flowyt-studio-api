@@ -24,6 +24,7 @@ django-select2 = "*"
 django-3-jet = "*"
 requests = "*"
 django-ace = "*"
+redis = "*"
 
 [dev-packages]
 flake8 = "*"

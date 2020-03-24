@@ -1,13 +1,13 @@
 import copy
+import io
 import json
 import os
 import shutil
 from operator import itemgetter
-import io
 
 from apps.workspaces.actions import ACTIONS
 from django.utils.text import slugify
-from orchestryzi_api.settings import BASE_DIR
+from orchestryzi_api.settings import BASE_DIR, WORKSPACE_PUBLISH_MODE
 from utils.zipdir import zipdir
 
 
@@ -16,7 +16,10 @@ class ReleaseBuilder:
         projects_to_publish = self._load_projects(
             validated_data, release, workspace, flows, routes, integrations, function_files
         )
-        projects_to_publish = self._create_and_zip(projects_to_publish)
+
+        if WORKSPACE_PUBLISH_MODE == "upload":
+            return self._create_and_zip(projects_to_publish)
+
         return projects_to_publish
 
     def _load_projects(self, validated_data, release, workspace, flows, routes, integrations, function_files):

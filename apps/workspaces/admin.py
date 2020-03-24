@@ -22,6 +22,7 @@ from apps.workspaces.models import (
     FunctionFileRelease,
     IntegrationRelease,
     EnvironmentRelease,
+    Language,
 )
 
 
@@ -55,12 +56,20 @@ class FunctionFileInline(CompactInline):
     extra = 0
 
 
+@admin.register(Language)
+class LanguageAdmin(admin.ModelAdmin):
+    list_display = ["active", "language"]
+    list_display_links = list_display
+    list_filter = ["active"]
+    search_fields = ["language"]
+
+
 @admin.register(Workspace)
 class WorkspaceAdmin(admin.ModelAdmin):
-    list_display = ["name", "description", "creator", "team", "workspae_color_render"]
-    list_display_links = ["name", "description", "creator", "team"]
-    list_filter = ["creator", "team"]
-    list_select_related = ("creator", "team")
+    list_display = ["language", "name", "description", "creator", "team", "workspae_color_render"]
+    list_display_links = ["language", "name", "description", "creator", "team"]
+    list_filter = ["creator", "team", "language"]
+    list_select_related = ("creator", "team", "language")
     form = WorkspaceAdminForm
     inlines = [
         ReleaseInline,
