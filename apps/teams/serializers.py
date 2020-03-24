@@ -51,7 +51,7 @@ class TeamCreateSerializer(TeamSerializer):
 
 class TeamInvitationCreateSerializer(serializers.Serializer):
 
-    MAXIMUM_EMAILS_ALLOWED = 5
+    MAXIMUM_EMAILS_ALLOWED = 1000
 
     emails = serializers.ListField(write_only=True)
 
@@ -77,6 +77,28 @@ class TeamInvitationCreateSerializer(serializers.Serializer):
                     "One or more of the email ID's provided is already associated with accounts. (%s)"
                     % ",".join(email_ids_existing)
                 )
+            return data
+
+        raise serializers.ValidationError("Operation not allowed.")
+
+
+class TeamRemoveMemberSerializer(serializers.Serializer):
+
+    email = serializers.EmailField()
+
+    def validate(self, data):
+        email = data.get("email")
+        team_pk = self.context.get("team_pk")
+        user = self.context.get("user")
+
+        try:
+            team = Team.objects.get(pk=team_pk)
+        except Team.DoesNotExist:
+            raise serializers.ValidationError("Team does not exist.")
+
+        if team.has_invite_permissions(user):
+            if team.owner.email == email:
+                raise serializers.ValidationError("You cant remove owner from members list")
             return data
 
         raise serializers.ValidationError("Operation not allowed.")

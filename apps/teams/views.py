@@ -1,13 +1,13 @@
 from django.contrib.sites.shortcuts import get_current_site
-from django.db.models import Q
-from rest_framework import generics, permissions, status, mixins
+from rest_framework import generics, permissions, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from . import serializers
 from .models import Team, TeamInvitation
-from apps.accounts.models import UserProfile
 from .permissions import IsTeamOwnerPermission
-from rest_framework.exceptions import PermissionDenied
+from .serializers import TeamSerializer
+from ..accounts.models import UserProfile
 
 
 class ListCreateTeamAPIView(generics.ListCreateAPIView):
@@ -84,3 +84,37 @@ class InviteToTeamAPIView(generics.CreateAPIView):
         # Sending email expected to be done asynchronously in production environment.
         for invitation in invitations:
             invitation.send_email_invite(get_current_site(self.request))
+
+
+class RemoveFromTeamAPIView(generics.CreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.TeamRemoveMemberSerializer
+    queryset = Team.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(
+            data=request.data, context={"user": request.user, "team_pk": kwargs["pk"]}
+        )
+        if serializer.is_valid(raise_exception=True):
+            email = serializer.validated_data.get("email")
+            team = Team.objects.get(pk=kwargs["pk"])
+            team = self.remove_member(email, team)
+            team_serializer = TeamSerializer(instance=team)
+            return Response(team_serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def remove_member(self, email, team):
+        try:
+            profile = UserProfile.objects.get(user__email=email)
+            team.members.remove(profile.user)
+        except:
+            pass
+
+        TeamInvitation.objects.filter(team=team, email=email).update(status=TeamInvitation.REMOVED)
+        return team
+
+    # def send_email_invites(self, invitations):
+    #     # Sending email expected to be done asynchronously in production environment.
+    #     for invitation in invitations:
+    #         invitation.send_email_invite(get_current_site(self.request))

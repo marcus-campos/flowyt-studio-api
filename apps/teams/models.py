@@ -84,17 +84,20 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
     ACCEPTED = 1
     DECLINED = 2
     EXPIRED = 4
+    REMOVED = 5
 
     PENDING_TEXT = "PENDING"
     ACCEPTED_TEXT = "ACCEPTED"
     DECLINED_TEXT = "DECLINED"
     EXPIRED_TEXT = "EXPIRED"
+    REMOVED_TEXT = "REMOVED"
 
     STATUS_DICT = {
         PENDING: PENDING_TEXT,
         ACCEPTED: ACCEPTED_TEXT,
         DECLINED: DECLINED_TEXT,
         EXPIRED: EXPIRED_TEXT,
+        REMOVED: REMOVED_TEXT,
     }
 
     STATUS_CHOICES = (
@@ -102,6 +105,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
         (ACCEPTED, ACCEPTED_TEXT),
         (DECLINED, DECLINED_TEXT),
         (EXPIRED, EXPIRED_TEXT),
+        (REMOVED, REMOVED_TEXT),
     )
 
     invited_by = models.ForeignKey(
