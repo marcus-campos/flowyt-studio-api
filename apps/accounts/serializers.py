@@ -63,7 +63,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             self.invitation = TeamInvitation.objects.validate_code(email, value)
             if not self.invitation:
                 raise serializers.ValidationError("Invite code is not valid / expired.")
-            self.team = self.invitation.invited_by.team.last()
+            self.team = self.invitation.team
         return value
 
     def create(self, validated_data):
