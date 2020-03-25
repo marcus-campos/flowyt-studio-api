@@ -35,7 +35,7 @@ from apps.workspaces.serializers import (
     LanguageSerializer,
 )
 from apps.workspaces.services import ReleaseBuilder
-from orchestryzi_api.settings import ENGINE_ENDPOINTS, WORKSPACE_PUBLISH_MODE
+from orchestryzi_api.settings import ENGINE_ENDPOINTS, WORKSPACE_PUBLISH_MODE, WORKSPACE_PUBLISH_HOST
 from utils.models import to_dict
 from utils.redis import redis
 
@@ -170,8 +170,15 @@ class ReleasePublishView(generics.GenericAPIView):
 
         # Response
         response = {"msg": "The projects were published successfully!"}
+        
+        if WORKSPACE_PUBLISH_MODE == "redis":
+            urls = [
+                "{0}/{1}".format(WORKSPACE_PUBLISH_HOST, project["name"]) for project in projects_to_publish
+            ]
 
-        if WORKSPACE_PUBLISH_MODE == "upload":
+            response = {"msg": "The projects were published successfully!", "urls": urls}
+
+        elif WORKSPACE_PUBLISH_MODE == "upload":
             # Delete release files
             self._delete_release_files(projects_to_publish)
 
@@ -220,13 +227,13 @@ class ReleasePublishView(generics.GenericAPIView):
                         files={
                             "workpace_zip_file": ("{0}.zip".format(project_zip["name"]), project_zip["file"])
                         },
-                        headers={"X-Orchestryzi-Token": host.secret_token},
+                        headers={"X-Flowyt-Token": host.secret_token},
                     )
 
                     if result.status_code != 200:
                         has_errors = True
 
-            result = requests.get(url_reload, headers={"X-Orchestryzi-Token": host.secret_token})
+            result = requests.get(url_reload, headers={"X-Flowyt-Token": host.secret_token})
 
         elif WORKSPACE_PUBLISH_MODE == "redis":
             for project in projects:
