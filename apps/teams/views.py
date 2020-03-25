@@ -4,6 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
 from . import serializers
+from .builders import SubDomainBuilder
 from .models import Team, TeamInvitation
 from .permissions import IsTeamOwnerPermission
 from .serializers import TeamSerializer
@@ -18,10 +19,17 @@ class ListCreateTeamAPIView(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={"user": request.user})
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             team = serializer.save(owner=request.user)
             team.members.add(request.user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+            builder = SubDomainBuilder()
+            team.sub_domain_url = builder.build_sub_domain_url(team.organization, team.name)
+            team.save()
+
+            team_serializer = TeamSerializer(instance=team)
+
+            return Response(team_serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -29,7 +37,7 @@ class ListCreateTeamAPIView(generics.ListCreateAPIView):
         return self.queryset.filter(members__in=[self.request.user])
 
 
-class RetriveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveDestroyAPIView):
+class RetrieveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveDestroyAPIView):
 
     permission_classes = (IsTeamOwnerPermission,)
     serializer_class = serializers.TeamSerializer
@@ -38,7 +46,7 @@ class RetriveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveD
     def perform_destroy(self, instance):
         if not instance.can_delete:
             raise PermissionDenied(detail="The default Personal team cant be removed")
-        return super(RetriveDestroyUpdateTeamAPIView, self).perform_destroy(instance)
+        return super(RetrieveDestroyUpdateTeamAPIView, self).perform_destroy(instance)
 
     def get(self, request, *args, **kwargs):
         team = self.queryset.get(pk=str(kwargs["pk"]))
@@ -114,7 +122,16 @@ class RemoveFromTeamAPIView(generics.CreateAPIView):
         TeamInvitation.objects.filter(team=team, email=email).update(status=TeamInvitation.REMOVED)
         return team
 
-    # def send_email_invites(self, invitations):
-    #     # Sending email expected to be done asynchronously in production environment.
-    #     for invitation in invitations:
-    #         invitation.send_email_invite(get_current_site(self.request))
+
+class SubDomainURLBuilderView(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = serializers.SubDomainURLBuilderSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.GET)
+        serializer.is_valid(raise_exception=True)
+        builder = SubDomainBuilder()
+        url = builder.build_sub_domain_url(
+            serializer.validated_data["organization"], serializer.validated_data["team"]
+        )
+        return Response({"url": url}, status=status.HTTP_200_OK)
