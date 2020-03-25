@@ -23,13 +23,13 @@ class TeamManager(models.Manager):
 class Team(AutoCreatedUpdatedMixin):
 
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True, help_text="(Opcional)")
     owner = models.ForeignKey(
         User, related_name="owned_teams", null=True, blank=False, on_delete=models.SET_NULL,
     )
     members = models.ManyToManyField(User, related_name="teams")
     can_delete = models.BooleanField(default=True)
-    organization = models.CharField("Organization", default="Personal", max_length=255)
+    organization = models.CharField("Organization", max_length=255)
     sub_domain_url = models.URLField("Sub Domain", max_length=500, db_index=True, unique=True, null=True)
     is_personal = models.BooleanField("Is Personal Team?", default=False)
     objects = TeamManager()
