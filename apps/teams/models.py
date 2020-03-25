@@ -31,6 +31,7 @@ class Team(AutoCreatedUpdatedMixin):
     can_delete = models.BooleanField(default=True)
     organization = models.CharField("Organization", default="Personal", max_length=255)
     sub_domain_url = models.URLField("Sub Domain", max_length=500, db_index=True, unique=True, null=True)
+    is_personal = models.BooleanField("Is Personal Team?", default=True)
     objects = TeamManager()
 
     class Meta:
@@ -41,7 +42,7 @@ class Team(AutoCreatedUpdatedMixin):
         return "{0} - {1} ({2})".format(self.organization, self.name, self.owner.email)
 
     def has_invite_permissions(self, user):
-        if self.owner == user:
+        if not self.is_personal and self.owner == user:
             return True
         return False
 
