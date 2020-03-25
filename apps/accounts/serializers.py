@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.accounts.models import UserProfile
+from apps.teams.builders import SubDomainBuilder
 from apps.teams.models import TeamInvitation, Team
 from apps.teams.serializers import TeamSerializer
 from apps.workspaces.models import Environment
@@ -99,6 +100,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             personal_team.description = "Your personal team"
             personal_team.owner = user
             personal_team.can_delete = False
+            mail_prefix = user.email.split("@")[0]
+            personal_team.sub_domain_url = SubDomainBuilder().build_sub_domain_url(
+                personal_team.organization, mail_prefix
+            )
             personal_team.members.set([user])
             personal_team.save()
 

@@ -1,12 +1,12 @@
 import base64
-import uuid
 import datetime
+import uuid
+
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from utils.email import EmailAsync
@@ -29,6 +29,8 @@ class Team(AutoCreatedUpdatedMixin):
     )
     members = models.ManyToManyField(User, related_name="teams")
     can_delete = models.BooleanField(default=True)
+    organization = models.CharField("Organization", default="Personal", max_length=255)
+    sub_domain_url = models.URLField("Sub Domain", max_length=500, db_index=True, unique=True, null=True)
     objects = TeamManager()
 
     class Meta:
@@ -36,7 +38,7 @@ class Team(AutoCreatedUpdatedMixin):
         verbose_name_plural = "teams"
 
     def __str__(self):
-        return "{0} - {1}".format(self.name, self.owner.email)
+        return "{0} - {1} ({2})".format(self.organization, self.name, self.owner.email)
 
     def has_invite_permissions(self, user):
         if self.owner == user:

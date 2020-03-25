@@ -1,20 +1,19 @@
-import re
-import hashlib
 import datetime
+import hashlib
+import re
 
 from django.conf import settings
-from django.db import models, transaction
 from django.contrib.auth import get_user_model
-from django.utils.crypto import get_random_string
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models, transaction
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.crypto import get_random_string
 
+from utils import encodings
 from utils.email import EmailAsync
 from utils.models import AutoCreatedUpdatedMixin
-from utils import encodings
 
 User = get_user_model()
 

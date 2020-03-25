@@ -100,9 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -118,7 +115,6 @@ LOCALE_PATHS = (PROJECT_DIR / "locale",)
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
 
-# Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 REST_FRAMEWORK = {
@@ -200,6 +196,8 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
 DEFAULT_FROM_EMAIL = "Flowyt <noreply@flowyt.com>"
 
 SITE_NAME = "Flowyt"
+BASE_DOMAIN_URL = "flowyt.com"
+BASE_PROTOCOL = "https://"
 
 JET_SIDE_MENU_COMPACT = True
 

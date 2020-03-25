@@ -1,7 +1,5 @@
-from rest_framework import serializers
-
 from django.contrib.auth import get_user_model
-from rest_framework.serializers import ListSerializer
+from rest_framework import serializers
 
 from apps.hosts.serializers import HostSerializer
 from apps.teams.models import Team, TeamInvitation
@@ -10,12 +8,21 @@ User = get_user_model()
 
 
 class TeamSerializer(serializers.ModelSerializer):
-    team_hosts = HostSerializer(many=True)
+    team_hosts = HostSerializer(many=True, read_only=True)
 
     class Meta:
         model = Team
         fields = "__all__"
-        read_only_fields = ("id", "created_at", "updated_at", "owner", "members")
+        read_only_fields = (
+            "id",
+            "created_at",
+            "updated_at",
+            "owner",
+            "members",
+            "can_delete",
+            "sub_domain_url",
+            "team_hosts",
+        )
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -38,7 +45,16 @@ class TeamCreateSerializer(TeamSerializer):
     class Meta:
         model = Team
         fields = "__all__"
-        read_only_fields = ("id", "created_at", "updated_at", "owner", "members")
+        read_only_fields = (
+            "id",
+            "created_at",
+            "updated_at",
+            "owner",
+            "members",
+            "sub_domain_url",
+            "can_delete",
+            "team_hosts",
+        )
 
     def validate(self, data):
         user = self.context.get("user", None)
@@ -102,3 +118,9 @@ class TeamRemoveMemberSerializer(serializers.Serializer):
             return data
 
         raise serializers.ValidationError("Operation not allowed.")
+
+
+class SubDomainURLBuilderSerializer(serializers.Serializer):
+
+    organization = serializers.CharField()
+    team = serializers.CharField()
