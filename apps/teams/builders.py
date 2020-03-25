@@ -1,6 +1,7 @@
 import random
 
 from django.conf import settings
+from django.utils.text import slugify
 
 from apps.teams.models import Team
 
@@ -22,7 +23,7 @@ class SubDomainBuilder:
     ]
 
     def build_sub_domain_url(self, organization, team):
-        sub_domain = "{0}-{1}".format(organization, team)
+        sub_domain = slugify("{0}-{1}".format(organization, team))
         url = self._build_full_url(sub_domain)
         exists = self._sub_domain_exists(url)
         if exists:
