@@ -96,10 +96,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             TeamInvitation.objects.decline_pending_invitations(email_ids=[validated_data.get("email")])
 
             personal_team = Team()
-            personal_team.name = "Personal"
-            personal_team.description = "Your personal team"
+            personal_team.name = "Private"
+            personal_team.organization = "Personal"
+            personal_team.description = "Your private personal team."
             personal_team.owner = user
             personal_team.can_delete = False
+            personal_team.is_personal = True
             mail_prefix = user.email.split("@")[0]
             personal_team.sub_domain_url = SubDomainBuilder().build_sub_domain_url(
                 personal_team.organization, mail_prefix
