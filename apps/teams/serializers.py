@@ -22,6 +22,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "can_delete",
             "sub_domain_url",
             "team_hosts",
+            "is_personal",
         )
 
     def to_representation(self, instance):
@@ -54,6 +55,7 @@ class TeamCreateSerializer(TeamSerializer):
             "sub_domain_url",
             "can_delete",
             "team_hosts",
+            "is_personal",
         )
 
     def validate(self, data):

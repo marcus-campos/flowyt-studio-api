@@ -31,7 +31,7 @@ class Team(AutoCreatedUpdatedMixin):
     can_delete = models.BooleanField(default=True)
     organization = models.CharField("Organization", default="Personal", max_length=255)
     sub_domain_url = models.URLField("Sub Domain", max_length=500, db_index=True, unique=True, null=True)
-    is_personal = models.BooleanField("Is Personal Team?", default=True)
+    is_personal = models.BooleanField("Is Personal Team?", default=False)
     objects = TeamManager()
 
     class Meta:
