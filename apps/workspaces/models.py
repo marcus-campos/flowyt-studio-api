@@ -11,7 +11,7 @@ User = get_user_model()
 
 
 class Language(AutoCreatedUpdatedMixin):
-    language = models.CharField("Language", max_length=255)
+    language = models.CharField("Language", max_length=100)
     active = models.BooleanField("Active?", default=True)
 
     class Meta:
@@ -148,7 +148,7 @@ class Release(AutoCreatedUpdatedMixin):
 class WorkspaceRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Workspace Name", max_length=255)
     description = models.TextField("Description", null=True, blank=True, help_text="(Opcional)")
-    workspace_color = models.CharField("Workspace Color", null=True, blank=True, max_length=6)
+    workspace_color = models.CharField("Workspace Color", null=True, blank=True, max_length=7)
     language = models.ForeignKey("Language", on_delete=models.CASCADE, null=True, blank=True)
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)

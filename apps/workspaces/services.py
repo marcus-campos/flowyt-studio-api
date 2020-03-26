@@ -42,7 +42,9 @@ class ReleaseBuilder:
 
             # Add project to list
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
-            projects_to_publish.append({"name": slug, "data": project})
+            projects_to_publish.append(
+                {"name": slug, "subdomain": workspace.release.workspace.team.subdomain_url, "data": project}
+            )
 
         return projects_to_publish
 
@@ -150,6 +152,7 @@ class ConfigTranslation:
         settings["name"] = workspace.name
         settings["debug"] = environment.environment.debug
         settings["safe_mode"] = json.loads(safe_mode)
+        settings["development_language"] = workspace.language.language
         settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
         settings["env"] = json.loads(environment_variables)
