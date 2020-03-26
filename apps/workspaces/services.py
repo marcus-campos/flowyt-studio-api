@@ -43,7 +43,7 @@ class ReleaseBuilder:
             # Add project to list
             slug = slugify("{0}-{1}".format(workspace.name, environment.name))
             projects_to_publish.append(
-                {"name": slug, "subdomain": workspace.release.workspace.team.subdomain_url, "data": project}
+                {"name": slug, "subdomain": workspace.release.workspace.team.subdomain, "data": project}
             )
 
         return projects_to_publish

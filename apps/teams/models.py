@@ -30,7 +30,7 @@ class Team(AutoCreatedUpdatedMixin):
     members = models.ManyToManyField(User, related_name="teams")
     can_delete = models.BooleanField(default=True)
     organization = models.CharField("Organization", max_length=255)
-    subdomain_url = models.URLField("Subdomain", max_length=500, db_index=True, unique=True, null=True)
+    subdomain = models.CharField("Subdomain", max_length=500, db_index=True, unique=True, null=True)
     is_personal = models.BooleanField("Is Personal Team?", default=False)
     objects = TeamManager()
 

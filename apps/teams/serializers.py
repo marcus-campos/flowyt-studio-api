@@ -20,7 +20,7 @@ class TeamSerializer(serializers.ModelSerializer):
             "owner",
             "members",
             "can_delete",
-            "subdomain_url",
+            "subdomain",
             "team_hosts",
             "is_personal",
         )
@@ -52,7 +52,7 @@ class TeamCreateSerializer(TeamSerializer):
             "updated_at",
             "owner",
             "members",
-            "subdomain_url",
+            "subdomain",
             "can_delete",
             "team_hosts",
             "is_personal",
