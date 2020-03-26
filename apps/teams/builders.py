@@ -24,39 +24,33 @@ class SubDomainBuilder:
 
     def build_subdomain_url(self, organization, team):
         subdomain = slugify("{0}-{1}".format(organization, team))
-        url = self._build_full_url(subdomain)
-        exists = self._subdomain_exists(url)
+        exists = self._subdomain_exists(subdomain)
         if exists:
-            url = self._random_subdomain(subdomain)
-        return url
+            subdomain = self._random_subdomain(subdomain)
+        return subdomain
 
     def _random_subdomain(self, subdomain):
-        url = self._suffixed_subdomain(subdomain)
-        if not url:
-            url = self._numbered_subdomain(subdomain)
-        return url
-
-    def _build_full_url(self, subdomain):
-        return "{0}{1}.{2}".format(settings.BASE_PROTOCOL, subdomain, settings.BASE_DOMAIN_URL)
+        suffixed_subdomain = self._suffixed_subdomain(subdomain)
+        if not suffixed_subdomain:
+            suffixed_subdomain = self._numbered_subdomain(subdomain)
+        return suffixed_subdomain
 
     def _subdomain_exists(self, url):
-        return Team.objects.filter(subdomain_url=url).exists()
+        return Team.objects.filter(subdomain=url).exists()
 
     def _suffixed_subdomain(self, subdomain):
         suffixes = random.sample(SubDomainBuilder.COMPANY_SUFFIXES, len(SubDomainBuilder.COMPANY_SUFFIXES))
         for suffix in suffixes:
             subdomain_with_suffix = "{0}-{1}".format(subdomain, suffix)
-            url = self._build_full_url(subdomain_with_suffix)
-            exists = self._subdomain_exists(url)
+            exists = self._subdomain_exists(subdomain_with_suffix)
             if not exists:
-                return url
+                return subdomain_with_suffix
         return None
 
     def _numbered_subdomain(self, subdomain):
         count = 1
         while True:
             subdomain_with_suffix = "{0}-{1}".format(subdomain, count)
-            url = self._build_full_url(subdomain_with_suffix)
-            if not self._subdomain_exists(url):
-                return url
+            if not self._subdomain_exists(subdomain_with_suffix):
+                return subdomain_with_suffix
             count += 1

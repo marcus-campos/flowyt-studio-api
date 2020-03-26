@@ -24,7 +24,7 @@ class ListCreateTeamAPIView(generics.ListCreateAPIView):
             team.members.add(request.user)
 
             builder = SubDomainBuilder()
-            team.subdomain_url = builder.build_subdomain_url(team.organization, team.name)
+            team.subdomain = builder.build_subdomain_url(team.organization, team.name)
             team.save()
 
             team_serializer = TeamSerializer(instance=team)
