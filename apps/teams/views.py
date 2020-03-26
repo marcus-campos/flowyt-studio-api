@@ -10,6 +10,8 @@ from .permissions import IsTeamOwnerPermission
 from .serializers import TeamSerializer
 from ..accounts.models import UserProfile
 
+from django.conf import settings
+
 
 class ListCreateTeamAPIView(generics.ListCreateAPIView):
 
@@ -134,4 +136,6 @@ class SubDomainURLBuilderView(generics.ListAPIView):
         url = builder.build_subdomain_url(
             serializer.validated_data["organization"], serializer.validated_data["team"]
         )
-        return Response({"url": url}, status=status.HTTP_200_OK)
+        full_url = "{0}{1}.{2}".format(settings.BASE_PROTOCOL, url, settings.BASE_DOMAIN_URL)
+        result = {"url": full_url}
+        return Response(result, status=status.HTTP_200_OK)

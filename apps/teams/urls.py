@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path("", views.ListCreateTeamAPIView.as_view(), name="team"),
-    path("build-sub-domain", views.SubDomainURLBuilderView.as_view(), name="sub-domain-build-url",),
+    path("build-subdomain", views.SubDomainURLBuilderView.as_view(), name="subdomain-build-url",),
     path(
         "<uuid:pk>/", views.RetrieveDestroyUpdateTeamAPIView.as_view(), name="retrieve-destroy-update-team",
     ),
