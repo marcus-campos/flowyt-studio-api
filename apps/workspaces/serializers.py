@@ -11,13 +11,14 @@ from apps.workspaces.models import (
     FunctionFileRelease,
     Integration,
     IntegrationRelease,
+    Language,
     Release,
     Route,
     RouteRelease,
     Workspace,
     WorkspaceRelease,
-    Language,
 )
+from orchestryzi_api.settings import WORKSPACE_PUBLISH_MODE
 from rest_framework import serializers
 
 
@@ -122,6 +123,7 @@ class ReleaseSerializer(serializers.ModelSerializer):
             description=self.release.workspace.description,
             workspace_color=self.release.workspace.workspace_color,
             release=self.release,
+            language=self.release.workspace.language,
         )
         # Flows
         self._create_release_copies(
@@ -181,7 +183,9 @@ class ReleaseSerializer(serializers.ModelSerializer):
 class PublishSerializer(serializers.Serializer):
     release = serializers.UUIDField(required=True)
     environments = serializers.ListField(required=True)
-    host = serializers.UUIDField(required=True)
+
+    if WORKSPACE_PUBLISH_MODE == "upload":
+        host = serializers.UUIDField(required=True)
 
     def validate(self, data):
         try:
@@ -199,10 +203,11 @@ class PublishSerializer(serializers.Serializer):
                     "The environment {0} does not exist".format(data["environments"][index])
                 )
 
-        try:
-            host = Host.objects.get(pk=str(data["host"]))
-            data["host"] = host
-        except Host.DoesNotExist:
-            raise serializers.ValidationError("This host does not exist")
+        if WORKSPACE_PUBLISH_MODE == "upload":
+            try:
+                host = Host.objects.get(pk=str(data["host"]))
+                data["host"] = host
+            except Host.DoesNotExist:
+                raise serializers.ValidationError("This host does not exist")
 
         return data

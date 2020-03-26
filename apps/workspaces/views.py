@@ -165,13 +165,13 @@ class ReleasePublishView(generics.GenericAPIView):
         # Make
         projects_to_publish = self._make_workspaces(serializer.validated_data)
 
-        # Publish
-        has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
-
         # Response
         response = {"msg": "The projects were published successfully!"}
-        
+
         if WORKSPACE_PUBLISH_MODE == "redis":
+            # Publish
+            has_errors = self._publish(projects_to_publish, None)
+
             urls = [
                 "{0}/{1}".format(WORKSPACE_PUBLISH_HOST, project["name"]) for project in projects_to_publish
             ]
@@ -179,6 +179,9 @@ class ReleasePublishView(generics.GenericAPIView):
             response = {"msg": "The projects were published successfully!", "urls": urls}
 
         elif WORKSPACE_PUBLISH_MODE == "upload":
+            # Publish
+            has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
+
             # Delete release files
             self._delete_release_files(projects_to_publish)
 
@@ -215,11 +218,12 @@ class ReleasePublishView(generics.GenericAPIView):
         )
 
     def _publish(self, projects, host):
-        url_publish = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["publish"])
-        url_reload = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["reload"])
         has_errors = False
 
         if WORKSPACE_PUBLISH_MODE == "upload":
+            url_publish = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["publish"])
+            url_reload = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["reload"])
+
             for project_zip in projects["projects_zips"]:
                 if not has_errors:
                     result = requests.post(
@@ -237,7 +241,11 @@ class ReleasePublishView(generics.GenericAPIView):
 
         elif WORKSPACE_PUBLISH_MODE == "redis":
             for project in projects:
-                project_key = project["name"]  # TODO: Set subdomain
+                if not project["subdomain"] or not project["name"]:
+                    has_errors = True
+                    continue
+
+                project_key = "{0}.{1}".format(project["subdomain"], project["name"])
                 parsed_data = self._transform_redis(project["data"])
                 redis.set(project_key, json.dumps(parsed_data))
 

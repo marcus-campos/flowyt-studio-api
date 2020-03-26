@@ -24,7 +24,7 @@ class ListCreateTeamAPIView(generics.ListCreateAPIView):
             team.members.add(request.user)
 
             builder = SubDomainBuilder()
-            team.sub_domain_url = builder.build_sub_domain_url(team.organization, team.name)
+            team.subdomain_url = builder.build_subdomain_url(team.organization, team.name)
             team.save()
 
             team_serializer = TeamSerializer(instance=team)
@@ -131,7 +131,7 @@ class SubDomainURLBuilderView(generics.ListAPIView):
         serializer = self.serializer_class(data=request.GET)
         serializer.is_valid(raise_exception=True)
         builder = SubDomainBuilder()
-        url = builder.build_sub_domain_url(
+        url = builder.build_subdomain_url(
             serializer.validated_data["organization"], serializer.validated_data["team"]
         )
         return Response({"url": url}, status=status.HTTP_200_OK)
