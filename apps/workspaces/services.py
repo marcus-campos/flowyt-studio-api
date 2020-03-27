@@ -152,7 +152,7 @@ class ConfigTranslation:
         settings["name"] = workspace.name
         settings["debug"] = environment.environment.debug
         settings["safe_mode"] = json.loads(safe_mode)
-        settings["development_language"] = workspace.language.language
+        settings["development_language"] = workspace.language.language if workspace.language else "python"
         settings["release"]["id"] = str(release.id)
         settings["release"]["name"] = release.name
         settings["env"] = json.loads(environment_variables)

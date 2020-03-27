@@ -35,7 +35,7 @@ from apps.workspaces.serializers import (
     LanguageSerializer,
 )
 from apps.workspaces.services import ReleaseBuilder
-from orchestryzi_api.settings import ENGINE_ENDPOINTS, WORKSPACE_PUBLISH_MODE, WORKSPACE_PUBLISH_HOST
+from orchestryzi_api.settings import ENGINE_ENDPOINTS, WORKSPACE_PUBLISH_MODE, WORKSPACE_PUBLISH_HOST, WORKSPACE_SUBDOMAIN_ENABLE
 from utils.models import to_dict
 from utils.redis import redis
 
@@ -171,10 +171,16 @@ class ReleasePublishView(generics.GenericAPIView):
         if WORKSPACE_PUBLISH_MODE == "redis":
             # Publish
             has_errors = self._publish(projects_to_publish, None)
+            split = WORKSPACE_PUBLISH_HOST.split("://")
 
-            urls = [
-                "{0}/{1}".format(WORKSPACE_PUBLISH_HOST, project["name"]) for project in projects_to_publish
-            ]
+            if WORKSPACE_SUBDOMAIN_ENABLE:
+                urls = [
+                    "{0}://{1}.{2}/{3}".format(split[0], project["subdomain"], split[1], project["name"]) for project in projects_to_publish
+                ]
+            else:
+                urls = [
+                    "{0}://{1}/{2}/{3}".format(split[0], split[1], project["subdomain"], project["name"]) for project in projects_to_publish
+                ]
 
             response = {"msg": "The projects were published successfully!", "urls": urls}
 
