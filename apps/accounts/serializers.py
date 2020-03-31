@@ -103,7 +103,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             personal_team.can_delete = False
             personal_team.is_personal = True
             mail_prefix = user.email.split("@")[0]
-            personal_team.sub_domain_url = SubDomainBuilder().build_sub_domain_url(
+            personal_team.sub_domain_url = SubDomainBuilder().build_subdomain_url(
                 personal_team.organization, mail_prefix
             )
             personal_team.members.set([user])
