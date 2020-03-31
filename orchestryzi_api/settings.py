@@ -117,13 +117,7 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
-DEFAULT_RENDERER_CLASSES = ("rest_framework.renderers.JSONRenderer",)
-
-if DEBUG:
-    DEFAULT_RENDERER_CLASSES = DEFAULT_RENDERER_CLASSES + ("rest_framework.renderers.BrowsableAPIRenderer",)
-
 REST_FRAMEWORK = {
-    "DEFAULT_RENDERER_CLASSES": DEFAULT_RENDERER_CLASSES,
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "TEST_REQUEST_RENDERER_CLASSES": (
         "rest_framework.renderers.MultiPartRenderer",
