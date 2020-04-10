@@ -2,9 +2,9 @@ Dear {{ user.first_name }} {{ user.last_name }}
 <br><br>
 Thanks for signing up for {{ site_name }}.
 <br>
-Please <a href="https://{{ site }}{% url 'email_verify' verification_key=verification_key %}">click here</a> to activate your account.
+Please <a href="https://{{ site }}/login?activation_token={{ verification_key }}">click here</a> to activate your account.
 <br>
-If the link doesn't work, please copy - paste the following link to your browser - https://{{ site }}{% url 'email_verify' verification_key=verification_key %}
+If the link doesn't work, please copy - paste the following link to your browser - https://{{ site }}/login?activation_token={{ verification_key }}
 <br>
 If you didn't sign up for the service, please ignore this email.
 <br><br>

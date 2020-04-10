@@ -199,6 +199,8 @@ SITE_NAME = "Flowyt"
 BASE_DOMAIN_URL = "flowyt.com"
 BASE_PROTOCOL = "https://"
 
+STUDIO_BASE_DOMAIN_URL = "{0}studio.{1}".format(BASE_PROTOCOL, BASE_DOMAIN_URL)
+
 JET_SIDE_MENU_COMPACT = True
 
 django_heroku.settings(locals())

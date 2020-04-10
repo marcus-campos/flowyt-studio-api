@@ -116,7 +116,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
             "verification_key": self.verification_key,
             "expiration_days": getattr(settings, "VERIFICATION_KEY_EXPIRY_DAYS", 4),
             "user": self.user,
-            "site": getattr(settings, "BASE_DOMAIN_URL", None),
+            "site": getattr(settings, "STUDIO_BASE_DOMAIN_URL", None),
             "site_name": getattr(settings, "SITE_NAME", None),
         }
 
@@ -128,7 +128,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
     def send_password_reset_email(self, site):
         context = {
             "email": self.user.email,
-            "site": getattr(settings, "BASE_DOMAIN_URL", None),
+            "site": getattr(settings, "STUDIO_BASE_DOMAIN_URL", None),
             "site_name": getattr(settings, "SITE_NAME", None),
             "uid": encodings.base36encode(self.user.pk),
             "user": self.user,
