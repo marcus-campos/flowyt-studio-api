@@ -133,7 +133,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
 
     def send_email_invite(self, site):
         context = {
-            "site": site,
+            "site": getattr(settings, "BASE_DOMAIN_URL", None),
             "site_name": getattr(settings, "SITE_NAME", None),
             "code": self.code,
             "invited_by": self.invited_by,

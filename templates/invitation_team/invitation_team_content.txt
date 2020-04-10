@@ -4,7 +4,7 @@ You're invited to join the {{ team.name }} team on {{ site_name }}
 <br><br>
 You need to create another account even though you've used {{ site_name }} before with this email address.
 <br><br>
-You may copy/paste this link into your browser: http://{{ site }}{% url 'register' %}?referer={{ code }}
+You may copy/paste this link into your browser: https://{{ site }}{% url 'register' %}?referer={{ code }}
 <br><br>
 Your sign-in email is:
 {{ email }}
