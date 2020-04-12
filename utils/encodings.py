@@ -4,7 +4,7 @@ def base36encode(number, alphabet="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
 
     """
 
-    if not isinstance(number, (int, long)):
+    if not isinstance(number, int):
         raise TypeError("number must be an integer")
 
     base36 = ""

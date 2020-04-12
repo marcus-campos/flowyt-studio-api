@@ -1,7 +1,7 @@
 import datetime
 import hashlib
 import re
-
+import uuid
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -11,7 +11,6 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 
-from utils import encodings
 from utils.email import EmailAsync
 from utils.models import AutoCreatedUpdatedMixin
 
@@ -130,7 +129,7 @@ class UserProfile(AutoCreatedUpdatedMixin, Verification):
             "email": self.user.email,
             "site": getattr(settings, "STUDIO_BASE_DOMAIN_URL", None),
             "site_name": getattr(settings, "SITE_NAME", None),
-            "uid": encodings.base36encode(self.user.pk),
+            "uid": str(uuid.uuid4()),
             "user": self.user,
             "token": token_generator.make_token(self.user),
         }
