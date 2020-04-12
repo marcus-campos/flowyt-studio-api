@@ -89,12 +89,6 @@ class TeamInvitationCreateSerializer(serializers.Serializer):
             raise serializers.ValidationError("Team does not exist.")
 
         if team.has_invite_permissions(user):
-            email_ids_existing = User.objects.filter(email__in=emails).values_list("email", flat=True)
-            if email_ids_existing:
-                raise serializers.ValidationError(
-                    "One or more of the email ID's provided is already associated with accounts. (%s)"
-                    % ",".join(email_ids_existing)
-                )
             return data
 
         raise serializers.ValidationError("Operation not allowed.")

@@ -131,7 +131,7 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
     def __str__(self):
         return "To : %s | From %s" % (self.email, self.invited_by)
 
-    def send_email_invite(self, site):
+    def send_email_invite(self):
         context = {
             "site": getattr(settings, "STUDIO_BASE_DOMAIN_URL", None),
             "site_name": getattr(settings, "SITE_NAME", None),
@@ -141,7 +141,29 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
             "email": self.email,
         }
 
-        subject = render_to_string("invitation_team/invitation_team_subject.txt", context)
+        self.__send_mail(
+            context,
+            "invitation_team/invitation_team_subject.txt",
+            "invitation_team/invitation_team_content.txt",
+        )
+
+    def send_email_existing_user(self, user):
+        context = {
+            "site": getattr(settings, "STUDIO_BASE_DOMAIN_URL", None),
+            "site_name": getattr(settings, "SITE_NAME", None),
+            "code": self.code,
+            "invited_by": self.invited_by,
+            "team": self.team,
+            "user": user,
+        }
+        self.__send_mail(
+            context,
+            "invitation_team/invitation_team_existing_user_subject.txt",
+            "invitation_team/invitation_team_existing_user_content.txt",
+        )
+
+    def __send_mail(self, context, subject, content):
+        subject = render_to_string(subject, context)
         subject = "".join(subject.splitlines())
-        message = render_to_string("invitation_team/invitation_team_content.txt", context)
+        message = render_to_string(content, context)
         EmailAsync(subject=subject, to=[self.email], html=message).send()
