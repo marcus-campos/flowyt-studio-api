@@ -1,1 +1,1 @@
-{{ invited_by.first_name }} {{ invited_by.last_name }} has add you to {{ team.name }} team on {{ site_name }}
+{{ invited_by.first_name }} {{ invited_by.last_name }} has added you to {{ team.name }} team on {{ site_name }}
