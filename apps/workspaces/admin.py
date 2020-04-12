@@ -1,5 +1,6 @@
 from django.contrib import admin
 from jet.admin import CompactInline
+import json
 
 from apps.workspaces.forms import (
     WorkspaceAdminForm,
@@ -89,6 +90,7 @@ class WorkspaceAdmin(admin.ModelAdmin):
             debug_env.workspace = obj
             debug_env.can_delete = False
             debug_env.debug = True
+            debug_env.safe_mode = {"enable": True, "safe_time": 10}
             debug_env.save()
         return result
 
@@ -97,7 +99,7 @@ class WorkspaceAdmin(admin.ModelAdmin):
 class EnvironmentAdmin(admin.ModelAdmin):
     list_display = ["name", "description", "workspace"]
     list_display_links = list_display
-    list_filter = ["workspace", "workspace__team"]
+    list_filter = ["workspace", "workspace__team", "safe_mode"]
     search_fields = ["name", "description"]
     list_select_related = ("workspace",)
     form = EnvironmentAdminForm

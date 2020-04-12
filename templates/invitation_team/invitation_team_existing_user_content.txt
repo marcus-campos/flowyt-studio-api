@@ -1,0 +1,9 @@
+You were added to the {{ team.name }} team on {{ site_name }}
+<br><br>
+{{ invited_by.first_name }} {{ invited_by.last_name }} ({{ invited_by.email }}) sent you this invitation on your {{ user.email }} account.
+<br><br>
+On next time you login you will see all workspaces available for this team.
+<br><br>
+Thanks for using our site!
+<br><br>
+The {{ site_name }} team

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied
@@ -11,6 +12,9 @@ from .serializers import TeamSerializer
 from ..accounts.models import UserProfile
 
 from django.conf import settings
+
+
+User = get_user_model()
 
 
 class ListCreateTeamAPIView(generics.ListCreateAPIView):
@@ -91,9 +95,15 @@ class InviteToTeamAPIView(generics.CreateAPIView):
         self.send_email_invites(invitations)
 
     def send_email_invites(self, invitations):
-        # Sending email expected to be done asynchronously in production environment.
         for invitation in invitations:
-            invitation.send_email_invite(get_current_site(self.request))
+            user_list = User.objects.filter(email=invitation.email)
+            if user_list.exists():
+                user = user_list.first()
+                invitation.team.members.add(user)
+                invitation.team.save()
+                invitation.send_email_existing_user(user)
+            else:
+                invitation.send_email_invite()
 
 
 class RemoveFromTeamAPIView(generics.CreateAPIView):
