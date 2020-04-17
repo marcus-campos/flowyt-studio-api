@@ -207,7 +207,7 @@ django_heroku.settings(locals())
 del DATABASES["default"]["OPTIONS"]["sslmode"]
 
 WORKSPACE_PUBLISH_MODE = config("WORKSPACE_PUBLISH_MODE", default="redis", cast=str)  # redis, upload
-WORKSPACE_SUBDOMAIN_ENABLE = config("WORKSPACE_SUBDOMAIN_ENABLE", default=True, cast=bool)
+WORKSPACE_SUBDOMAIN_ENABLE = config("WORKSPACE_SUBDOMAIN_ENABLE", default=False, cast=bool)
 WORKSPACE_PUBLISH_HOST = config("WORKSPACE_PUBLISH_HOST", default="", cast=str)
 
 REDIS = {

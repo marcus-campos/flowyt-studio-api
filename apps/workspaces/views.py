@@ -209,51 +209,51 @@ class ReleasePublishView(generics.GenericAPIView):
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
 
-        # try:
-        # Make
-        projects_to_publish = self._make_workspaces(serializer.validated_data)
+        try:
+            # Make
+            projects_to_publish = self._make_workspaces(serializer.validated_data)
 
-        # Response
-        response = {"msg": "The projects were published successfully!"}
+            # Response
+            response = {"msg": "The projects were published successfully!"}
 
-        if WORKSPACE_PUBLISH_MODE == "redis":
-            # Publish
-            has_errors = self._publish(projects_to_publish, None)
-            split = WORKSPACE_PUBLISH_HOST.split("://")
+            if WORKSPACE_PUBLISH_MODE == "redis":
+                # Publish
+                has_errors = self._publish(projects_to_publish, None)
+                split = WORKSPACE_PUBLISH_HOST.split("://")
 
-            if WORKSPACE_SUBDOMAIN_ENABLE:
+                if WORKSPACE_SUBDOMAIN_ENABLE:
+                    urls = [
+                        "{0}://{1}.{2}/{3}".format(split[0], project["subdomain"], split[1], project["name"])
+                        for project in projects_to_publish
+                    ]
+                else:
+                    urls = [
+                        "{0}://{1}/{2}/{3}".format(split[0], split[1], project["subdomain"], project["name"])
+                        for project in projects_to_publish
+                    ]
+
+                response = {"msg": "The projects were published successfully!", "urls": urls}
+
+            elif WORKSPACE_PUBLISH_MODE == "upload":
+                # Publish
+                has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
+
+                # Delete release files
+                self._delete_release_files(projects_to_publish)
+
+                # Prepare response
                 urls = [
-                    "{0}://{1}.{2}/{3}".format(split[0], project["subdomain"], split[1], project["name"])
-                    for project in projects_to_publish
-                ]
-            else:
-                urls = [
-                    "{0}://{1}/{2}/{3}".format(split[0], split[1], project["subdomain"], project["name"])
-                    for project in projects_to_publish
+                    "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
+                    for project in projects_to_publish["projects"]
                 ]
 
-            response = {"msg": "The projects were published successfully!", "urls": urls}
+                response = {"msg": "The projects were published successfully!", "urls": urls}
 
-        elif WORKSPACE_PUBLISH_MODE == "upload":
-            # Publish
-            has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
-
-            # Delete release files
-            self._delete_release_files(projects_to_publish)
-
-            # Prepare response
-            urls = [
-                "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
-                for project in projects_to_publish["projects"]
-            ]
-
-            response = {"msg": "The projects were published successfully!", "urls": urls}
-
-        # except:
-        #     response = {
-        #         "msg": "It was not possible to generate a build for this release. Check that there is no incomplete data and create a new release."
-        #     }
-        #     return Response(data=response, status=400)
+        except:
+            response = {
+                "msg": "It was not possible to generate a build for this release. Check that there is no incomplete data and create a new release."
+            }
+            return Response(data=response, status=400)
 
         if has_errors:
             response = {"msg": "Something went wrong! This release could not be published."}
