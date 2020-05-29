@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0006_auto_20200528_1845'),
+        ("workspaces", "0006_auto_20200528_1845"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='integrationlist',
-            name='integration_key',
-            field=models.CharField(default=None, max_length=255, verbose_name='Integration Key'),
+            model_name="integrationlist",
+            name="integration_key",
+            field=models.CharField(default=None, max_length=255, verbose_name="Integration Key"),
             preserve_default=False,
         ),
     ]
