@@ -1,7 +1,7 @@
 from django.forms import ModelForm, TextInput
 from django_ace import AceWidget
 
-from apps.workspaces.models import Workspace, Environment, Integration, FunctionFile, Flow
+from apps.workspaces.models import Workspace, Environment, Integration, IntegrationList, FunctionFile, Flow
 
 
 class WorkspaceAdminForm(ModelForm):
@@ -32,6 +32,22 @@ class EnvironmentAdminForm(ModelForm):
 class IntegrationAdminForm(ModelForm):
     class Meta:
         model = Integration
+        fields = "__all__"
+        widgets = {
+            "integration_variables": AceWidget(
+                mode="json",
+                theme="twilight",
+                width="900px",
+                height="500px",
+                wordwrap=False,
+                showprintmargin=False,
+            )
+        }
+
+
+class IntegrationListAdminForm(ModelForm):
+    class Meta:
+        model = IntegrationList
         fields = "__all__"
         widgets = {
             "integration_variables": AceWidget(

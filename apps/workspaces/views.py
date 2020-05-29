@@ -30,6 +30,7 @@ from apps.workspaces.serializers import (
     FlowSerializer,
     FunctionFileSerializer,
     IntegrationSerializer,
+    IntegrationListSerializer,
     PublishSerializer,
     ReleaseSerializer,
     RouteSerializer,
@@ -107,10 +108,17 @@ class IntegrationViewSet(viewsets.ModelViewSet):
         return queryset.filter(workspace__team__in=teams)
 
 
-class IntegrationListViewSet(APIView):
+class IntegrationListViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = IntegrationList.objects.all()
+    serializer_class = IntegrationListSerializer
+    permission_classes = (IsInTeamPermission,)
 
-    def get(self, request):
-        return Response({"test"})
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_authenticated:
+            return queryset.none()
+        teams = Team.objects.filter(members__in=[self.request.user])
+        return queryset.filter(workspace__team__in=teams)
 
 
 class FunctionFileViewSet(viewsets.ModelViewSet):

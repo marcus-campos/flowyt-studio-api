@@ -116,7 +116,7 @@ class Integration(AutoCreatedUpdatedMixin):
 
     class Meta:
         ordering = ["created_at"]
-        unique_together = ["name", "workspace"]
+        unique_together = ["workspace"]
 
     def __str__(self):
         return self.name
