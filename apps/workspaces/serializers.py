@@ -150,7 +150,8 @@ class ReleaseSerializer(serializers.ModelSerializer):
         )
         # Integrations
         self._create_release_copies(
-            Integration, IntegrationRelease, ["integration_variables"],
+            Integration, IntegrationRelease, [
+                "-name", "integration_variables"],
         )
         # Function file
         self._create_release_copies(
@@ -175,8 +176,15 @@ class ReleaseSerializer(serializers.ModelSerializer):
         instance_attr_name = "{0}_set".format(from_class.__name__.lower())
         sources = getattr(self.release.workspace, instance_attr_name).all()
         for from_instance in sources:
+            keys = extra + ["name", "description"]
+
+            # Remove keys if start with -
+            for key in extra:
+                if key.startswith("-"):
+                    keys.remove(key[1:])
+
             self._copy_model_instance(
-                to_class, from_instance, extra + ["name", "description"],
+                to_class, from_instance, keys,
             )
 
     def _copy_model_instance(self, model_class, from_instance, copy=[], add={}):
