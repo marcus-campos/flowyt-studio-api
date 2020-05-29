@@ -1,30 +1,18 @@
-from django.contrib import admin
-from jet.admin import CompactInline
 import json
 
-from apps.workspaces.forms import (
-    WorkspaceAdminForm,
-    EnvironmentAdminForm,
-    IntegrationAdminForm,
-    FunctionFileAdminForm,
-    FlowAdminForm,
-)
-from apps.workspaces.models import (
-    Workspace,
-    Environment,
-    Integration,
-    FunctionFile,
-    Flow,
-    Route,
-    Release,
-    WorkspaceRelease,
-    FlowRelease,
-    RouteRelease,
-    FunctionFileRelease,
-    IntegrationRelease,
-    EnvironmentRelease,
-    Language,
-)
+from django.contrib import admin
+from jet.admin import CompactInline
+
+from apps.workspaces.forms import (EnvironmentAdminForm, FlowAdminForm,
+                                   FunctionFileAdminForm, IntegrationAdminForm,
+                                   IntegrationListAdminForm,
+                                   WorkspaceAdminForm)
+from apps.workspaces.models import (Environment, EnvironmentRelease, Flow,
+                                    FlowRelease, FunctionFile,
+                                    FunctionFileRelease, Integration,
+                                    IntegrationList, IntegrationRelease,
+                                    Language, Release, Route, RouteRelease,
+                                    Workspace, WorkspaceRelease)
 
 
 class ReleaseInline(CompactInline):
@@ -67,7 +55,8 @@ class LanguageAdmin(admin.ModelAdmin):
 
 @admin.register(Workspace)
 class WorkspaceAdmin(admin.ModelAdmin):
-    list_display = ["language", "name", "description", "creator", "team", "workspae_color_render"]
+    list_display = ["language", "name", "description",
+                    "creator", "team", "workspae_color_render"]
     list_display_links = ["language", "name", "description", "creator", "team"]
     list_filter = ["creator", "team", "language"]
     list_select_related = ("creator", "team", "language")
@@ -82,7 +71,8 @@ class WorkspaceAdmin(admin.ModelAdmin):
     ]
 
     def save_model(self, request, obj, form, change):
-        result = super(WorkspaceAdmin, self).save_model(request, obj, form, change)
+        result = super(WorkspaceAdmin, self).save_model(
+            request, obj, form, change)
         if not change:
             debug_env = Environment()
             debug_env.name = "debug"
@@ -112,12 +102,21 @@ class EnvironmentAdmin(admin.ModelAdmin):
 
 @admin.register(Integration)
 class IntegrationAdmin(admin.ModelAdmin):
-    list_display = ["name", "description", "workspace"]
+    list_display = ["description", "workspace"]
     list_display_links = list_display
-    list_filter = ["workspace", "workspace__team"]
-    search_fields = ["name", "description"]
+    list_filter = ["workspace", "workspace__team", "integration_list__name"]
+    search_fields = ["description"]
     list_select_related = ("workspace",)
     form = IntegrationAdminForm
+
+
+@admin.register(IntegrationList)
+class IntegrationListAdmin(admin.ModelAdmin):
+    list_display = ["name", "integration_key", "description"]
+    list_display_links = list_display
+    list_filter = ["name"]
+    search_fields = ["description"]
+    form = IntegrationListAdminForm
 
 
 @admin.register(FunctionFile)
