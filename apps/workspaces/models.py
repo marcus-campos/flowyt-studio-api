@@ -103,7 +103,7 @@ class Integration(AutoCreatedUpdatedMixin):
         unique_together = ["workspace"]
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class FunctionFile(AutoCreatedUpdatedMixin):
