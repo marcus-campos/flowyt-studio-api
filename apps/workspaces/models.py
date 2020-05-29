@@ -92,6 +92,7 @@ class Integration(AutoCreatedUpdatedMixin):
 
 class IntegrationList(AutoCreatedUpdatedMixin):
     name = models.CharField("Integration Name", max_length=255)
+    integration_key = models.CharField("Integration Key", max_length=255)
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONField(

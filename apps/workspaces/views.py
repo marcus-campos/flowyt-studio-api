@@ -111,14 +111,6 @@ class IntegrationViewSet(viewsets.ModelViewSet):
 class IntegrationListViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = IntegrationList.objects.all()
     serializer_class = IntegrationListSerializer
-    permission_classes = (IsInTeamPermission,)
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        if not self.request.user.is_authenticated:
-            return queryset.none()
-        teams = Team.objects.filter(members__in=[self.request.user])
-        return queryset.filter(workspace__team__in=teams)
 
 
 class FunctionFileViewSet(viewsets.ModelViewSet):

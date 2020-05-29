@@ -112,7 +112,7 @@ class IntegrationAdmin(admin.ModelAdmin):
 
 @admin.register(IntegrationList)
 class IntegrationListAdmin(admin.ModelAdmin):
-    list_display = ["name", "description"]
+    list_display = ["name", "integration_key", "description"]
     list_display_links = list_display
     list_filter = ["name"]
     search_fields = ["description"]
