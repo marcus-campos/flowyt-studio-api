@@ -73,22 +73,6 @@ class Environment(AutoCreatedUpdatedMixin):
         return self.name
 
 
-class Integration(AutoCreatedUpdatedMixin):
-    description = models.TextField(
-        "Description", null=True, blank=True, help_text="(Opcional)")
-    integration_variables = JSONField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
-
-    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
-
-    class Meta:
-        ordering = ["created_at"]
-        unique_together = ["workspace"]
-
-    def __str__(self):
-        return self.id
-
-
 class IntegrationList(AutoCreatedUpdatedMixin):
     name = models.CharField("Integration Name", max_length=255)
     integration_key = models.CharField("Integration Key", max_length=255)
@@ -119,7 +103,7 @@ class Integration(AutoCreatedUpdatedMixin):
         unique_together = ["workspace"]
 
     def __str__(self):
-        return self.name
+        return self.id
 
 
 class FunctionFile(AutoCreatedUpdatedMixin):
