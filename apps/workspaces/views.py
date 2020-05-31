@@ -278,7 +278,8 @@ class ReleasePublishView(generics.GenericAPIView):
             return Response(data=response, status=400)
 
         # Update release status
-        Release.objects.filter(published=True).update(published=False)
+        Release.objects.filter(
+            published=True, workspace=serializer.validated_data['release'].workspace).update(published=False)
         Release.objects.filter(
             pk=serializer.validated_data['release'].id).update(published=True)
 
