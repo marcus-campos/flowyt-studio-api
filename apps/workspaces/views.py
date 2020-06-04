@@ -266,10 +266,16 @@ class ReleasePublishView(generics.GenericAPIView):
                 response = {
                     "msg": "The projects were published successfully!", "urls": urls}
 
-        except:
+        except Exception as e:
             response = {
-                "msg": "It was not possible to generate a build for this release. Check that there is no incomplete data and create a new release."
+                "msg": "It was not possible to generate a build for this release. Check that there is no incomplete data and create a new release.",
+                "reason": None
             }
+
+            if hasattr(e, "message"):
+                response["reason"] = e.message
+            else:
+                response["reason"] = str(e)
             return Response(data=response, status=400)
 
         if has_errors:
