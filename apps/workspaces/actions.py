@@ -1,3 +1,6 @@
+from django.utils.text import slugify
+
+
 class BaseAction:
     id = ("",)
     action = ""
@@ -55,7 +58,7 @@ class Response(BaseAction):
 class Jump(BaseAction):
     def __init__(self, data):
         self.action = "jump"
-        self.data = {"next_flow": data.get("next_flow", "")}
+        self.data = {"next_flow": slugify(data.get("next_flow", ""))}
 
 
 class Switch(BaseAction):
