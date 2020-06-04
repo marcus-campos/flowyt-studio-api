@@ -19,7 +19,7 @@ whitenoise = "*"
 django-heroku = "*"
 django-cors-headers = "*"
 djangorestframework_simplejwt = "*"
-django-username-email = {git = "https://github.com/wdeoliveirawill/django-username-email.git"}
+django-username-email = {git = "https://github.com/marcus-campos/django-username-email.git"}
 django-select2 = "*"
 django-3-jet = "*"
 requests = "*"
