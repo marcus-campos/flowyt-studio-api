@@ -23,6 +23,7 @@ from apps.workspaces.models import (
     Workspace,
     WorkspaceRelease,
     Language,
+    Monitor
 )
 from apps.workspaces.permissions import IsCreatorPermission, IsInTeamPermission
 from apps.workspaces.serializers import (
@@ -98,6 +99,20 @@ class IntegrationViewSet(viewsets.ModelViewSet):
     queryset = Integration.objects.all()
     serializer_class = IntegrationSerializer
     filter_fields = ("workspace__id",)
+    permission_classes = (IsInTeamPermission,)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_authenticated:
+            return queryset.none()
+        teams = Team.objects.filter(members__in=[self.request.user])
+        return queryset.filter(workspace__team__in=teams)
+
+
+class MonitorViewSet(viewsets.ModelViewSet):
+    queryset = Monitor.objects.all()
+    serializer_class = IntegrationSerializer
+    filter_fields = ("environment__id", "environment__workspace_id")
     permission_classes = (IsInTeamPermission,)
 
     def get_queryset(self):

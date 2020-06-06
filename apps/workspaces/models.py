@@ -1,11 +1,11 @@
-from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import JSONField
-from django.db import models
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db import models
 from django.template.defaultfilters import safe
-
-from utils.models import AutoCreatedUpdatedMixin
+from fernet_fields import EncryptedCharField, EncryptedTextField
 from utils.choices import HTTPMethodChoices
+from utils.fields import JSONEncryptedField, JSONField
+from utils.models import AutoCreatedUpdatedMixin
 
 User = get_user_model()
 
@@ -57,7 +57,7 @@ class Environment(AutoCreatedUpdatedMixin):
     name = models.CharField("Environment Name", max_length=255)
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
-    environment_variables = JSONField(
+    environment_variables = JSONEncryptedField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)")
     debug = models.BooleanField(default=False, help_text="(Default false)")
     safe_mode = JSONField("Safe Mode", null=True,
@@ -71,6 +71,21 @@ class Environment(AutoCreatedUpdatedMixin):
 
     def __str__(self):
         return self.name
+
+
+class Monitor(AutoCreatedUpdatedMixin):
+    monitor_database_type = models.CharField(
+        "Monitor database type", max_length=255)
+    monitor_variables = JSONEncryptedField(
+        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+
+    environment = models.ForeignKey("Environment", on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return self.id
 
 
 class IntegrationList(AutoCreatedUpdatedMixin):
@@ -91,7 +106,7 @@ class IntegrationList(AutoCreatedUpdatedMixin):
 class Integration(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
-    integration_variables = JSONField(
+    integration_variables = JSONEncryptedField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)")
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
@@ -245,7 +260,7 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
     name = models.CharField("Environment Name", max_length=255)
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
-    environment_variables = JSONField(
+    environment_variables = JSONEncryptedField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)")
     debug = models.BooleanField(default=False, help_text="(Default false)")
     safe_mode = JSONField("Environment variables", null=True,
@@ -266,7 +281,7 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
 class IntegrationRelease(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
-    integration_variables = JSONField(
+    integration_variables = JSONEncryptedField(
         "Environment variables", null=True, blank=True, help_text="(Opcional)")
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)

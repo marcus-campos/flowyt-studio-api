@@ -1,9 +1,12 @@
-from apps.v1.core.widgets import JSONWidget
-from django.contrib.postgres import fields as postgres_fields
+from fernet_fields import EncryptedField
+
+from django.contrib.postgres.fields import JSONField
 
 
-class JSONField(postgres_fields.JSONField):
-    widget = JSONWidget
+class CustomJSONField(JSONField):
+    def db_type(self, connection):
+        return 'text'
 
-    def clean(self, value):
-        return {k: super().clean(v) for k, v in value.items()}
+
+class JSONEncryptedField(EncryptedField, CustomJSONField):
+    pass

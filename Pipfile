@@ -25,6 +25,8 @@ django-3-jet = "*"
 requests = "*"
 django-ace = "*"
 redis = "*"
+cryptography = "*"
+django-fernet-fields = "*"
 
 [dev-packages]
 flake8 = "*"

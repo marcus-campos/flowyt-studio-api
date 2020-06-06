@@ -1,26 +1,16 @@
 import json
 
+from rest_framework import serializers
+
 from apps.hosts.models import Host
 from apps.teams.models import Team
-from apps.workspaces.models import (
-    Environment,
-    EnvironmentRelease,
-    Flow,
-    FlowRelease,
-    FunctionFile,
-    FunctionFileRelease,
-    Integration,
-    IntegrationList,
-    IntegrationRelease,
-    Language,
-    Release,
-    Route,
-    RouteRelease,
-    Workspace,
-    WorkspaceRelease,
-)
+from apps.workspaces.models import (Environment, EnvironmentRelease, Flow,
+                                    FlowRelease, FunctionFile,
+                                    FunctionFileRelease, Integration,
+                                    IntegrationList, IntegrationRelease,
+                                    Language, Monitor, Release, Route,
+                                    RouteRelease, Workspace, WorkspaceRelease)
 from orchestryzi_api.settings import WORKSPACE_PUBLISH_MODE
-from rest_framework import serializers
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -85,6 +75,15 @@ class IntegrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Integration
+        fields = "__all__"
+
+
+class MonitorSerializer(serializers.ModelSerializer):
+    monitor_database_type = serializers.CharField(required=True)
+    monitor_variables = serializers.JSONField(required=True)
+
+    class Meta:
+        model = Monitor
         fields = "__all__"
 
 
