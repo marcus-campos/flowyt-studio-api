@@ -85,7 +85,7 @@ class Monitor(AutoCreatedUpdatedMixin):
         ordering = ["created_at"]
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class IntegrationList(AutoCreatedUpdatedMixin):
@@ -94,7 +94,7 @@ class IntegrationList(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+        "Integration variables", null=True, blank=True, help_text="(Opcional)")
 
     class Meta:
         ordering = ["created_at"]
@@ -107,7 +107,7 @@ class Integration(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONEncryptedField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+        "Integration variables", null=True, blank=True, help_text="(Opcional)")
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     integration_list = models.ForeignKey(
@@ -282,7 +282,7 @@ class IntegrationRelease(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONEncryptedField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+        "Integration variables", null=True, blank=True, help_text="(Opcional)")
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey(

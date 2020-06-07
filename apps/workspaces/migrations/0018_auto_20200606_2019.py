@@ -7,28 +7,36 @@ import utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0017_auto_20200606_2016'),
+        ("workspaces", "0017_auto_20200606_2016"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='environment',
-            name='environment_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="environment",
+            name="environment_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='environmentrelease',
-            name='environment_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="environmentrelease",
+            name="environment_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integration',
-            name='integration_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="integration",
+            name="integration_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integrationrelease',
-            name='integration_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="integrationrelease",
+            name="integration_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
     ]

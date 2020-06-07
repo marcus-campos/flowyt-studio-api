@@ -25,16 +25,14 @@ class ReleaseBuilder:
     def _load_projects(self, validated_data, release, workspace, flows, routes, integrations, function_files):
         environments_to_publish = validated_data["environments"]
 
-        project_structure = {"config": [],
-                             "flows": [], "functions": [], "routes": []}
+        project_structure = {"config": [], "flows": [], "functions": [], "routes": []}
         projects_to_publish = []
 
         for environment in environments_to_publish:
             project = copy.deepcopy(project_structure)
 
             # Config
-            project = self._settings(
-                project, release, workspace, environment, integrations)
+            project = self._settings(project, release, workspace, environment, integrations)
             # Flows and Routes
             project = self._flows(project, flows)
             # Routes
@@ -56,13 +54,11 @@ class ReleaseBuilder:
         )
 
         project["config"].append(
-            {"name": "settings", "data": json.dumps(
-                config_settings, ensure_ascii=False), }
+            {"name": "settings", "data": json.dumps(config_settings, ensure_ascii=False),}
         )
 
         project["config"].append(
-            {"name": "logs", "data": json.dumps(
-                config_settings, ensure_ascii=False), }
+            {"name": "logs", "data": json.dumps(config_settings, ensure_ascii=False),}
         )
 
         return project
@@ -74,8 +70,7 @@ class ReleaseBuilder:
             translated_flow = FlowTranslation().translate(flow)
 
             flows_list.append(
-                {"name": slug, "data": json.dumps(
-                    translated_flow, ensure_ascii=False), }
+                {"name": slug, "data": json.dumps(translated_flow, ensure_ascii=False),}
             )
 
         project["flows"] = flows_list
@@ -85,16 +80,14 @@ class ReleaseBuilder:
     def _routes(self, project, routes):
         for route in routes:
             project["routes"].append(
-                {"path": route.path, "method": route.method,
-                    "flow": slugify(route.flow_release.name), }
+                {"path": route.path, "method": route.method, "flow": slugify(route.flow_release.name),}
             )
 
         return project
 
     def _functions(self, project, function_files):
         for function in function_files:
-            project["functions"].append(
-                {"name": function.name.lower(), "data": function.function_data})
+            project["functions"].append({"name": function.name.lower(), "data": function.function_data})
 
         return project
 
@@ -105,13 +98,10 @@ class ReleaseBuilder:
             WORKSPACE_DIR = BASE_DIR + "/storage/tmp/workspaces/"
             project_folder = WORKSPACE_DIR + project["name"]
 
-            self._create_project_file(
-                project, project_folder, "config", "json")
+            self._create_project_file(project, project_folder, "config", "json")
             self._create_project_file(project, project_folder, "flows", "json")
-            self._create_project_file(
-                project, project_folder, "functions", "py")
-            self._create_project_file(
-                project, project_folder, "routes", "json")
+            self._create_project_file(project, project_folder, "functions", "py")
+            self._create_project_file(project, project_folder, "routes", "json")
 
             # Zip
             zipdir("{0}".format(project_folder))
@@ -125,10 +115,8 @@ class ReleaseBuilder:
 
     def _create_project_file(self, project, project_folder, key, extension):
         if key == "routes":
-            file = io.open("{0}/{1}.{2}".format(project_folder,
-                                                key, extension), "w+", encoding="utf8")
-            file.write(json.dumps(project["data"]
-                                  ["routes"], ensure_ascii=False))
+            file = io.open("{0}/{1}.{2}".format(project_folder, key, extension), "w+", encoding="utf8")
+            file.write(json.dumps(project["data"]["routes"], ensure_ascii=False))
             file.close()
             return
 
@@ -174,7 +162,9 @@ class ConfigTranslation:
         settings["env"] = json.loads(environment_variables)
 
         for integration in integrations:
-            settings["integrations"][integration.integration.integration_list.integration_key] = integration.integration_variables
+            settings["integrations"][
+                integration.integration.integration_list.integration_key
+            ] = integration.integration_variables
 
         return settings
 
@@ -218,8 +208,7 @@ class FlowTranslation:
             if flow_node_data[index]["id"] == node_id:
                 for key, value in flow_node_data[index]["data"].items():
                     try:
-                        data[key] = json.loads(
-                            flow_node_data[index]["data"][key])
+                        data[key] = json.loads(flow_node_data[index]["data"][key])
                     except:
                         data[key] = flow_node_data[index]["data"][key]
 
@@ -234,8 +223,7 @@ class FlowTranslation:
 
         for key, value in flow_links.items():
             if value["from"]["nodeId"] == node_id:
-                links.append(
-                    {"node_id": value["to"]["nodeId"], "port_id": value["from"]["portId"]})
+                links.append({"node_id": value["to"]["nodeId"], "port_id": value["from"]["portId"]})
                 del aux_flow_links[key]
         flow_links = aux_flow_links
         links = sorted(links, key=itemgetter("port_id"))
@@ -262,8 +250,7 @@ class FlowTranslation:
 
             for key, value in enumerate(action.data["conditions"]):
                 action.data["conditions"][key]["next_action"] = links[key]["node_id"]
-            action.data["next_action_else"] = links[(
-                len(links) - 1)]["node_id"]
+            action.data["next_action_else"] = links[(len(links) - 1)]["node_id"]
             action.next_action = "${pipeline.next_action}"
 
         elif action.action in ["response", "jump"]:

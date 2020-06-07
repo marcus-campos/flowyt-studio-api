@@ -6,28 +6,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0016_auto_20200606_2014'),
+        ("workspaces", "0016_auto_20200606_2014"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='environment',
-            name='environment_variables',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="environment",
+            name="environment_variables",
+            field=models.TextField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='environmentrelease',
-            name='environment_variables',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="environmentrelease",
+            name="environment_variables",
+            field=models.TextField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integration',
-            name='integration_variables',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="integration",
+            name="integration_variables",
+            field=models.TextField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integrationrelease',
-            name='integration_variables',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="integrationrelease",
+            name="integration_variables",
+            field=models.TextField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
     ]

@@ -1,9 +1,15 @@
 from django.forms import ModelForm, TextInput
 from django_ace import AceWidget
 
-from apps.workspaces.models import (Environment, Flow, FunctionFile,
-                                    Integration, IntegrationList, Monitor,
-                                    Workspace)
+from apps.workspaces.models import (
+    Environment,
+    Flow,
+    FunctionFile,
+    Integration,
+    IntegrationList,
+    Monitor,
+    Workspace,
+)
 
 
 class WorkspaceAdminForm(ModelForm):

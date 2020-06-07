@@ -7,25 +7,35 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0007_integrationlist_integration_key'),
+        ("workspaces", "0007_integrationlist_integration_key"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Monitor',
+            name="Monitor",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created_at', models.DateTimeField(auto_now_add=True, db_index=True, null=True, verbose_name='Criado em')),
-                ('updated_at', models.DateTimeField(auto_now=True, db_index=True, null=True, verbose_name='Atualizado em')),
-                ('host', models.CharField(max_length=255, verbose_name='Host')),
-                ('port', models.IntegerField(verbose_name='Port')),
-                ('user', models.CharField(max_length=255, verbose_name='User')),
-                ('password', models.CharField(max_length=255, verbose_name='Password')),
-                ('database', models.CharField(max_length=255, verbose_name='Database')),
+                (
+                    "id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True, db_index=True, null=True, verbose_name="Criado em"
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True, db_index=True, null=True, verbose_name="Atualizado em"
+                    ),
+                ),
+                ("host", models.CharField(max_length=255, verbose_name="Host")),
+                ("port", models.IntegerField(verbose_name="Port")),
+                ("user", models.CharField(max_length=255, verbose_name="User")),
+                ("password", models.CharField(max_length=255, verbose_name="Password")),
+                ("database", models.CharField(max_length=255, verbose_name="Database")),
             ],
-            options={
-                'verbose_name': 'Programming Language',
-                'ordering': ['host'],
-            },
+            options={"verbose_name": "Programming Language", "ordering": ["host"],},
         ),
     ]

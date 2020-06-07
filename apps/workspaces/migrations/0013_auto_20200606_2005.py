@@ -6,28 +6,48 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0012_auto_20200606_2001'),
+        ("workspaces", "0012_auto_20200606_2001"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='environment',
-            name='environment_variables',
-            field=models.TextField(blank=True, default=dict, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="environment",
+            name="environment_variables",
+            field=models.TextField(
+                blank=True,
+                default=dict,
+                help_text="(Opcional)",
+                null=True,
+                verbose_name="Environment variables",
+            ),
         ),
         migrations.AlterField(
-            model_name='environmentrelease',
-            name='environment_variables',
-            field=models.TextField(blank=True, default=dict, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="environmentrelease",
+            name="environment_variables",
+            field=models.TextField(
+                blank=True,
+                default=dict,
+                help_text="(Opcional)",
+                null=True,
+                verbose_name="Environment variables",
+            ),
         ),
         migrations.AlterField(
-            model_name='integrationlist',
-            name='integration_variables',
-            field=models.TextField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="integrationlist",
+            name="integration_variables",
+            field=models.TextField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integrationrelease',
-            name='integration_variables',
-            field=models.TextField(blank=True, default=dict, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="integrationrelease",
+            name="integration_variables",
+            field=models.TextField(
+                blank=True,
+                default=dict,
+                help_text="(Opcional)",
+                null=True,
+                verbose_name="Environment variables",
+            ),
         ),
     ]

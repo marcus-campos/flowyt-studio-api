@@ -8,49 +8,35 @@ import utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0018_auto_20200606_2019'),
+        ("workspaces", "0018_auto_20200606_2019"),
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='monitor',
-            options={'ordering': ['created_at']},
-        ),
-        migrations.RemoveField(
-            model_name='monitor',
-            name='database',
-        ),
-        migrations.RemoveField(
-            model_name='monitor',
-            name='host',
-        ),
-        migrations.RemoveField(
-            model_name='monitor',
-            name='password',
-        ),
-        migrations.RemoveField(
-            model_name='monitor',
-            name='port',
-        ),
-        migrations.RemoveField(
-            model_name='monitor',
-            name='user',
-        ),
+        migrations.AlterModelOptions(name="monitor", options={"ordering": ["created_at"]},),
+        migrations.RemoveField(model_name="monitor", name="database",),
+        migrations.RemoveField(model_name="monitor", name="host",),
+        migrations.RemoveField(model_name="monitor", name="password",),
+        migrations.RemoveField(model_name="monitor", name="port",),
+        migrations.RemoveField(model_name="monitor", name="user",),
         migrations.AddField(
-            model_name='monitor',
-            name='environment',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='workspaces.Environment'),
+            model_name="monitor",
+            name="environment",
+            field=models.ForeignKey(
+                default=None, on_delete=django.db.models.deletion.CASCADE, to="workspaces.Environment"
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='monitor',
-            name='monitor_database_type',
-            field=models.CharField(default=None, max_length=255, verbose_name='Monitor database type'),
+            model_name="monitor",
+            name="monitor_database_type",
+            field=models.CharField(default=None, max_length=255, verbose_name="Monitor database type"),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='monitor',
-            name='monitor_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Environment variables'),
+            model_name="monitor",
+            name="monitor_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Environment variables"
+            ),
         ),
     ]
