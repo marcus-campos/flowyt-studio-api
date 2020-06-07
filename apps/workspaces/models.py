@@ -95,6 +95,8 @@ class IntegrationList(AutoCreatedUpdatedMixin):
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONField(
         "Integration variables", null=True, blank=True, help_text="(Opcional)")
+    image_src = models.TextField(
+        "Integration image src", max_length=2000, null=True, blank=True, help_text="(Opcional)")
 
     class Meta:
         ordering = ["created_at"]
