@@ -57,10 +57,6 @@ class ReleaseBuilder:
             {"name": "settings", "data": json.dumps(config_settings, ensure_ascii=False),}
         )
 
-        project["config"].append(
-            {"name": "logs", "data": json.dumps(config_settings, ensure_ascii=False),}
-        )
-
         return project
 
     def _flows(self, project, flows):

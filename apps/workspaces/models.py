@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import safe
 from fernet_fields import EncryptedCharField, EncryptedTextField
-from utils.choices import HTTPMethodChoices
+from utils.choices import HTTPMethodChoices, MonitorDBChoices
 from utils.fields import JSONEncryptedField, JSONField
 from utils.models import AutoCreatedUpdatedMixin
 
@@ -58,7 +58,8 @@ class Environment(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     environment_variables = JSONEncryptedField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+        "Environment variables", null=True, blank=True, help_text="(Opcional)"
+    )
     debug = models.BooleanField(default=False, help_text="(Default false)")
     safe_mode = JSONField("Safe Mode", null=True,
                           blank=True, help_text="(Opcional)")
@@ -74,12 +75,13 @@ class Environment(AutoCreatedUpdatedMixin):
 
 
 class Monitor(AutoCreatedUpdatedMixin):
-    monitor_database_type = models.CharField(
-        "Monitor database type", max_length=255)
+    database = models.CharField(
+        "Database", max_length=10, choices=MonitorDBChoices.choices)
     monitor_variables = JSONEncryptedField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+        "Environment variables", null=True, blank=True, help_text="(Opcional)"
+    )
 
-    environment = models.ForeignKey("Environment", on_delete=models.CASCADE)
+    workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["created_at"]
@@ -96,7 +98,8 @@ class IntegrationList(AutoCreatedUpdatedMixin):
     integration_variables = JSONField(
         "Integration variables", null=True, blank=True, help_text="(Opcional)")
     image_src = models.TextField(
-        "Integration image src", max_length=2000, null=True, blank=True, help_text="(Opcional)")
+        "Integration image src", max_length=2000, null=True, blank=True, help_text="(Opcional)"
+    )
 
     class Meta:
         ordering = ["created_at"]
@@ -109,7 +112,8 @@ class Integration(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONEncryptedField(
-        "Integration variables", null=True, blank=True, help_text="(Opcional)")
+        "Integration variables", null=True, blank=True, help_text="(Opcional)"
+    )
 
     workspace = models.ForeignKey("Workspace", on_delete=models.CASCADE)
     integration_list = models.ForeignKey(
@@ -263,7 +267,8 @@ class EnvironmentRelease(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     environment_variables = JSONEncryptedField(
-        "Environment variables", null=True, blank=True, help_text="(Opcional)")
+        "Environment variables", null=True, blank=True, help_text="(Opcional)"
+    )
     debug = models.BooleanField(default=False, help_text="(Default false)")
     safe_mode = JSONField("Environment variables", null=True,
                           blank=True, help_text="(Opcional)")
@@ -284,7 +289,8 @@ class IntegrationRelease(AutoCreatedUpdatedMixin):
     description = models.TextField(
         "Description", null=True, blank=True, help_text="(Opcional)")
     integration_variables = JSONEncryptedField(
-        "Integration variables", null=True, blank=True, help_text="(Opcional)")
+        "Integration variables", null=True, blank=True, help_text="(Opcional)"
+    )
 
     release = models.ForeignKey("Release", on_delete=models.CASCADE)
     workspace_release = models.ForeignKey(

@@ -8,28 +8,40 @@ import utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0021_auto_20200607_0007'),
+        ("workspaces", "0021_auto_20200607_0007"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='integrationlist',
-            name='image_src',
-            field=models.TextField(blank=True, help_text='(Opcional)', max_length=2000, null=True, verbose_name='Integration image src'),
+            model_name="integrationlist",
+            name="image_src",
+            field=models.TextField(
+                blank=True,
+                help_text="(Opcional)",
+                max_length=2000,
+                null=True,
+                verbose_name="Integration image src",
+            ),
         ),
         migrations.AlterField(
-            model_name='integration',
-            name='integration_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Integration variables'),
+            model_name="integration",
+            name="integration_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Integration variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integrationlist',
-            name='integration_variables',
-            field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, help_text='(Opcional)', null=True, verbose_name='Integration variables'),
+            model_name="integrationlist",
+            name="integration_variables",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Integration variables"
+            ),
         ),
         migrations.AlterField(
-            model_name='integrationrelease',
-            name='integration_variables',
-            field=utils.fields.JSONEncryptedField(blank=True, help_text='(Opcional)', null=True, verbose_name='Integration variables'),
+            model_name="integrationrelease",
+            name="integration_variables",
+            field=utils.fields.JSONEncryptedField(
+                blank=True, help_text="(Opcional)", null=True, verbose_name="Integration variables"
+            ),
         ),
     ]

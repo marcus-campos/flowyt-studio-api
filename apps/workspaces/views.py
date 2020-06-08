@@ -4,13 +4,6 @@ import os
 import shutil
 
 import requests
-from django.core import serializers
-from django.db import transaction
-from rest_framework import generics, mixins, status, viewsets
-from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied
-from rest_framework.response import Response
-
 from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
@@ -18,33 +11,40 @@ from apps.workspaces.models import (
     FunctionFile,
     Integration,
     IntegrationList,
+    Language,
+    Monitor,
     Release,
     Route,
     Workspace,
     WorkspaceRelease,
-    Language,
-    Monitor,
 )
 from apps.workspaces.permissions import IsCreatorPermission, IsInTeamPermission
 from apps.workspaces.serializers import (
     EnvironmentSerializer,
     FlowSerializer,
     FunctionFileSerializer,
-    IntegrationSerializer,
     IntegrationListSerializer,
+    IntegrationSerializer,
+    LanguageSerializer,
+    MonitorSerializer,
     PublishSerializer,
     ReleaseSerializer,
     RouteSerializer,
     WorkspaceSerializer,
-    LanguageSerializer,
 )
 from apps.workspaces.services import ReleaseBuilder
+from django.core import serializers
+from django.db import transaction
 from orchestryzi_api.settings import (
     ENGINE_ENDPOINTS,
-    WORKSPACE_PUBLISH_MODE,
     WORKSPACE_PUBLISH_HOST,
+    WORKSPACE_PUBLISH_MODE,
     WORKSPACE_SUBDOMAIN_ENABLE,
 )
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from utils.models import to_dict
 from utils.redis import redis
 
@@ -60,7 +60,8 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     permission_classes = (IsInTeamPermission,)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={"user": request.user})
+        serializer = self.serializer_class(
+            data=request.data, context={"user": request.user})
         serializer.is_valid(raise_exception=True)
         serializer.save(creator=request.user)
         headers = self.get_success_headers(serializer.data)
@@ -82,7 +83,8 @@ class EnvironmentViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         if not instance.can_delete:
-            raise PermissionDenied(detail="The default debug environment cant be removed")
+            raise PermissionDenied(
+                detail="The default debug environment cant be removed")
         return super(EnvironmentViewSet, self).perform_destroy(instance)
 
     def get_queryset(self):
@@ -109,9 +111,14 @@ class IntegrationViewSet(viewsets.ModelViewSet):
 
 class MonitorViewSet(viewsets.ModelViewSet):
     queryset = Monitor.objects.all()
-    serializer_class = IntegrationSerializer
-    filter_fields = ("environment__id", "environment__workspace_id")
+    serializer_class = MonitorSerializer
+    filter_fields = ("workspace__id",)
     permission_classes = (IsInTeamPermission,)
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        # TODO: Publish in redis configs for monitor
+        return response
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -234,7 +241,8 @@ class ReleasePublishView(generics.GenericAPIView):
 
         try:
             # Make
-            projects_to_publish = self._make_workspaces(serializer.validated_data)
+            projects_to_publish = self._make_workspaces(
+                serializer.validated_data)
 
             # Response
             response = {"msg": "The projects were published successfully!"}
@@ -246,31 +254,37 @@ class ReleasePublishView(generics.GenericAPIView):
 
                 if WORKSPACE_SUBDOMAIN_ENABLE:
                     urls = [
-                        "{0}://{1}.{2}/{3}".format(split[0], project["subdomain"], split[1], project["name"])
+                        "{0}://{1}.{2}/{3}".format(
+                            split[0], project["subdomain"], split[1], project["name"])
                         for project in projects_to_publish
                     ]
                 else:
                     urls = [
-                        "{0}://{1}/{2}/{3}".format(split[0], split[1], project["subdomain"], project["name"])
+                        "{0}://{1}/{2}/{3}".format(
+                            split[0], split[1], project["subdomain"], project["name"])
                         for project in projects_to_publish
                     ]
 
-                response = {"msg": "The projects were published successfully!", "urls": urls}
+                response = {
+                    "msg": "The projects were published successfully!", "urls": urls}
 
             elif WORKSPACE_PUBLISH_MODE == "upload":
                 # Publish
-                has_errors = self._publish(projects_to_publish, serializer.validated_data["host"])
+                has_errors = self._publish(
+                    projects_to_publish, serializer.validated_data["host"])
 
                 # Delete release files
                 self._delete_release_files(projects_to_publish)
 
                 # Prepare response
                 urls = [
-                    "{0}/{1}".format(serializer.validated_data["host"].host, project["name"])
+                    "{0}/{1}".format(
+                        serializer.validated_data["host"].host, project["name"])
                     for project in projects_to_publish["projects"]
                 ]
 
-                response = {"msg": "The projects were published successfully!", "urls": urls}
+                response = {
+                    "msg": "The projects were published successfully!", "urls": urls}
 
         except Exception as e:
             response = {
@@ -285,14 +299,16 @@ class ReleasePublishView(generics.GenericAPIView):
             return Response(data=response, status=400)
 
         if has_errors:
-            response = {"msg": "Something went wrong! This release could not be published."}
+            response = {
+                "msg": "Something went wrong! This release could not be published."}
             return Response(data=response, status=400)
 
         # Update release status
         Release.objects.filter(
             published=True, workspace=serializer.validated_data["release"].workspace
         ).update(published=False)
-        Release.objects.filter(pk=serializer.validated_data["release"].id).update(published=True)
+        Release.objects.filter(
+            pk=serializer.validated_data["release"].id).update(published=True)
 
         return Response(data=response, status=200)
 
@@ -312,7 +328,8 @@ class ReleasePublishView(generics.GenericAPIView):
         has_errors = False
 
         if WORKSPACE_PUBLISH_MODE == "upload":
-            url_publish = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["publish"])
+            url_publish = "{0}{1}".format(
+                host.host, ENGINE_ENDPOINTS["publish"])
             url_reload = "{0}{1}".format(host.host, ENGINE_ENDPOINTS["reload"])
 
             for project_zip in projects["projects_zips"]:
@@ -328,7 +345,8 @@ class ReleasePublishView(generics.GenericAPIView):
                     if result.status_code != 200:
                         has_errors = True
 
-            result = requests.get(url_reload, headers={"X-Flowyt-Token": host.secret_token})
+            result = requests.get(url_reload, headers={
+                                  "X-Flowyt-Token": host.secret_token})
 
         elif WORKSPACE_PUBLISH_MODE == "redis":
             for project in projects:
@@ -336,7 +354,8 @@ class ReleasePublishView(generics.GenericAPIView):
                     has_errors = True
                     continue
 
-                project_key = "{0}.{1}".format(project["subdomain"], project["name"])
+                project_key = "{0}.{1}".format(
+                    project["subdomain"], project["name"])
                 parsed_data = self._transform_redis(project["data"])
                 redis.set(project_key, json.dumps(parsed_data))
 
@@ -355,8 +374,10 @@ class ReleasePublishView(generics.GenericAPIView):
         model = {"config": {}, "flows": {}, "functions": {}, "routes": []}
 
         model["routes"] = project["routes"]
-        model["config"] = {config["name"]: json.loads(config["data"]) for config in project["config"]}
-        model["flows"] = {flow["name"]: json.loads(flow["data"]) for flow in project["flows"]}
+        model["config"] = {config["name"]: json.loads(
+            config["data"]) for config in project["config"]}
+        model["flows"] = {flow["name"]: json.loads(
+            flow["data"]) for flow in project["flows"]}
         model["functions"] = project["functions"]
 
         return model

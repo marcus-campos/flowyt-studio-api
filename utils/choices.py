@@ -10,3 +10,7 @@ class HTTPMethodChoices(models.TextChoices):
     TRACE = "TRACE"
     OPTIONS = "OPTIONS"
     CONNECT = "CONNECT"
+
+
+class MonitorDBChoices(models.TextChoices):
+    MONGO = "MONGO"

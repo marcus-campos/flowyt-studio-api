@@ -46,7 +46,8 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         if not creator:
             raise serializers.ValidationError("User not found.")
         if not Team.objects.filter(members__in=[creator]).exists():
-            raise serializers.ValidationError("User is not in the specified Team.")
+            raise serializers.ValidationError(
+                "User is not in the specified Team.")
         return data
 
     def create(self, validated_data):
@@ -57,7 +58,8 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         debug_env.workspace = workspace
         debug_env.can_delete = False
         debug_env.debug = True
-        debug_env.safe_mode = json.dumps({"enable": True, "safe_time": 10}, ensure_ascii=False)
+        debug_env.safe_mode = json.dumps(
+            {"enable": True, "safe_time": 10}, ensure_ascii=False)
         debug_env.save()
 
         return workspace
@@ -72,7 +74,8 @@ class EnvironmentSerializer(serializers.ModelSerializer):
         exclude = ["can_delete"]
 
     def create(self, validated_data):
-        validated_data["safe_mode"] = json.dumps({"enable": True, "safe_time": 10}, ensure_ascii=False)
+        validated_data["safe_mode"] = json.dumps(
+            {"enable": True, "safe_time": 10}, ensure_ascii=False)
         workspace = super(EnvironmentSerializer, self).create(validated_data)
 
         return workspace
@@ -88,7 +91,6 @@ class IntegrationSerializer(serializers.ModelSerializer):
 
 
 class MonitorSerializer(serializers.ModelSerializer):
-    monitor_database_type = serializers.CharField(required=True)
     monitor_variables = serializers.JSONField(required=True)
 
     class Meta:
@@ -153,11 +155,13 @@ class ReleaseSerializer(serializers.ModelSerializer):
         )
         # Environments
         self._create_release_copies(
-            Environment, EnvironmentRelease, ["environment_variables", "debug", "safe_mode"],
+            Environment, EnvironmentRelease, [
+                "environment_variables", "debug", "safe_mode"],
         )
         # Integrations
         self._create_release_copies(
-            Integration, IntegrationRelease, ["-name", "integration_variables"],
+            Integration, IntegrationRelease, [
+                "-name", "integration_variables"],
         )
         # Function file
         self._create_release_copies(
@@ -226,11 +230,13 @@ class PublishSerializer(serializers.Serializer):
 
         for index in range(len(data["environments"])):
             try:
-                environment = EnvironmentRelease.objects.get(pk=data["environments"][index])
+                environment = EnvironmentRelease.objects.get(
+                    pk=data["environments"][index])
                 data["environments"][index] = environment
             except EnvironmentRelease.DoesNotExist:
                 raise serializers.ValidationError(
-                    "The environment {0} does not exist".format(data["environments"][index])
+                    "The environment {0} does not exist".format(
+                        data["environments"][index])
                 )
 
         if WORKSPACE_PUBLISH_MODE == "upload":
