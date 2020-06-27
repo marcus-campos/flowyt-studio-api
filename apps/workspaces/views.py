@@ -46,7 +46,8 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.models import to_dict
-from utils.redis import redis
+from utils.redis import redis_workspace, redis_monitor
+from django.utils.text import slugify
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
@@ -117,8 +118,29 @@ class MonitorViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        # TODO: Publish in redis configs for monitor
+        self._perform_redis(response.data['id'])
         return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        self._perform_redis(response.data['id'])
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        self._perform_redis(kwargs['pk'], True)
+        response = super().destroy(request, *args, **kwargs)
+        return response
+
+    def _perform_redis(self, monitor_id, destroy=False):
+        monitor = self.queryset.get(id=monitor_id)
+        subdomain = monitor.workspace.team.subdomain
+        workspace = slugify(monitor.workspace.name)
+
+        if not destroy:
+            redis_monitor.set("{0}.{1}".format(
+                subdomain, workspace), json.dumps(monitor.monitor_variables))
+        else:
+            redis_monitor.delete("{0}.{1}".format(subdomain, workspace))
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -357,7 +379,7 @@ class ReleasePublishView(generics.GenericAPIView):
                 project_key = "{0}.{1}".format(
                     project["subdomain"], project["name"])
                 parsed_data = self._transform_redis(project["data"])
-                redis.set(project_key, json.dumps(parsed_data))
+                redis_workspace.set(project_key, json.dumps(parsed_data))
 
         return has_errors
 

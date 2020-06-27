@@ -91,11 +91,22 @@ class IntegrationSerializer(serializers.ModelSerializer):
 
 
 class MonitorSerializer(serializers.ModelSerializer):
+    database = serializers.CharField(required=True)
     monitor_variables = serializers.JSONField(required=True)
 
     class Meta:
         model = Monitor
         fields = "__all__"
+
+    def validate(self, data):
+        instance = self.instance
+        if not instance:
+            has_monitor = Monitor.objects.filter(
+                workspace=data['workspace']).exists()
+            if has_monitor:
+                raise serializers.ValidationError(
+                    "Monitoring settings already registered for this workspace")
+        return data
 
 
 class IntegrationListSerializer(serializers.ModelSerializer):

@@ -6,18 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0025_auto_20200608_2322'),
+        ("workspaces", "0025_auto_20200608_2322"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='monitor',
-            name='monitor_database',
-        ),
+        migrations.RemoveField(model_name="monitor", name="monitor_database",),
         migrations.AddField(
-            model_name='monitor',
-            name='monitor_database_type',
-            field=models.TextField(choices=[('MONGO', 'Mongo')], default=None, max_length=10, verbose_name='Database'),
+            model_name="monitor",
+            name="monitor_database_type",
+            field=models.TextField(
+                choices=[("MONGO", "Mongo")], default=None, max_length=10, verbose_name="Database"
+            ),
             preserve_default=False,
         ),
     ]

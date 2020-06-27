@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('workspaces', '0026_auto_20200608_2323'),
+        ("workspaces", "0026_auto_20200608_2323"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='monitor',
-            name='monitor_database_type',
-            field=models.CharField(choices=[('MONGO', 'Mongo')], max_length=10, verbose_name='Database'),
+            model_name="monitor",
+            name="monitor_database_type",
+            field=models.CharField(choices=[("MONGO", "Mongo")], max_length=10, verbose_name="Database"),
         ),
     ]

@@ -72,8 +72,7 @@ class LanguageAdmin(admin.ModelAdmin):
 
 @admin.register(Workspace)
 class WorkspaceAdmin(admin.ModelAdmin):
-    list_display = ["language", "name", "description",
-                    "creator", "team", "workspae_color_render"]
+    list_display = ["language", "name", "description", "creator", "team", "workspae_color_render"]
     list_display_links = ["language", "name", "description", "creator", "team"]
     list_filter = ["creator", "team", "language"]
     list_select_related = ("creator", "team", "language")
@@ -88,8 +87,7 @@ class WorkspaceAdmin(admin.ModelAdmin):
     ]
 
     def save_model(self, request, obj, form, change):
-        result = super(WorkspaceAdmin, self).save_model(
-            request, obj, form, change)
+        result = super(WorkspaceAdmin, self).save_model(request, obj, form, change)
         if not change:
             debug_env = Environment()
             debug_env.name = "debug"
