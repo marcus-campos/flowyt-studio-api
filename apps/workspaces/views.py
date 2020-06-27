@@ -132,15 +132,18 @@ class MonitorViewSet(viewsets.ModelViewSet):
         return response
 
     def _perform_redis(self, monitor_id, destroy=False):
-        monitor = self.queryset.get(id=monitor_id)
-        subdomain = monitor.workspace.team.subdomain
-        workspace = slugify(monitor.workspace.name)
+        try:
+            monitor = self.queryset.get(id=monitor_id)
+            subdomain = monitor.workspace.team.subdomain
+            workspace = slugify(monitor.workspace.name)
 
-        if not destroy:
-            redis_monitor.set("{0}.{1}".format(
-                subdomain, workspace), json.dumps(monitor.monitor_variables))
-        else:
-            redis_monitor.delete("{0}.{1}".format(subdomain, workspace))
+            if not destroy:
+                redis_monitor.set("{0}.{1}".format(
+                    subdomain, workspace), json.dumps(monitor.monitor_variables))
+            else:
+                redis_monitor.delete("{0}.{1}".format(subdomain, workspace))
+        except:
+            pass
 
     def get_queryset(self):
         queryset = super().get_queryset()
