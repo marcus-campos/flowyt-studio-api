@@ -1,5 +1,7 @@
 import json
 
+from rest_framework import serializers
+
 from apps.hosts.models import Host
 from apps.teams.models import Team
 from apps.workspaces.models import (
@@ -13,6 +15,7 @@ from apps.workspaces.models import (
     IntegrationList,
     IntegrationRelease,
     Language,
+    Monitor,
     Release,
     Route,
     RouteRelease,
@@ -20,7 +23,6 @@ from apps.workspaces.models import (
     WorkspaceRelease,
 )
 from orchestryzi_api.settings import WORKSPACE_PUBLISH_MODE
-from rest_framework import serializers
 
 
 class LanguageSerializer(serializers.ModelSerializer):
@@ -86,6 +88,25 @@ class IntegrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Integration
         fields = "__all__"
+
+
+class MonitorSerializer(serializers.ModelSerializer):
+    database = serializers.CharField(required=True)
+    monitor_variables = serializers.JSONField(required=True)
+
+    class Meta:
+        model = Monitor
+        fields = "__all__"
+
+    def validate(self, data):
+        instance = self.instance
+        if not instance:
+            has_monitor = Monitor.objects.filter(
+                workspace=data['workspace']).exists()
+            if has_monitor:
+                raise serializers.ValidationError(
+                    "Monitoring settings already registered for this workspace")
+        return data
 
 
 class IntegrationListSerializer(serializers.ModelSerializer):

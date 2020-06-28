@@ -4,13 +4,6 @@ import os
 import shutil
 
 import requests
-from django.core import serializers
-from django.db import transaction
-from rest_framework import generics, mixins, status, viewsets
-from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied
-from rest_framework.response import Response
-
 from apps.teams.models import Team
 from apps.workspaces.models import (
     Environment,
@@ -18,34 +11,43 @@ from apps.workspaces.models import (
     FunctionFile,
     Integration,
     IntegrationList,
+    Language,
+    Monitor,
     Release,
     Route,
     Workspace,
     WorkspaceRelease,
-    Language,
 )
 from apps.workspaces.permissions import IsCreatorPermission, IsInTeamPermission
 from apps.workspaces.serializers import (
     EnvironmentSerializer,
     FlowSerializer,
     FunctionFileSerializer,
-    IntegrationSerializer,
     IntegrationListSerializer,
+    IntegrationSerializer,
+    LanguageSerializer,
+    MonitorSerializer,
     PublishSerializer,
     ReleaseSerializer,
     RouteSerializer,
     WorkspaceSerializer,
-    LanguageSerializer,
 )
 from apps.workspaces.services import ReleaseBuilder
+from django.core import serializers
+from django.db import transaction
 from orchestryzi_api.settings import (
     ENGINE_ENDPOINTS,
-    WORKSPACE_PUBLISH_MODE,
     WORKSPACE_PUBLISH_HOST,
+    WORKSPACE_PUBLISH_MODE,
     WORKSPACE_SUBDOMAIN_ENABLE,
 )
+from rest_framework import generics, mixins, status, viewsets
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from utils.models import to_dict
-from utils.redis import redis
+from utils.redis import redis_workspace, redis_monitor
+from django.utils.text import slugify
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
@@ -65,6 +67,30 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         serializer.save(creator=request.user)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def destroy(self, request, *args, **kwargs):
+        workspace = self.queryset.filter(pk=kwargs['pk'])
+        if workspace.exists():
+            workspace = workspace.first()
+            monitor = Monitor.objects.filter(workspace=kwargs['pk'])
+            if monitor.exists():
+                MonitorViewSet()._perform_redis(str(monitor.first().id), True)
+            self._perform_redis(workspace)
+        response = super().destroy(request, *args, **kwargs)
+        return response
+
+    def _perform_redis(self, workspace):
+        subdomain = workspace.team.subdomain
+        workspace_name = slugify(workspace.name)
+        release = Release.objects.filter(
+            workspace=workspace, published=True).first()
+        workspace_release = WorkspaceRelease.objects.get(release=release)
+
+        for environment in workspace_release.environmentrelease_set.all():
+            workspace_env = slugify(
+                "{0}-{1}".format(workspace_name, environment.name))
+            key_pattern = "{0}.{1}".format(subdomain, workspace_env)
+            redis_workspace.delete(key_pattern)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -99,6 +125,49 @@ class IntegrationViewSet(viewsets.ModelViewSet):
     serializer_class = IntegrationSerializer
     filter_fields = ("workspace__id",)
     permission_classes = (IsInTeamPermission,)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_authenticated:
+            return queryset.none()
+        teams = Team.objects.filter(members__in=[self.request.user])
+        return queryset.filter(workspace__team__in=teams)
+
+
+class MonitorViewSet(viewsets.ModelViewSet):
+    queryset = Monitor.objects.all()
+    serializer_class = MonitorSerializer
+    filter_fields = ("workspace__id",)
+    permission_classes = (IsInTeamPermission,)
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        self._perform_redis(response.data['id'])
+        return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        self._perform_redis(response.data['id'])
+        return response
+
+    def destroy(self, request, *args, **kwargs):
+        self._perform_redis(kwargs['pk'], True)
+        response = super().destroy(request, *args, **kwargs)
+        return response
+
+    def _perform_redis(self, monitor_id, destroy=False):
+        try:
+            monitor = self.queryset.get(id=monitor_id)
+            subdomain = monitor.workspace.team.subdomain
+            workspace = slugify(monitor.workspace.name)
+
+            if not destroy:
+                redis_monitor.set("{0}.{1}".format(
+                    subdomain, workspace), json.dumps(monitor.monitor_variables))
+            else:
+                redis_monitor.delete("{0}.{1}".format(subdomain, workspace))
+        except:
+            pass
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -269,7 +338,7 @@ class ReleasePublishView(generics.GenericAPIView):
         except Exception as e:
             response = {
                 "msg": "It was not possible to generate a build for this release. Check that there is no incomplete data and create a new release.",
-                "reason": None
+                "reason": None,
             }
 
             if hasattr(e, "message"):
@@ -285,9 +354,10 @@ class ReleasePublishView(generics.GenericAPIView):
 
         # Update release status
         Release.objects.filter(
-            published=True, workspace=serializer.validated_data['release'].workspace).update(published=False)
+            published=True, workspace=serializer.validated_data["release"].workspace
+        ).update(published=False)
         Release.objects.filter(
-            pk=serializer.validated_data['release'].id).update(published=True)
+            pk=serializer.validated_data["release"].id).update(published=True)
 
         return Response(data=response, status=200)
 
@@ -336,7 +406,7 @@ class ReleasePublishView(generics.GenericAPIView):
                 project_key = "{0}.{1}".format(
                     project["subdomain"], project["name"])
                 parsed_data = self._transform_redis(project["data"])
-                redis.set(project_key, json.dumps(parsed_data))
+                redis_workspace.set(project_key, json.dumps(parsed_data))
 
         return has_errors
 

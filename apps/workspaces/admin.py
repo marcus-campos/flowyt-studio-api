@@ -9,6 +9,7 @@ from apps.workspaces.forms import (
     FunctionFileAdminForm,
     IntegrationAdminForm,
     IntegrationListAdminForm,
+    MonitorAdminForm,
     WorkspaceAdminForm,
 )
 from apps.workspaces.models import (
@@ -22,6 +23,7 @@ from apps.workspaces.models import (
     IntegrationList,
     IntegrationRelease,
     Language,
+    Monitor,
     Release,
     Route,
     RouteRelease,
@@ -121,6 +123,16 @@ class IntegrationAdmin(admin.ModelAdmin):
     search_fields = ["description"]
     list_select_related = ("workspace",)
     form = IntegrationAdminForm
+
+
+@admin.register(Monitor)
+class MonitorAdmin(admin.ModelAdmin):
+    list_display = ["id", "database"]
+    list_display_links = list_display
+    list_filter = ["workspace"]
+    search_fields = ["description"]
+    list_select_related = ("workspace",)
+    form = MonitorAdminForm
 
 
 @admin.register(IntegrationList)

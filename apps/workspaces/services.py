@@ -169,7 +169,9 @@ class ConfigTranslation:
         settings["env"] = json.loads(environment_variables)
 
         for integration in integrations:
-            settings["integrations"][integration.integration.integration_list.integration_key] = integration.integration_variables
+            settings["integrations"][
+                integration.integration.integration_list.integration_key
+            ] = integration.integration_variables
 
         return settings
 

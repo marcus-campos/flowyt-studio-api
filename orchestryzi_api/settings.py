@@ -211,8 +211,22 @@ WORKSPACE_SUBDOMAIN_ENABLE = config("WORKSPACE_SUBDOMAIN_ENABLE", default=False,
 WORKSPACE_PUBLISH_HOST = config("WORKSPACE_PUBLISH_HOST", default="", cast=str)
 
 REDIS = {
-    "HOST": config("REDIS_HOST", cast=str, default="127.0.0.1"),
-    "PORT": config("REDIS_PORT", cast=int, default=6379),
-    "PASSWORD": config("REDIS_PASSWORD", cast=str, default=""),
-    "DB": config("REDIS_DB", cast=int, default=0),
+    "WORKSPACES": {
+        "HOST": config("REDIS_HOST", cast=str, default="127.0.0.1"),
+        "PORT": config("REDIS_PORT", cast=int, default=6379),
+        "PASSWORD": config("REDIS_PASSWORD", cast=str, default=""),
+        "DB": 0,
+    },
+    "PLAN": {
+        "HOST": config("REDIS_HOST", cast=str, default="127.0.0.1"),
+        "PORT": config("REDIS_PORT", cast=int, default=6379),
+        "PASSWORD": config("REDIS_PASSWORD", cast=str, default=""),
+        "DB": 1,
+    },
+    "MONITOR": {
+        "HOST": config("REDIS_HOST", cast=str, default="127.0.0.1"),
+        "PORT": config("REDIS_PORT", cast=int, default=6379),
+        "PASSWORD": config("REDIS_PASSWORD", cast=str, default=""),
+        "DB": 2,
+    },
 }
