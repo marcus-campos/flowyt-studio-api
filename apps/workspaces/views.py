@@ -68,6 +68,30 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def destroy(self, request, *args, **kwargs):
+        workspace = self.queryset.filter(pk=kwargs['pk'])
+        if workspace.exists():
+            workspace = workspace.first()
+            monitor = Monitor.objects.filter(workspace=kwargs['pk'])
+            if monitor.exists():
+                MonitorViewSet()._perform_redis(str(monitor.first().id), True)
+            self._perform_redis(workspace)
+        response = super().destroy(request, *args, **kwargs)
+        return response
+
+    def _perform_redis(self, workspace):
+        subdomain = workspace.team.subdomain
+        workspace_name = slugify(workspace.name)
+        release = Release.objects.filter(
+            workspace=workspace, published=True).first()
+        workspace_release = WorkspaceRelease.objects.get(release=release)
+
+        for environment in workspace_release.environmentrelease_set.all():
+            workspace_env = slugify(
+                "{0}-{1}".format(workspace_name, environment.name))
+            key_pattern = "{0}.{1}".format(subdomain, workspace_env)
+            redis_workspace.delete(key_pattern)
+
     def get_queryset(self):
         queryset = super().get_queryset()
         if not self.request.user.is_authenticated:
