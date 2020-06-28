@@ -1,7 +1,6 @@
 import json
 
 from django.contrib.postgres.fields import JSONField
-from fernet_fields import EncryptedField, EncryptedTextField
 
 from .cryptography import Cryptography
 
