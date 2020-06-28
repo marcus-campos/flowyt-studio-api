@@ -84,13 +84,14 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         workspace_name = slugify(workspace.name)
         release = Release.objects.filter(
             workspace=workspace, published=True).first()
-        workspace_release = WorkspaceRelease.objects.get(release=release)
+        if release:
+            workspace_release = WorkspaceRelease.objects.get(release=release)
 
-        for environment in workspace_release.environmentrelease_set.all():
-            workspace_env = slugify(
-                "{0}-{1}".format(workspace_name, environment.name))
-            key_pattern = "{0}.{1}".format(subdomain, workspace_env)
-            redis_workspace.delete(key_pattern)
+            for environment in workspace_release.environmentrelease_set.all():
+                workspace_env = slugify(
+                    "{0}-{1}".format(workspace_name, environment.name))
+                key_pattern = "{0}.{1}".format(subdomain, workspace_env)
+                redis_workspace.delete(key_pattern)
 
     def get_queryset(self):
         queryset = super().get_queryset()
