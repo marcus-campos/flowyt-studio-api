@@ -3,8 +3,8 @@ import uuid
 from itertools import chain
 
 from django.db import models
-from django.utils.translation import gettext_lazy as translate
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as translate
 
 
 def to_dict(instance):
@@ -27,9 +27,12 @@ class AutoCreatedUpdatedMixin(models.Model):
 
 
 class SoftDeleteMixin(models.Model):
-
     deleted_at = models.DateTimeField(
-        verbose_name=translate("deleted at"), unique=False, null=True, blank=True, db_index=True,
+        verbose_name=translate("deleted at"),
+        unique=False,
+        null=True,
+        blank=True,
+        db_index=True,
     )
 
     class Meta:

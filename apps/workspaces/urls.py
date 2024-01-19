@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework import routers
+
 from apps.workspaces import views
 
 router = routers.DefaultRouter()
@@ -17,6 +18,10 @@ router.register(r"monitor", views.MonitorViewSet)
 
 urlpatterns = [
     path("releases/workspaces/<uuid:id>/", views.ReleaseView.as_view(), name="release"),
-    path("releases/<uuid:id>/publish/", views.ReleasePublishView.as_view(), name="publish",),
+    path(
+        "releases/<uuid:id>/publish/",
+        views.ReleasePublishView.as_view(),
+        name="publish",
+    ),
     path("", include(router.urls)),
 ]

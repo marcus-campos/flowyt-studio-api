@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import re
 import uuid
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -22,7 +23,6 @@ SHA1_RE = re.compile("^[a-f0-9]{40}$")
 
 
 class Verification(models.Model):
-
     has_email_verified = models.BooleanField(default=False)
 
     class Meta:
@@ -89,7 +89,6 @@ class UserProfileRegistrationManager(models.Manager):
 
 
 class UserProfile(AutoCreatedUpdatedMixin, Verification):
-
     ACTIVATED = "ALREADY ACTIVATED"
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

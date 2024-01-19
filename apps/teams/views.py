@@ -1,24 +1,21 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import generics, permissions, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 
+from ..accounts.models import UserProfile
 from . import serializers
 from .builders import SubDomainBuilder
 from .models import Team, TeamInvitation
 from .permissions import IsTeamOwnerPermission
 from .serializers import TeamSerializer
-from ..accounts.models import UserProfile
-
-from django.conf import settings
-
 
 User = get_user_model()
 
 
 class ListCreateTeamAPIView(generics.ListCreateAPIView):
-
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.TeamCreateSerializer
     queryset = Team.objects.all()
@@ -44,7 +41,6 @@ class ListCreateTeamAPIView(generics.ListCreateAPIView):
 
 
 class RetrieveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.RetrieveDestroyAPIView):
-
     permission_classes = (IsTeamOwnerPermission,)
     serializer_class = serializers.TeamSerializer
     queryset = Team.objects.all()
@@ -70,7 +66,6 @@ class RetrieveDestroyUpdateTeamAPIView(generics.UpdateAPIView, generics.Retrieve
 
 
 class InviteToTeamAPIView(generics.CreateAPIView):
-
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.TeamInvitationCreateSerializer
     queryset = TeamInvitation.objects.all()

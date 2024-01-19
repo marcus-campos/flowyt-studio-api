@@ -21,11 +21,14 @@ class TeamManager(models.Manager):
 
 
 class Team(AutoCreatedUpdatedMixin):
-
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True, help_text="(Opcional)")
     owner = models.ForeignKey(
-        User, related_name="owned_teams", null=True, blank=False, on_delete=models.SET_NULL,
+        User,
+        related_name="owned_teams",
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
     )
     members = models.ManyToManyField(User, related_name="teams")
     can_delete = models.BooleanField(default=True)
@@ -112,7 +115,11 @@ class TeamInvitation(AutoCreatedUpdatedMixin):
     )
 
     invited_by = models.ForeignKey(
-        User, related_name="invitations_sent", null=True, blank=False, on_delete=models.SET_NULL,
+        User,
+        related_name="invitations_sent",
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
     )
     team = models.ForeignKey("teams.Team", null=True, blank=True, on_delete=models.PROTECT)
     email = models.EmailField()

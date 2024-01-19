@@ -11,14 +11,12 @@ User = get_user_model()
 
 
 class UserRegistrationAPIView(generics.CreateAPIView):
-
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.UserRegistrationSerializer
     queryset = User.objects.all()
 
 
 class UserEmailVerificationAPIView(views.APIView):
-
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, verification_key):
@@ -32,7 +30,6 @@ class UserEmailVerificationAPIView(views.APIView):
 
 
 class PasswordResetAPIView(views.APIView):
-
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.PasswordResetSerializer
 
@@ -53,14 +50,13 @@ class PasswordResetAPIView(views.APIView):
 
 
 class PasswordResetConfirmView(views.APIView):
-
     permission_classes = (permissions.AllowAny,)
     serializer_class = serializers.PasswordResetConfirmSerializer
 
     def post(self, request, *args, **kwargs):
-
         serializer = self.serializer_class(
-            data=request.data, context={"uidb64": kwargs["uidb64"], "token": kwargs["token"]},
+            data=request.data,
+            context={"uidb64": kwargs["uidb64"], "token": kwargs["token"]},
         )
 
         if serializer.is_valid(raise_exception=True):
@@ -74,7 +70,6 @@ class PasswordResetConfirmView(views.APIView):
 
 
 class UserProfileAPIView(generics.RetrieveAPIView):
-
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.UserProfileSerializer
 

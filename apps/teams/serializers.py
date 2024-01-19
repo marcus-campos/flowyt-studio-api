@@ -68,7 +68,6 @@ class TeamCreateSerializer(TeamSerializer):
 
 
 class TeamInvitationCreateSerializer(serializers.Serializer):
-
     MAXIMUM_EMAILS_ALLOWED = 1000
 
     emails = serializers.ListField(write_only=True)
@@ -95,7 +94,6 @@ class TeamInvitationCreateSerializer(serializers.Serializer):
 
 
 class TeamRemoveMemberSerializer(serializers.Serializer):
-
     email = serializers.EmailField()
 
     def validate(self, data):
@@ -117,6 +115,5 @@ class TeamRemoveMemberSerializer(serializers.Serializer):
 
 
 class SubDomainURLBuilderSerializer(serializers.Serializer):
-
     organization = serializers.CharField()
     team = serializers.CharField()

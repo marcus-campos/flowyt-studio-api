@@ -2,22 +2,21 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.accounts.models import UserProfile
 from apps.teams.builders import SubDomainBuilder
-from apps.teams.models import TeamInvitation, Team
+from apps.teams.models import Team, TeamInvitation
 from apps.teams.serializers import TeamSerializer
 from apps.workspaces.models import Environment
 from utils import encodings as base_utils
-from django.db import transaction
 
 User = get_user_model()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-
     email = serializers.EmailField(required=True, label="Email Address")
     password = serializers.CharField(required=True, label="Password", style={"input_type": "password"})
     password_2 = serializers.CharField(
@@ -79,7 +78,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         is_active = True if team else False
         with transaction.atomic():
-
             user = UserProfile.objects.create_user_profile(
                 data=user_data,
                 is_active=is_active,
@@ -113,7 +111,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class PasswordResetSerializer(serializers.Serializer):
-
     email = serializers.EmailField(required=True)
 
     def validate_email(self, value):
@@ -123,7 +120,6 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
-
     token_generator = default_token_generator
 
     def __init__(self, *args, **kwargs):
@@ -163,7 +159,6 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     teams = TeamSerializer(many=True)
 
     class Meta:
@@ -172,7 +167,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-
     user = UserSerializer()
 
     class Meta:

@@ -46,8 +46,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         if not creator:
             raise serializers.ValidationError("User not found.")
         if not Team.objects.filter(members__in=[creator]).exists():
-            raise serializers.ValidationError(
-                "User is not in the specified Team.")
+            raise serializers.ValidationError("User is not in the specified Team.")
         return data
 
     def create(self, validated_data):
@@ -58,8 +57,7 @@ class WorkspaceSerializer(serializers.ModelSerializer):
         debug_env.workspace = workspace
         debug_env.can_delete = False
         debug_env.debug = True
-        debug_env.safe_mode = json.dumps(
-            {"enable": True, "safe_time": 10}, ensure_ascii=False)
+        debug_env.safe_mode = json.dumps({"enable": True, "safe_time": 10}, ensure_ascii=False)
         debug_env.save()
 
         return workspace
@@ -74,8 +72,7 @@ class EnvironmentSerializer(serializers.ModelSerializer):
         exclude = ["can_delete"]
 
     def create(self, validated_data):
-        validated_data["safe_mode"] = json.dumps(
-            {"enable": True, "safe_time": 10}, ensure_ascii=False)
+        validated_data["safe_mode"] = json.dumps({"enable": True, "safe_time": 10}, ensure_ascii=False)
         workspace = super(EnvironmentSerializer, self).create(validated_data)
 
         return workspace
@@ -101,11 +98,9 @@ class MonitorSerializer(serializers.ModelSerializer):
     def validate(self, data):
         instance = self.instance
         if not instance:
-            has_monitor = Monitor.objects.filter(
-                workspace=data['workspace']).exists()
+            has_monitor = Monitor.objects.filter(workspace=data["workspace"]).exists()
             if has_monitor:
-                raise serializers.ValidationError(
-                    "Monitoring settings already registered for this workspace")
+                raise serializers.ValidationError("Monitoring settings already registered for this workspace")
         return data
 
 
@@ -141,7 +136,6 @@ class RouteSerializer(serializers.ModelSerializer):
 
 
 class ReleaseSerializer(serializers.ModelSerializer):
-
     workspace_release = None
     release = None
 
@@ -162,21 +156,27 @@ class ReleaseSerializer(serializers.ModelSerializer):
         )
         # Flows
         self._create_release_copies(
-            Flow, FlowRelease, ["flow_layout", "flow_data"],
+            Flow,
+            FlowRelease,
+            ["flow_layout", "flow_data"],
         )
         # Environments
         self._create_release_copies(
-            Environment, EnvironmentRelease, [
-                "environment_variables", "debug", "safe_mode"],
+            Environment,
+            EnvironmentRelease,
+            ["environment_variables", "debug", "safe_mode"],
         )
         # Integrations
         self._create_release_copies(
-            Integration, IntegrationRelease, [
-                "-name", "integration_variables"],
+            Integration,
+            IntegrationRelease,
+            ["-name", "integration_variables"],
         )
         # Function file
         self._create_release_copies(
-            FunctionFile, FunctionFileRelease, ["function_data"],
+            FunctionFile,
+            FunctionFileRelease,
+            ["function_data"],
         )
         # Routes
         self._create_route_copies()
@@ -206,7 +206,9 @@ class ReleaseSerializer(serializers.ModelSerializer):
                     keys.remove(key)
 
             self._copy_model_instance(
-                to_class, from_instance, keys,
+                to_class,
+                from_instance,
+                keys,
             )
 
     def _copy_model_instance(self, model_class, from_instance, copy=[], add={}):
@@ -241,13 +243,11 @@ class PublishSerializer(serializers.Serializer):
 
         for index in range(len(data["environments"])):
             try:
-                environment = EnvironmentRelease.objects.get(
-                    pk=data["environments"][index])
+                environment = EnvironmentRelease.objects.get(pk=data["environments"][index])
                 data["environments"][index] = environment
             except EnvironmentRelease.DoesNotExist:
                 raise serializers.ValidationError(
-                    "The environment {0} does not exist".format(
-                        data["environments"][index])
+                    "The environment {0} does not exist".format(data["environments"][index])
                 )
 
         if WORKSPACE_PUBLISH_MODE == "upload":

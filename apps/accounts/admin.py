@@ -5,7 +5,6 @@ from .models import UserProfile
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-
     list_display = ("id", "name", "email", "is_active", "has_email_verified")
 
     def email(self, profile):

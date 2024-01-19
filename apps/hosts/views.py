@@ -1,8 +1,10 @@
-from rest_framework import generics, mixins, status, viewsets, permissions
+from rest_framework import generics, mixins, permissions, status, viewsets
+
 from apps.hosts.models import Host
+
+from ..teams.models import Team
 from . import serializers
 from .permissions import IsInHostTeamMemberPermission
-from ..teams.models import Team
 
 
 class HostViewSet(generics.ListAPIView):
