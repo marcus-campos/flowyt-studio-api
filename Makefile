@@ -18,7 +18,7 @@ clean-build:
 black:
 	pipenv run black .
 
-pip-install:
+pipenv:
 	pipenv install --dev
 
 runserver:

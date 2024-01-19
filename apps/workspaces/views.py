@@ -35,7 +35,7 @@ from apps.workspaces.serializers import (
 from apps.workspaces.services import ReleaseBuilder
 from django.core import serializers
 from django.db import transaction
-from orchestryzi_api.settings import (
+from flowyt_api.settings import (
     ENGINE_ENDPOINTS,
     WORKSPACE_PUBLISH_HOST,
     WORKSPACE_PUBLISH_MODE,

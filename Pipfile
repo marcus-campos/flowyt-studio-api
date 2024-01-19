@@ -4,33 +4,28 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-belogging = "*"
-blinker = "*"
-django = "*"
+django = "==4.1.4"
 djangorestframework = "*"
 django-extensions = "*"
 django-filter = "*"
 gunicorn = "*"
 prettyconf = "*"
 psycopg2-binary = "*"
-dj_database_url = "*"
 drf-yasg = "*"
 whitenoise = "*"
-django-heroku = "*"
 django-cors-headers = "*"
 djangorestframework_simplejwt = "*"
-django-username-email = {git = "https://github.com/marcus-campos/django-username-email.git"}
+django-username-email = {git = "https://github.com/marcus-campos/django-username-email.git@master#egg=django-username-email"}
 django-select2 = "*"
-django-3-jet = "*"
+django-jet-reboot = "*"
 requests = "*"
 django-ace = "*"
 redis = "*"
 cryptography = "*"
 
 [dev-packages]
-flake8 = "*"
-ipdb = "*"
-pylint = "*"
+black = "*"
+isort = "*"
 
 [requires]
-python_full_version = "3.8.1"
+python_version = "3.11"

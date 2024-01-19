@@ -1,10 +1,8 @@
 import os
-import django_heroku
 
 from pathlib import Path
 from django.utils.module_loading import import_string
 from prettyconf import config
-from dj_database_url import parse as parse_db_url
 from datetime import timedelta
 
 # Project Structure
@@ -64,8 +62,8 @@ MIDDLEWARE = [
 ]
 
 
-ROOT_URLCONF = "orchestryzi_api.urls"
-WSGI_APPLICATION = "orchestryzi_api.wsgi.application"
+ROOT_URLCONF = "flowyt_api.urls"
+WSGI_APPLICATION = "flowyt_api.wsgi.application"
 
 TEMPLATES = [
     {
@@ -82,13 +80,18 @@ TEMPLATES = [
         },
     },
 ]
-# Database
-DATABASES = {"default": config("DATABASE_URL", cast=parse_db_url)}
-DATABASES["default"]["CONN_MAX_AGE"] = config(
-    "CONN_MAX_AGE", cast=config.eval, default="None"
-)  # always connected
-DATABASES["default"]["TEST"] = {"NAME": config("TEST_DATABASE_NAME", default=None)}
-DATABASES["default"]["OPTIONS"] = {"sslmode": "disable"}
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("DATABASE_NAME", default="flowyt", cast=str),
+        "USER": config("DATABASE_USER", default="postgres", cast=str),
+        "PASSWORD": config("DATABASE_PASSWORD", default="postgres", cast=str),
+        "HOST": config("DATABASE_HOST", default="127.0.0.1", cast=str),
+        "PORT": config("DATABASE_PORT", default="5432", cast=str),
+        "OPTIONS": {},
+    }
+}
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -202,9 +205,6 @@ BASE_PROTOCOL = "https://"
 STUDIO_BASE_DOMAIN_URL = "{0}studio.{1}".format(BASE_PROTOCOL, BASE_DOMAIN_URL)
 
 JET_SIDE_MENU_COMPACT = True
-
-django_heroku.settings(locals())
-del DATABASES["default"]["OPTIONS"]["sslmode"]
 
 WORKSPACE_PUBLISH_MODE = config("WORKSPACE_PUBLISH_MODE", default="redis", cast=str)  # redis, upload
 WORKSPACE_SUBDOMAIN_ENABLE = config("WORKSPACE_SUBDOMAIN_ENABLE", default=False, cast=bool)

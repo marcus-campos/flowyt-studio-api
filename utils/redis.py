@@ -1,5 +1,5 @@
 import redis as red
-from orchestryzi_api.settings import REDIS
+from flowyt_api.settings import REDIS
 
 
 redis_workspace = red.Redis(

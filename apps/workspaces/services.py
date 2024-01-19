@@ -7,7 +7,7 @@ from operator import itemgetter
 
 from apps.workspaces.actions import ACTIONS
 from django.utils.text import slugify
-from orchestryzi_api.settings import BASE_DIR, WORKSPACE_PUBLISH_MODE
+from flowyt_api.settings import BASE_DIR, WORKSPACE_PUBLISH_MODE
 from utils.zipdir import zipdir
 
 

@@ -22,7 +22,7 @@ from apps.workspaces.models import (
     Workspace,
     WorkspaceRelease,
 )
-from orchestryzi_api.settings import WORKSPACE_PUBLISH_MODE
+from flowyt_api.settings import WORKSPACE_PUBLISH_MODE
 
 
 class LanguageSerializer(serializers.ModelSerializer):

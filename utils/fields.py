@@ -1,6 +1,6 @@
 import json
 
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 
 from .cryptography import Cryptography
 
